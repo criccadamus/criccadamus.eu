@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ~~~~ -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <!-- ~~~~ -->
+    <link rel="apple-touch-icon" sizes="180x180" href="resources/icons/favicon/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="resources/icons/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="resources/icons/favicon/favicon-16x16.png">
+    <!-- ~~~~ -->
+    <link rel="manifest" href="resources/site.webmanifest">
+    <!-- ~~~~ -->
+    <link rel="stylesheet" href="resources/styles/root.css">
+    <link rel="stylesheet" href="resources/styles/footer.css">
+    <link rel="stylesheet" href="resources/styles/glassbox.css">
+    <link rel="stylesheet" href="resources/styles/content-placement.css">
+    <!-- ~~~~ -->
+    <link rel="stylesheet" href="resources/styles/content-desktop/header.css">
+    <link rel="stylesheet" href="resources/styles/content-desktop/streams.css">
+    <link rel="stylesheet" href="resources/styles/content-desktop/button.css">
+    <link rel="stylesheet" href="resources/styles/content-desktop/button-content.css">
+    <link rel="stylesheet" href="resources/styles/content-desktop/links.css">
+    <!-- ~~~~ -->
+    <link rel="stylesheet" media="(max-width: 746px)" href="resources/styles/content-mobile/root-mobile.css"/>
+    <link rel="stylesheet" media="(max-width: 746px)" href="resources/styles/content-mobile/button-content-mobile.css"/>
+    <link rel="stylesheet" media="(max-width: 746px)" href="resources/styles/content-mobile/button-mobile.css"/>
+    <link rel="stylesheet" media="(max-width: 746px)" href="resources/styles/content-mobile/header-mobile.css"/>
+    <link rel="stylesheet" media="(max-width: 746px)" href="resources/styles/content-mobile/links-mobile.css"/>
+    <link rel="stylesheet" media="(max-width: 746px)" href="resources/styles/content-mobile/streams-mobile.css"/>
+    <!-- ~~~~ -->
+    <title>Criccahub</title>
+</head>
+<header>
+    <div class="name-wrapper">
+            <span>Criccahub</span>
+    </div>
+<br>
+</header>
+<body>
+    <span class="streams-title">Latest media</span><br><br><br>
+    <div class="box streams">
+        <div class="streams-wrapper">
+            <iframe
+            height="320" width="480"
+            src="https://player.twitch.tv/?channel=criccadamus&parent=criccadamus.eu"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen="true" 
+            scrolling="no"
+            ></iframe>&nbsp;&nbsp;&nbsp;
+            <iframe width="480" height="320"
+            src="https://www.youtube.com/embed/videoseries?list=PLoGa9G4mB1Gha-vfKxoS8yHWYCeUd4ZYk" title="FFXIV Playlist"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen>
+        </iframe>
+        </div>
+    </div>
+<br><br><br>
+    <span class="links-title">Links</span><br><br><br>
+    <div class="box links">
+        <span class="links-subtitle">Socials</span><br><br>
+        <div class="button discord" onclick="copyToClipboard('criccadamus#5604')" title="Copy my username to the clipboard">
+            <span><img src="resources/icons/discord.png" class="button-icon discord-icon"><!-- Thanks FlatIcons! --></span>&nbsp;Discord
+        </div><br>
+        <div class="embed">
+            <a href="https://twitter.com/criccadamus" target="_blank">
+                <div class="twitter-embed">
+                    <span><img src="resources/icons/gorjeo.png" style="vertical-align: middle;" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;Twitter<br>
+                </div>
+                <a class="twitter-timeline" data-width="320" data-height="320" data-theme="dark" href="https://twitter.com/criccadamus?ref_src=twsrc%5Etfw">Loading...</a>
+                <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>   
+            </a>
+        </div><br>
+        <a href="https://www.reddit.com/user/criccadamus" target="_blank">
+                    <div class="button reddit">
+                        <span><img src="resources/icons/reddit.png" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;reddit profile
+                    </div>
+        </a><br>
+        <a href="https://anilist.co/user/criccadamus/" target="_blank">
+                    <div class="button anilist">
+                        <span><img src="resources/icons/anilist.svg" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;Anilist
+                    </div>
+        </a><br>
+        <a href="https://mstdn.games/@criccadamus" target="_blank" rel="me">
+            <div class="button mastodon">
+            <span><img src="resources/icons/mastodon.png" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;mastodon
+            </div>
+        </a><br>
+        <a href="https://blog.criccadam.us" target="_blank">
+                    <div class="button blog">
+                    <span><img src="resources/icons/blog.png" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;Blog
+                    </div>
+        </a><br>
+        <br><span class="links-subtitle">Misc</span><br><br>
+        <a href="https://github.com/criccadamus" target="_blank">
+            <div class="button github">
+            <span><img src="resources/icons/github.png" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;Github
+            </div>
+        </a><br>
+        <a href="https://mailhide.io/e/v9Q7m9wE" target="_blank">
+                    <div class="button mail">
+                    <span><img src="resources/icons/mail.png" class="button-icon"><!-- Thanks FlatIcons! --></span>&nbsp;Mail
+                    </div>
+        </a><br>
+<br>
+    </div>
+<br><br>
+<!-- ~~~~ -->
+<script src="resources/scripts/copy-to-clickboard.js"></script>
+<script src="resources/scripts/touch-interaction.js"></script>
+<script src="resources/scripts/add-background-streams.js"></script>
+<script src="resources/scripts/hide-streams.js"></script>
+<script src="resources/scripts/hide-links.js"></script>
+<script src="resources/scripts/add-background-to-title.js"></script>
+<script src="resources/scripts/scroll-to-top-when-reload.js"></script>
+<script src="resources/scripts/go-to-top.js"></script>
+<!-- ~~~~ -->
+</body>
+<footer>
+    <span onclick="topFunction()" class="gototop" title="Return to the top of the page">&copy;&nbsp;criccadamus, 2023</span>
+<br><br>
+</footer>
+</html>
