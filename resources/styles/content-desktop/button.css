@@ -1,0 +1,16 @@
+.button {
+    text-decoration: none;
+    background: #eeee;
+    color: rgb(0, 0, 0);
+    border-radius: 30px;
+    padding:10px 15px 10px 15px;
+    text-align: left;
+    margin-left: 15%;
+    margin-right: 15%;
+    transition: 0.3s;
+    text-align: center;
+}
+
+.button:hover{
+    cursor: pointer;
+}
