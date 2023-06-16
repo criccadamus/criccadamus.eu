@@ -6,7 +6,7 @@ function copyToClipboard(string) {
       // Update the title attribute to display the message
       button.title = 'Copied to clipboard';
       // Update the content of the button
-      button.innerHTML = '<img src="resources/icons/discord.png" width="50" height="50" class="button-icon" style="filter: invert(1);"> Copied user to clipboard!';
+      button.innerHTML = '<img src="resources/icons/discord.png" width="50" height="50" class="button-icon" style="filter: invert(1);"> Handler copied to clipboard';
       // Toggle the clicked class
       button.classList.toggle('clicked');
       // Reset the title attribute, content, and remove the clicked class after 3 seconds
