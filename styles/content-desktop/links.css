@@ -1,0 +1,88 @@
+@font-face {    
+    font-family: 'name';    
+    src: url('../../fonts/name.otf') format('opentype');     
+}
+
+.links {
+    margin-right: 20%;
+    margin-left: 20%;
+    height: 36em;
+    padding: 30px;
+}
+
+.links-title {
+    z-index: 1;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    font-size:72px;
+    margin-top: 0em;
+    font-family: 'name', sans-serif;
+    font-size: 2.5em;
+    margin-right: 20%;
+    margin-left: 20%;
+    transition: 0.2s;
+}
+
+.links-subtitle {
+    margin-right: 20%;
+    margin-left: 20%;
+    font-family: 'name', sans-serif;
+    font-size: 2em;
+}
+
+.links-title.sticky-fixed {
+    background: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    padding: 10px;
+    border-radius: 30px;
+    color:white;
+  }
+
+.buttons-grid{
+    text-align: center;
+    margin: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
+
+@font-face {    
+    font-family: 'twitter';    
+    src: url('../../fonts/twitter.woff') format('woff');     
+}
+
+.twitter-embed {
+    font-family: 'twitter';
+    font-size: 3em;
+    text-align: left;
+}
+
+.embed {
+    text-align: center;
+    text-decoration: none;
+    background: #eeee;
+    color: rgb(0, 0, 0);
+    border-radius: 30px;
+    padding:10px;
+    overflow: auto;
+    margin-left: 20%;
+    margin-right: 20%;
+    transition: 0.3s;
+}
+
+.embed a:visited{
+    color:black;
+}
+
+.embed:hover{
+    background-color: black;
+    color: white;
+}
+
+.embed:hover a:visited{
+    color:white;
+}

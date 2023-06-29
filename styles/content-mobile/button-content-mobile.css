@@ -1,0 +1,137 @@
+.button-icon {
+    vertical-align: middle;
+    width: 30px;
+    height: 30px;
+}
+@font-face {    
+    font-family: 'reddit';    
+    src: url('../../fonts/reddit.ttf') format('truetype');     
+}
+
+.reddit {
+    font-family: 'reddit', sans-serif;
+    font-size: 0.9em;
+}
+
+.reddit:active {
+    background-color: #ff4500;
+    color: white;
+    transition: 0.3s;
+}
+
+
+@font-face {    
+    font-family: 'anilist';    
+    src: url('../../fonts/anilist.ttf') format('truetype');     
+}
+
+.anilist {
+    font-family: 'anilist';
+    font-size: 0.9em;
+}
+
+.anilist:active {
+    background: rgb(36,37,55);
+    background: linear-gradient(90deg, rgba(36,37,55,1) 0%, rgba(61,62,93,1) 35%, rgba(61,62,93,1) 100%); 
+    color: white;
+    transition: 0.3s;
+}
+
+@font-face {    
+    font-family: 'github';    
+    src: url('../../fonts/github.otf') format('opentype');     
+}
+
+.github {
+    font-family: 'github';
+    font-size: 0.9em;
+}
+
+.github:active {
+    background: rgb(22,27,34);
+    background: linear-gradient(90deg, rgba(22,27,34,1) 0%, rgba(53,58,68,1) 57%, rgba(57,63,71,1) 100%);
+    color:white;
+    transition: 0.3s;
+}
+
+
+@font-face {    
+    font-family: 'mastodon';    
+    src: url('../../fonts/mastodon.otf') format('opentype');     
+}
+
+.mastodon {
+    font-family: 'mastodon';
+    font-size: 0.9em;
+}
+
+.mastodon:active {
+    background: rgb(99,100,255);
+    background: linear-gradient(90deg, rgba(99,100,255,1) 0%, rgba(86,58,204,1) 57%); 
+    color: white;
+    transition: 0.3s;
+}
+
+@font-face {    
+    font-family: 'blog';    
+    src: url('../../fonts/blog.ttf') format('truetype');     
+}
+
+.blog {
+    font-family: 'blog';
+    font-size: 0.9em;
+}
+
+.blog:active {
+    background-color: rgb(34, 32, 32);
+    color: #eee;
+    transition: 0.3s;
+}
+
+@font-face {    
+    font-family: 'mail';    
+    src: url('../../fonts/mail.ttf ') format('truetype');     
+}
+
+.mail {
+    font-family: 'mail';
+    font-size: 0.9em;
+}
+
+.mail:active {
+    filter: invert(1);
+    transition: 0.3s;
+}
+
+
+@font-face {    
+    font-family: 'discord';    
+    src: url('../../fonts/discord.ttf ') format('truetype');     
+}
+
+.discord {
+    font-family: 'discord';
+    font-size: 0.9em;
+    transition:0.2s;
+}
+
+.discord:hover{
+    font-family: 'discord';
+    font-size: 0.9em;
+    transition:0.2s;
+    background: #7289DA;
+    color:white;
+}
+
+.discord:active{
+    font-family: 'discord';
+    font-size: 0.9em;
+    transition:0.2s;
+    background: #7289DA;
+    color:white;
+}
+
+.discord.clicked {
+    background: #434a87;
+    color:white;
+  }

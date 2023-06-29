@@ -1,0 +1,28 @@
+@font-face {    
+    font-family: 'name';    
+    src: url('../../fonts/name.otf') format('opentype');     
+}
+
+.streams {
+    margin-right: 5%;
+    margin-left: 5%;
+}
+
+iframe {
+    border-radius: 30px;
+    width: 300px;
+    padding: 0px;
+}
+
+
+.streams-wrapper{
+    text-align: center;
+}
+
+.streams-title {
+    font-family: 'name', sans-serif;
+    font-size: 2.5em;
+    text-align: left;
+    margin-right: 9%;
+    margin-left:9%;
+}

@@ -1,0 +1,47 @@
+a:link{
+    text-decoration: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+    width: 100%;
+    background-color: #56aee6;
+    opacity: 1;
+    background-image:  linear-gradient(30deg, #558be6 12%, transparent 12.5%, transparent 87%, #558be6 87.5%, #558be6), linear-gradient(150deg, #558be6 12%, transparent 12.5%, transparent 87%, #558be6 87.5%, #558be6), linear-gradient(30deg, #558be6 12%, transparent 12.5%, transparent 87%, #558be6 87.5%, #558be6), linear-gradient(150deg, #558be6 12%, transparent 12.5%, transparent 87%, #558be6 87.5%, #558be6), linear-gradient(60deg, #558be677 25%, transparent 25.5%, transparent 75%, #558be677 75%, #558be677), linear-gradient(60deg, #558be677 25%, transparent 25.5%, transparent 75%, #558be677 75%, #558be677);
+    background-size: 46px 81px;
+    background-position: 0 0, 0 0, 23px 40px, 23px 40px, 0 0, 23px 40px;
+}
+
+#night-mode-toggle {
+  position: fixed;
+  top: 1em;
+  right: 1em;
+  background-color: white;
+  border-radius: 100%;
+  padding: 3em;
+}
+
+/* ===== Scrollbar CSS ===== */
+  /* Firefox */
+  * {
+    scrollbar-width: auto;
+    scrollbar-color: #569ee7 #ffffff;
+  }
+
+  /* Chrome, Edge, and Safari */
+  *::-webkit-scrollbar {
+    width: 16px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #569ee7;
+    border-radius: 10px;
+    border: 3px none #ffffff;
+  }
