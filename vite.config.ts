@@ -1,23 +1,33 @@
 import { defineConfig } from 'vite'
-import { devtools } from '@tanstack/devtools-vite'
+import path from 'path'
+import viteTsConfigPaths from 'vite-tsconfig-paths'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import viteReact from '@vitejs/plugin-react'
-import viteTsConfigPaths from 'vite-tsconfig-paths'
 import tailwindcss from '@tailwindcss/vite'
-import { nitro } from 'nitro/vite'
+import { cloudflare } from '@cloudflare/vite-plugin'
 
-const config = defineConfig({
+/**
+ * Configures plugins for React, TypeScript paths, Tailwind CSS, TanStack Start, and Cloudflare.
+ *
+ * @returns Vite configuration object
+ */
+export default defineConfig({
   plugins: [
-    devtools(),
-    nitro(),
-    // this is the plugin that enables path aliases
+    cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+      },
+    }),
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
     tailwindcss(),
-    tanstackStart(),
     viteReact(),
   ],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
 })
-
-export default config
