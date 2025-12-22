@@ -1,30 +1,30 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
-@import 'shadcn/tailwind.css';
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
 @font-face {
-  font-family: 'Pretendard';
+  font-family: "Pretendard";
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url('/fonts/pretendard-variable.woff2') format('woff2-variations');
+  src: url("/fonts/pretendard-variable.woff2") format("woff2-variations");
 }
 
 @font-face {
-  font-family: 'Berkeley Mono';
+  font-family: "Berkeley Mono";
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url('/fonts/berkeley_mono.woff2') format('woff2-variations');
+  src: url("/fonts/berkeley_mono.woff2") format("woff2-variations");
 }
 
 @theme {
   --font-sans:
-    'Pretendard', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+    "Pretendard", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
   --font-mono:
-    'Berkeley Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-    'Liberation Mono', 'Courier New', monospace;
+    "Berkeley Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
 }
 
 @custom-variant dark (&:is(.dark *));

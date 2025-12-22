@@ -11,5 +11,5 @@ export function TwitchEmbed() {
         title="Twitch Stream"
       />
     </div>
-  )
+  );
 }

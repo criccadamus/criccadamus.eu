@@ -1,10 +1,10 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { Header } from '@/components/layout/header'
-import { SocialLinks } from '@/components/social-links'
-import { TwitchEmbed } from '@/components/twitch-embed'
-import { YouTubeCarousel } from '@/components/youtube-carousel'
+import { createFileRoute } from "@tanstack/react-router";
+import { Header } from "@/components/layout/header";
+import { SocialLinks } from "@/components/social-links";
+import { TwitchEmbed } from "@/components/twitch-embed";
+import { YouTubeCarousel } from "@/components/youtube-carousel";
 
-export const Route = createFileRoute('/')({ component: App })
+export const Route = createFileRoute("/")({ component: App });
 
 function App() {
   return (
@@ -18,5 +18,5 @@ function App() {
         </div>
       </main>
     </div>
-  )
+  );
 }

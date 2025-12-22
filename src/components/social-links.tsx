@@ -1,14 +1,14 @@
-import { IconCopy, IconExternalLink } from '@tabler/icons-react'
-import { toast } from 'sonner'
-import { cn } from '@/lib/utils'
+import { IconCopy, IconExternalLink } from "@tabler/icons-react";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 export function SocialLinks() {
   const copyDiscordUsername = () => {
-    void navigator.clipboard.writeText('criccadamus')
-    toast('Discord username copied!', {
-      description: 'criccadamus',
-    })
-  }
+    void navigator.clipboard.writeText("criccadamus");
+    toast("Discord username copied!", {
+      description: "criccadamus",
+    });
+  };
 
   return (
     <div className="space-y-4">
@@ -21,11 +21,11 @@ export function SocialLinks() {
           target="_blank"
           rel="noopener noreferrer"
           className={cn(
-            'group relative flex flex-col items-center justify-center',
-            'bg-card border border-border rounded-lg p-8 aspect-square',
-            'transition-all duration-300 ease-in-out',
-            'hover:border-[#1DA1F2] hover:bg-[#1DA1F2]/10',
-            'cursor-pointer',
+            "group relative flex flex-col items-center justify-center",
+            "bg-card border border-border rounded-lg p-8 aspect-square",
+            "transition-all duration-300 ease-in-out",
+            "hover:border-[#1DA1F2] hover:bg-[#1DA1F2]/10",
+            "cursor-pointer",
           )}
         >
           <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
@@ -47,11 +47,11 @@ export function SocialLinks() {
         <button
           onClick={copyDiscordUsername}
           className={cn(
-            'group relative flex flex-col items-center justify-center',
-            'bg-card border border-border rounded-lg p-8 aspect-square',
-            'transition-all duration-300 ease-in-out',
-            'hover:border-[#5865F2] hover:bg-[#5865F2]/10',
-            'cursor-pointer',
+            "group relative flex flex-col items-center justify-center",
+            "bg-card border border-border rounded-lg p-8 aspect-square",
+            "transition-all duration-300 ease-in-out",
+            "hover:border-[#5865F2] hover:bg-[#5865F2]/10",
+            "cursor-pointer",
           )}
         >
           <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
@@ -75,23 +75,19 @@ export function SocialLinks() {
           target="_blank"
           rel="noopener noreferrer"
           className={cn(
-            'group relative flex flex-col items-center justify-center',
-            'bg-card border border-border rounded-lg p-8 aspect-square',
-            'transition-all duration-300 ease-in-out',
-            'hover:border-[#02A9FF] hover:bg-[#02A9FF]/10',
-            'cursor-pointer',
+            "group relative flex flex-col items-center justify-center",
+            "bg-card border border-border rounded-lg p-8 aspect-square",
+            "transition-all duration-300 ease-in-out",
+            "hover:border-[#02A9FF] hover:bg-[#02A9FF]/10",
+            "cursor-pointer",
           )}
         >
           <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
             <IconExternalLink className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#02A9FF]" />
           </div>
-          <img
-            src="/icon/anilist.svg"
-            alt="AniList"
-            className="w-full h-full max-w-24 max-h-24"
-          />
+          <img src="/icon/anilist.svg" alt="AniList" className="w-full h-full max-w-24 max-h-24" />
         </a>
       </div>
     </div>
-  )
+  );
 }

@@ -1,59 +1,57 @@
-import * as React from 'react'
-import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react'
-import { Button } from '@/components/ui/button'
+import * as React from "react";
+import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { Button } from "@/components/ui/button";
 
-const ReactPlayer = React.lazy(() => import('react-player')) as any
+const ReactPlayer = React.lazy(() => import("react-player")) as any;
 
 export function YouTubeCarousel() {
-  const [currentIndex, setCurrentIndex] = React.useState(0)
+  const [currentIndex, setCurrentIndex] = React.useState(0);
 
   const items = [
     {
-      url: 'https://www.youtube.com/watch?v=BBxqw9r5FZU&list=PLoGa9G4mB1GhdBdQdwnrnyYZLdCrQENxo',
-      title: 'FFXIV: Dawntrail post-game',
+      url: "https://www.youtube.com/watch?v=BBxqw9r5FZU&list=PLoGa9G4mB1GhdBdQdwnrnyYZLdCrQENxo",
+      title: "FFXIV: Dawntrail post-game",
     },
     {
-      url: 'https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC',
-      title: 'FFXIV: Dawntrail MSQ',
+      url: "https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC",
+      title: "FFXIV: Dawntrail MSQ",
     },
     {
-      url: 'https://www.youtube.com/watch?v=O4jALVwmpGA&list=PLoGa9G4mB1Gha-vfKxoS8yHWYCeUd4ZYk',
-      title: 'FFXIV: Endwalker',
+      url: "https://www.youtube.com/watch?v=O4jALVwmpGA&list=PLoGa9G4mB1Gha-vfKxoS8yHWYCeUd4ZYk",
+      title: "FFXIV: Endwalker",
     },
     {
-      url: 'https://www.youtube.com/watch?v=6mgUiB2Fuao&list=PLoGa9G4mB1GgUtOByPIgVHFpM-JrnKVxr',
-      title: 'FFXVI',
+      url: "https://www.youtube.com/watch?v=6mgUiB2Fuao&list=PLoGa9G4mB1GgUtOByPIgVHFpM-JrnKVxr",
+      title: "FFXVI",
     },
     {
-      url: 'https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC',
-      title: 'Crisis Core: a FF Story',
+      url: "https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC",
+      title: "Crisis Core: a FF Story",
     },
     {
-      url: 'https://www.youtube.com/watch?v=4FJjiFFe4xg&list=PLoGa9G4mB1GiCRnSKzuIJ3ilHrsfdFGP9',
-      title: 'FFXV',
+      url: "https://www.youtube.com/watch?v=4FJjiFFe4xg&list=PLoGa9G4mB1GiCRnSKzuIJ3ilHrsfdFGP9",
+      title: "FFXV",
     },
     {
-      url: 'https://www.youtube.com/watch?v=xDp9uChxJls&list=PLoGa9G4mB1GhCiHDLtemmfq6b1cge42AW',
-      title: 'FFVII Remake',
+      url: "https://www.youtube.com/watch?v=xDp9uChxJls&list=PLoGa9G4mB1GhCiHDLtemmfq6b1cge42AW",
+      title: "FFVII Remake",
     },
-  ]
+  ];
 
   const nextItem = () => {
-    setCurrentIndex((prev) => (prev + 1) % items.length)
-  }
+    setCurrentIndex((prev) => (prev + 1) % items.length);
+  };
 
   const prevItem = () => {
-    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)
-  }
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  };
 
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border">
       <h2 className="sr-only">Youtube</h2>
       <React.Suspense
         fallback={
-          <div className="flex items-center justify-center w-full h-full bg-muted">
-            Loading...
-          </div>
+          <div className="flex items-center justify-center w-full h-full bg-muted">Loading...</div>
         }
       >
         <ReactPlayer
@@ -92,5 +90,5 @@ export function YouTubeCarousel() {
         </>
       )}
     </div>
-  )
+  );
 }
