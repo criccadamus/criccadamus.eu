@@ -61,7 +61,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           }}
         />
-        {children}
+        <div className="mx-auto w-full max-w-4xl px-4 py-8">{children}</div>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
