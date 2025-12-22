@@ -16,10 +16,8 @@ export function SocialLinks() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 px-1">
-        <IconExternalLink className="h-5 w-5 text-muted-foreground" />
-        <h2 className="text-xl font-semibold text-foreground">Links</h2>
-      </div>
+      <h2 className="sr-only">Links</h2>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Twitter Button */}
         <a
@@ -43,13 +41,7 @@ export function SocialLinks() {
             <img
               src="/icon/twitter.svg"
               alt="Twitter"
-              className="w-full h-full absolute inset-0 transition-opacity duration-300"
-              style={{
-                filter: twitterHovered
-                  ? 'none'
-                  : 'brightness(0) saturate(100%) invert(93%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(103%) contrast(103%)',
-                opacity: 1,
-              }}
+              className="w-full h-full absolute inset-0 transition-opacity duration-300 text-[#1DA1F2]"
             />
           </div>
         </a>
@@ -74,13 +66,7 @@ export function SocialLinks() {
             <img
               src="/icon/discord.svg"
               alt="Discord"
-              className="w-full h-full absolute inset-0 transition-opacity duration-300"
-              style={{
-                filter: discordHovered
-                  ? 'none'
-                  : 'brightness(0) saturate(100%) invert(93%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(103%) contrast(103%)',
-                opacity: 1,
-              }}
+              className="w-full h-full absolute inset-0 transition-opacity duration-300 text-[#7289DA]"
             />
           </div>
         </button>

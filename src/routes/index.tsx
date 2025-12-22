@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Header } from '@/components/criccahub/header'
-import { SocialLinks } from '@/components/criccahub/social-links'
-import { TwitchEmbed } from '@/components/criccahub/twitch-embed'
-import { YouTubeCarousel } from '@/components/criccahub/youtube-carousel'
+import { Header } from '@/components/layout/header'
+import { SocialLinks } from '@/components/social-links'
+import { TwitchEmbed } from '@/components/twitch-embed'
+import { YouTubeCarousel } from '@/components/youtube-carousel'
 
 export const Route = createFileRoute('/')({ component: App })
 
