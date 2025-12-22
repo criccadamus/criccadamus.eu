@@ -6,7 +6,7 @@ import { Toaster } from 'sonner'
 import appCss from '../styles.css?url'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { NotFound } from '@/components/not-found'
-import { Footer } from '@/components/footer'
+import { Footer } from '@/components/layout/footer'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -61,8 +61,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           toastOptions={{
             classNames: {
               toast: 'bg-primary text-primary-foreground border-primary',
-              title: 'text-primary-foreground',
-              description: 'text-primary-foreground/80',
+              title:
+                'text-primary-foreground font-semibold tracking-tight text-lg',
+              description: 'text-primary-foreground/80 font-mono',
             },
           }}
         />
