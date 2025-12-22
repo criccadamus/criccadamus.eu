@@ -1,14 +1,10 @@
-import * as React from 'react'
 import { IconCopy, IconExternalLink } from '@tabler/icons-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 
 export function SocialLinks() {
-  const [twitterHovered, setTwitterHovered] = React.useState(false)
-  const [discordHovered, setDiscordHovered] = React.useState(false)
-
   const copyDiscordUsername = () => {
-    navigator.clipboard.writeText('criccadamus')
+    void navigator.clipboard.writeText('criccadamus')
     toast('Discord username copied!', {
       description: 'criccadamus',
     })
@@ -24,8 +20,6 @@ export function SocialLinks() {
           href="https://twitter.com/criccadamus"
           target="_blank"
           rel="noopener noreferrer"
-          onMouseEnter={() => setTwitterHovered(true)}
-          onMouseLeave={() => setTwitterHovered(false)}
           className={cn(
             'group relative flex flex-col items-center justify-center',
             'bg-card border border-border rounded-lg p-12 aspect-square',
@@ -49,8 +43,6 @@ export function SocialLinks() {
         {/* Discord Button */}
         <button
           onClick={copyDiscordUsername}
-          onMouseEnter={() => setDiscordHovered(true)}
-          onMouseLeave={() => setDiscordHovered(false)}
           className={cn(
             'group relative flex flex-col items-center justify-center',
             'bg-card border border-border rounded-lg p-12 aspect-square',

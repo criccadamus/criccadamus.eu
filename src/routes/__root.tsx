@@ -4,6 +4,9 @@ import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Toaster } from 'sonner'
 
 import appCss from '../styles.css?url'
+import { ErrorBoundary } from '@/components/error-boundary'
+import { NotFound } from '@/components/not-found'
+import { Footer } from '@/components/footer'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,6 +35,8 @@ export const Route = createRootRoute({
   }),
 
   shellComponent: RootDocument,
+  errorComponent: ErrorBoundary,
+  notFoundComponent: NotFound,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
@@ -62,6 +67,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           }}
         />
         <div className="mx-auto w-full max-w-4xl px-4 py-8">{children}</div>
+        <Footer />
         <TanStackDevtools
           config={{
             position: 'bottom-right',
