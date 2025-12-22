@@ -14,7 +14,7 @@ export function SocialLinks() {
     <div className="space-y-4">
       <h2 className="sr-only">Links</h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-4 max-w-2xl mx-auto">
         {/* Twitter Button */}
         <a
           href="https://twitter.com/criccadamus"
@@ -22,16 +22,16 @@ export function SocialLinks() {
           rel="noopener noreferrer"
           className={cn(
             'group relative flex flex-col items-center justify-center',
-            'bg-card border border-border rounded-lg p-12 aspect-square',
+            'bg-card border border-border rounded-lg p-8 aspect-square',
             'transition-all duration-300 ease-in-out',
             'hover:border-[#1DA1F2] hover:bg-[#1DA1F2]/10',
             'cursor-pointer',
           )}
         >
-          <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
-            <IconExternalLink className="h-5 w-5 text-foreground group-hover:text-[#1DA1F2]" />
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
+            <IconExternalLink className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#1DA1F2]" />
           </div>
-          <div className="w-32 h-32 relative text-[#1DA1F2] flex items-center justify-center">
+          <div className="w-full h-full max-w-24 max-h-24 relative text-[#1DA1F2] flex items-center justify-center">
             <svg
               className="w-full h-full max-w-full max-h-full object-contain"
               viewBox="0 0 24 24"
@@ -48,16 +48,16 @@ export function SocialLinks() {
           onClick={copyDiscordUsername}
           className={cn(
             'group relative flex flex-col items-center justify-center',
-            'bg-card border border-border rounded-lg p-12 aspect-square',
+            'bg-card border border-border rounded-lg p-8 aspect-square',
             'transition-all duration-300 ease-in-out',
             'hover:border-[#5865F2] hover:bg-[#5865F2]/10',
             'cursor-pointer',
           )}
         >
-          <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
-            <IconCopy className="h-5 w-5 text-foreground group-hover:text-[#5865F2]" />
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
+            <IconCopy className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#5865F2]" />
           </div>
-          <div className="w-32 h-32 relative text-[#7289DA] flex items-center justify-center">
+          <div className="w-full h-full max-w-24 max-h-24 relative text-[#7289DA] flex items-center justify-center">
             <svg
               className="w-full h-full max-w-full max-h-full object-contain"
               viewBox="0 0 24 24"
@@ -76,16 +76,20 @@ export function SocialLinks() {
           rel="noopener noreferrer"
           className={cn(
             'group relative flex flex-col items-center justify-center',
-            'bg-card border border-border rounded-lg p-12 aspect-square',
+            'bg-card border border-border rounded-lg p-8 aspect-square',
             'transition-all duration-300 ease-in-out',
             'hover:border-[#02A9FF] hover:bg-[#02A9FF]/10',
             'cursor-pointer',
           )}
         >
-          <div className="absolute top-4 right-4 opacity-50 group-hover:opacity-100 transition-opacity">
-            <IconExternalLink className="h-5 w-5 text-foreground group-hover:text-[#02A9FF]" />
+          <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
+            <IconExternalLink className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#02A9FF]" />
           </div>
-          <img src="/icon/anilist.svg" alt="AniList" className="w-32 h-32" />
+          <img
+            src="/icon/anilist.svg"
+            alt="AniList"
+            className="w-full h-full max-w-24 max-h-24"
+          />
         </a>
       </div>
     </div>

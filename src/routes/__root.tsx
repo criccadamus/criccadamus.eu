@@ -1,6 +1,4 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
 import { Toaster } from 'sonner'
 
 import appCss from '../styles.css?url'
@@ -23,7 +21,8 @@ export const Route = createRootRoute({
       },
       {
         name: 'description',
-        content: 'Personal hub for Criccadamus - Gaming, streaming, and more',
+        content:
+          "&quot;why dont you make a linktree?&quot; &quot;i'm a nerd&quot;",
       },
     ],
     links: [
@@ -54,8 +53,26 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             `,
           }}
         />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body>
+      <body className="min-h-screen flex flex-col">
         <Toaster
           position="bottom-center"
           toastOptions={{
@@ -67,19 +84,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             },
           }}
         />
-        <div className="mx-auto w-full max-w-4xl px-4 py-8">{children}</div>
+
+        <div className="mx-auto w-full max-w-4xl px-4 py-8 flex-1">
+          {children}
+        </div>
+
         <Footer />
-        <TanStackDevtools
-          config={{
-            position: 'bottom-right',
-          }}
-          plugins={[
-            {
-              name: 'Tanstack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
         <Scripts />
       </body>
     </html>

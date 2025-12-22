@@ -11,11 +11,11 @@ export function Footer() {
   const currentYear = new Date().getFullYear()
 
   return (
-    <footer className="w-full select-none border-t border-border">
+    <footer className="w-full select-none border-t border-border mt-auto">
       <div className="flex items-center justify-center py-4 md:py-6 max-w-2xl mx-auto px-4">
         <div className="grid place-items-center border-r border-border pr-3 py-6">
           <div className="grid place-items-center">
-            <span className="font-semibold tracking-tight flex items-center">
+            <span className="font-semibold font-mono tracking-tight flex items-center">
               criccadamus.eu
             </span>
           </div>
