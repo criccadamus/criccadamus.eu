@@ -2,9 +2,11 @@ import { IconCopy, IconExternalLink } from "@tabler/icons-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTheme } from "@/hooks/use-theme";
 
 export function SocialLinks() {
   const isMobile = useIsMobile();
+  const isDark = useTheme();
 
   const copyDiscordUsername = () => {
     void navigator.clipboard.writeText("criccadamus");
@@ -136,47 +138,47 @@ export function SocialLinks() {
 
         {/* AniList Button */}
         {isMobile ? (
-          <a
-            href="https://anilist.co/user/criccadamus/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "group relative flex items-center gap-4",
-              "bg-card border border-border rounded-lg p-4",
-              "transition-all duration-300 ease-in-out",
-              "hover:border-[#02A9FF] hover:bg-[#02A9FF]/10",
-              "cursor-pointer",
-            )}
-          >
-            <img
-              src="/icon/anilist-dark.svg"
-              alt="AniList"
-              className="w-6 h-6 shrink-0"
-            />
+           <a
+             href="https://anilist.co/user/criccadamus/"
+             target="_blank"
+             rel="noopener noreferrer"
+             className={cn(
+               "group relative flex items-center gap-4",
+               "bg-card border border-border rounded-lg p-4",
+               "transition-all duration-300 ease-in-out",
+               "hover:border-[#02A9FF] hover:bg-[#02A9FF]/10",
+               "cursor-pointer",
+             )}
+           >
+             <img
+               src={isDark ? "/icon/anilist-dark.svg" : "/icon/anilist-light.svg"}
+               alt="AniList"
+               className="w-6 h-6 shrink-0"
+             />
             <span className="text-foreground font-medium">AniList</span>
             <IconExternalLink className="h-4 w-4 text-foreground group-hover:text-[#02A9FF] ml-auto shrink-0" />
           </a>
         ) : (
-          <a
-            href="https://anilist.co/user/criccadamus/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={cn(
-              "group relative flex flex-col items-center justify-center",
-              "bg-card border border-border rounded-lg p-8 aspect-square",
-              "transition-all duration-300 ease-in-out",
-              "hover:border-[#02A9FF] hover:bg-[#02A9FF]/10",
-              "cursor-pointer",
-            )}
-          >
-            <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
-              <IconExternalLink className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#02A9FF]" />
-            </div>
-            <img
-              src="/icon/anilist-dark.svg"
-              alt="AniList"
-              className="w-full h-full max-w-24 max-h-24"
-            />
+           <a
+             href="https://anilist.co/user/criccadamus/"
+             target="_blank"
+             rel="noopener noreferrer"
+             className={cn(
+               "group relative flex flex-col items-center justify-center",
+               "bg-card border border-border rounded-lg p-8 aspect-square",
+               "transition-all duration-300 ease-in-out",
+               "hover:border-[#02A9FF] hover:bg-[#02A9FF]/10",
+               "cursor-pointer",
+             )}
+           >
+             <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
+               <IconExternalLink className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#02A9FF]" />
+             </div>
+             <img
+               src={isDark ? "/icon/anilist-dark.svg" : "/icon/anilist-light.svg"}
+               alt="AniList"
+               className="w-full h-full max-w-24 max-h-24"
+             />
           </a>
         )}
       </div>
