@@ -51,43 +51,43 @@ export function YouTubeCarousel() {
   const items: PlaylistItem[] = [
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=BBxqw9r5FZU&list=PLoGa9G4mB1GhdBdQdwnrnyYZLdCrQENxo"
+        "https://www.youtube.com/watch?v=BBxqw9r5FZU&list=PLoGa9G4mB1GhdBdQdwnrnyYZLdCrQENxo",
       ),
       title: "FFXIV: Dawntrail post-game",
     },
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC"
+        "https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC",
       ),
       title: "FFXIV: Dawntrail MSQ",
     },
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=O4jALVwmpGA&list=PLoGa9G4mB1Gha-vfKxoS8yHWYCeUd4ZYk"
+        "https://www.youtube.com/watch?v=O4jALVwmpGA&list=PLoGa9G4mB1Gha-vfKxoS8yHWYCeUd4ZYk",
       ),
       title: "FFXIV: Endwalker",
     },
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=6mgUiB2Fuao&list=PLoGa9G4mB1GgUtOByPIgVHFpM-JrnKVxr"
+        "https://www.youtube.com/watch?v=6mgUiB2Fuao&list=PLoGa9G4mB1GgUtOByPIgVHFpM-JrnKVxr",
       ),
       title: "FFXVI",
     },
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC"
+        "https://www.youtube.com/watch?v=OTArZvgOSYg&list=PLoGa9G4mB1Gjp1XLknZJPNskHtgpg-gko",
       ),
       title: "Crisis Core: a FF Story",
     },
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=4FJjiFFe4xg&list=PLoGa9G4mB1GiCRnSKzuIJ3ilHrsfdFGP9"
+        "https://www.youtube.com/watch?v=4FJjiFFe4xg&list=PLoGa9G4mB1GiCRnSKzuIJ3ilHrsfdFGP9",
       ),
       title: "FFXV",
     },
     {
       ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=xDp9uChxJls&list=PLoGa9G4mB1GhCiHDLtemmfq6b1cge42AW"
+        "https://www.youtube.com/watch?v=xDp9uChxJls&list=PLoGa9G4mB1GhCiHDLtemmfq6b1cge42AW",
       ),
       title: "FFVII Remake",
     },
@@ -128,7 +128,7 @@ export function YouTubeCarousel() {
             size="icon"
             onClick={prevItem}
             className={`absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
-              showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              showControls ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
             <IconChevronLeft className="h-5 w-5" />
@@ -138,16 +138,20 @@ export function YouTubeCarousel() {
             size="icon"
             onClick={nextItem}
             className={`absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
-              showControls ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              showControls ? "opacity-100" : "opacity-0 pointer-events-none"
             }`}
           >
             <IconChevronRight className="h-5 w-5" />
           </Button>
 
           {/* Playlist indicators with glassmorphic tooltips */}
-          <div className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-all duration-300 ${
-            showControls ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2 pointer-events-none'
-          }`}>
+          <div
+            className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-all duration-300 ${
+              showControls
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 translate-y-2 pointer-events-none"
+            }`}
+          >
             {items.map((item, index) => (
               <div
                 key={index}
@@ -160,7 +164,7 @@ export function YouTubeCarousel() {
                   <div
                     className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md bg-black/80 backdrop-blur-xl border border-white/20 text-white text-xs whitespace-nowrap pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200"
                     style={{
-                      boxShadow: '0 0 20px rgba(139, 92, 246, 0.3)',
+                      boxShadow: "0 0 20px rgba(139, 92, 246, 0.3)",
                     }}
                   >
                     {item.title}
@@ -182,9 +186,10 @@ export function YouTubeCarousel() {
                     <div
                       className="absolute inset-0 rounded-full animate-pulse"
                       style={{
-                        background: 'radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%)',
-                        filter: 'blur(6px)',
-                        transform: 'scale(2.5)',
+                        background:
+                          "radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%)",
+                        filter: "blur(6px)",
+                        transform: "scale(2.5)",
                       }}
                     />
                   )}
@@ -193,8 +198,8 @@ export function YouTubeCarousel() {
                   <div
                     className={`relative w-full h-full rounded-full transition-all duration-300 ${
                       currentIndex === index
-                        ? 'bg-gradient-to-r from-violet-400 to-purple-500 scale-150 shadow-lg shadow-purple-500/50'
-                        : 'bg-white/40 group-hover:bg-white/70 group-hover:scale-125'
+                        ? "bg-gradient-to-r from-violet-400 to-purple-500 scale-150 shadow-lg shadow-purple-500/50"
+                        : "bg-white/40 group-hover:bg-white/70 group-hover:scale-125"
                     }`}
                   />
                 </button>
@@ -203,9 +208,13 @@ export function YouTubeCarousel() {
           </div>
 
           {/* Current playlist title overlay */}
-          <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white text-sm font-medium tracking-wide transition-all duration-300 ${
-            showControls ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
-          }`}>
+          <div
+            className={`absolute top-4 left-4 px-3 py-1.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white text-sm font-medium tracking-wide transition-all duration-300 ${
+              showControls
+                ? "opacity-100 translate-y-0"
+                : "opacity-0 -translate-y-2 pointer-events-none"
+            }`}
+          >
             {currentItem.title}
           </div>
         </>
@@ -231,7 +240,9 @@ export function YouTubeCarousel() {
         }
 
         .animate-in {
-          animation: fade-in 0.2s ease-out, slide-in-from-bottom-2 0.2s ease-out;
+          animation:
+            fade-in 0.2s ease-out,
+            slide-in-from-bottom-2 0.2s ease-out;
         }
       `}</style>
     </div>
