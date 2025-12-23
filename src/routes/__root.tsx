@@ -22,8 +22,7 @@ export const Route = createRootRoute({
       },
       {
         name: "description",
-        content:
-          "&quot;why dont you make a linktree?&quot; &quot;i'm a nerd&quot;",
+        content: '"why dont you make a linktree?" "i\'m a nerd"',
       },
     ],
     links: [
