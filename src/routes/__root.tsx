@@ -5,6 +5,7 @@ import appCss from "../styles.css?url";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { NotFound } from "@/components/not-found";
 import { Footer } from "@/components/layout/footer";
+import { ParallaxBackground } from "@/components/layout/parallax-background";
 
 export const Route = createRootRoute({
   head: () => ({
@@ -73,6 +74,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className="min-h-screen flex flex-col">
+        <ParallaxBackground />
         <Toaster
           position="bottom-center"
           toastOptions={{

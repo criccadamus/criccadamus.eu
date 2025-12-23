@@ -8,7 +8,7 @@ export const Route = createFileRoute("/")({ component: App });
 
 function App() {
   return (
-    <div className="bg-background">
+    <div className="relative z-10">
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-8">
