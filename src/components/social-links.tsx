@@ -17,9 +17,13 @@ export function SocialLinks() {
     <div className="space-y-4">
       <h2 className="sr-only">Links</h2>
 
-      <div className={cn(
-        isMobile ? "flex flex-col gap-3 max-w-sm mx-auto" : "grid grid-cols-3 gap-4 max-w-2xl mx-auto"
-      )}>
+      <div
+        className={cn(
+          isMobile
+            ? "flex flex-col gap-3 max-w-sm mx-auto"
+            : "grid grid-cols-3 gap-4 max-w-2xl mx-auto",
+        )}
+      >
         {/* Twitter Button */}
         {isMobile ? (
           <a
@@ -34,7 +38,7 @@ export function SocialLinks() {
               "cursor-pointer",
             )}
           >
-            <div className="text-[#1DA1F2] flex-shrink-0">
+            <div className="text-[#1DA1F2] shrink-0">
               <svg
                 className="w-6 h-6"
                 viewBox="0 0 24 24"
@@ -45,7 +49,7 @@ export function SocialLinks() {
               </svg>
             </div>
             <span className="text-foreground font-medium">Twitter</span>
-            <IconExternalLink className="h-4 w-4 text-foreground group-hover:text-[#1DA1F2] ml-auto flex-shrink-0" />
+            <IconExternalLink className="h-4 w-4 text-foreground group-hover:text-[#1DA1F2] ml-auto shrink-0" />
           </a>
         ) : (
           <a
@@ -89,7 +93,7 @@ export function SocialLinks() {
               "cursor-pointer",
             )}
           >
-            <div className="text-[#7289DA] flex-shrink-0">
+            <div className="text-[#7289DA] shrink-0">
               <svg
                 className="w-6 h-6"
                 viewBox="0 0 24 24"
@@ -100,7 +104,7 @@ export function SocialLinks() {
               </svg>
             </div>
             <span className="text-foreground font-medium">Discord</span>
-            <IconCopy className="h-4 w-4 text-foreground group-hover:text-[#5865F2] ml-auto flex-shrink-0" />
+            <IconCopy className="h-4 w-4 text-foreground group-hover:text-[#5865F2] ml-auto shrink-0" />
           </button>
         ) : (
           <button
@@ -144,9 +148,13 @@ export function SocialLinks() {
               "cursor-pointer",
             )}
           >
-            <img src="/icon/anilist.svg" alt="AniList" className="w-6 h-6 flex-shrink-0" />
+            <img
+              src="/icon/anilist-dark.svg"
+              alt="AniList"
+              className="w-6 h-6 shrink-0"
+            />
             <span className="text-foreground font-medium">AniList</span>
-            <IconExternalLink className="h-4 w-4 text-foreground group-hover:text-[#02A9FF] ml-auto flex-shrink-0" />
+            <IconExternalLink className="h-4 w-4 text-foreground group-hover:text-[#02A9FF] ml-auto shrink-0" />
           </a>
         ) : (
           <a
@@ -164,7 +172,11 @@ export function SocialLinks() {
             <div className="absolute top-2 right-2 md:top-3 md:right-3 opacity-50 group-hover:opacity-100 transition-opacity">
               <IconExternalLink className="h-4 w-4 md:h-5 md:w-5 text-foreground group-hover:text-[#02A9FF]" />
             </div>
-            <img src="/icon/anilist.svg" alt="AniList" className="w-full h-full max-w-24 max-h-24" />
+            <img
+              src="/icon/anilist-dark.svg"
+              alt="AniList"
+              className="w-full h-full max-w-24 max-h-24"
+            />
           </a>
         )}
       </div>
