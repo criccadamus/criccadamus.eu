@@ -79,6 +79,7 @@ export function SocialLinks() {
         {/* Discord Button */}
         {isMobile ? (
           <button
+            type="button"
             onClick={copyDiscordUsername}
             className={cn(
               "group relative flex items-center gap-4",
@@ -103,6 +104,7 @@ export function SocialLinks() {
           </button>
         ) : (
           <button
+            type="button"
             onClick={copyDiscordUsername}
             className={cn(
               "group relative flex flex-col items-center justify-center",
