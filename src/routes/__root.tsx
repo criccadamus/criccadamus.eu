@@ -21,7 +21,8 @@ export const Route = createRootRoute({
       },
       {
         name: "description",
-        content: "&quot;why dont you make a linktree?&quot; &quot;i'm a nerd&quot;",
+        content:
+          "&quot;why dont you make a linktree?&quot; &quot;i'm a nerd&quot;",
       },
     ],
     links: [
@@ -52,9 +53,23 @@ function RootDocument({ children }: { children: React.ReactNode }) {
             `,
           }}
         />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className="min-h-screen flex flex-col">
@@ -62,14 +77,18 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           position="bottom-center"
           toastOptions={{
             classNames: {
-              toast: "bg-primary text-primary-foreground border-primary",
-              title: "text-primary-foreground font-semibold tracking-tight text-lg",
-              description: "text-primary-foreground/80 font-mono",
+              toast: "bg-primary text-primary-foreground border-border",
+              title:
+                "text-primary-foreground font-semibold tracking-tight text-lg font-sans",
+              description:
+                "text-primary-foreground/80 font-mono font-semibold tracking-tight",
             },
           }}
         />
 
-        <div className="mx-auto w-full max-w-4xl px-4 py-8 flex-1">{children}</div>
+        <div className="mx-auto w-full max-w-4xl px-4 py-8 flex-1">
+          {children}
+        </div>
 
         <Footer />
         <Scripts />
