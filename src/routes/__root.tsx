@@ -86,7 +86,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
           }}
         />
 
-        <div className="mx-auto w-full max-w-4xl px-4 py-8 flex-1">
+        <div className="mx-auto w-full max-w-4xl px-4 py-3 md:py-8 flex-1">
           {children}
         </div>
 
