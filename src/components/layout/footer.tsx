@@ -15,11 +15,11 @@ export function Footer() {
       <div className="flex items-center justify-center py-4 md:py-6 max-w-2xl mx-auto px-4">
         <div className="grid place-items-center border-r border-border pr-3 py-6">
           <div className="grid place-items-center">
-            <span className="font-semibold tracking-tight flex items-center">
+            <span className="font-semibold tracking-tight flex items-center text-white">
               criccadamus.eu
             </span>
           </div>
-          <span className="text-xs font-mono opacity-85 ml-px mt-2">
+          <span className="text-xs font-mono opacity-85 ml-px mt-2 text-white">
             v{VERSION} | {currentYear}
           </span>
         </div>
@@ -27,7 +27,7 @@ export function Footer() {
           href="https://github.com/criccadamus/criccadamus.eu"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors ml-3"
+          className="flex items-center gap-2 text-sm text-white hover:text-[#eeeeee] transition-colors ml-3"
           aria-label="View source code on GitHub"
         >
           <svg
