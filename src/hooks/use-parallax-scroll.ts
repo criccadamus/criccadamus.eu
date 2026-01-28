@@ -2,6 +2,7 @@ import * as React from "react";
 
 export function useParallaxScroll() {
   const [scrollY, setScrollY] = React.useState(0);
+  const [viewportHeight, setViewportHeight] = React.useState(0);
 
   React.useEffect(() => {
     let ticking = false;
@@ -18,16 +19,22 @@ export function useParallaxScroll() {
       }
     };
 
-    // Set initial scroll position
-    setScrollY(window.scrollY);
+    const handleResize = () => {
+      setViewportHeight(window.innerHeight);
+    };
 
-    // Add scroll listener with passive flag for better performance
+    // Set initial values
+    setScrollY(window.scrollY);
+    setViewportHeight(window.innerHeight);
+
     window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
-  return scrollY;
+  return { scrollY, viewportHeight };
 }
