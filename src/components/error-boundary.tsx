@@ -1,6 +1,7 @@
-import { Link, ErrorComponentProps, useRouter } from "@tanstack/react-router";
 import { IconAlertTriangle, IconHome, IconRefresh } from "@tabler/icons-react";
+import { Link, ErrorComponentProps, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
+
 import { Button } from "@/components/ui/button";
 
 export function ErrorBoundary({ error, reset }: ErrorComponentProps) {

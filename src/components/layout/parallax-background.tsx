@@ -1,6 +1,7 @@
 import * as React from "react";
-import { useParallaxScroll } from "@/hooks/use-parallax-scroll";
+
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useParallaxScroll } from "@/hooks/use-parallax-scroll";
 
 export function ParallaxBackground() {
   const scrollY = useParallaxScroll();

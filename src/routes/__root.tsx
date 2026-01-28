@@ -1,11 +1,12 @@
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 
-import appCss from "../styles.css?url";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { NotFound } from "@/components/not-found";
 import { Footer } from "@/components/layout/footer";
 import { ParallaxBackground } from "@/components/layout/parallax-background";
+import { NotFound } from "@/components/not-found";
+
+import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
   head: () => ({

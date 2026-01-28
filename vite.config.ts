@@ -1,10 +1,10 @@
-import { defineConfig } from "vite";
-import path from "path";
-import viteTsConfigPaths from "vite-tsconfig-paths";
+import { cloudflare } from "@cloudflare/vite-plugin";
+import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
-import tailwindcss from "@tailwindcss/vite";
-import { cloudflare } from "@cloudflare/vite-plugin";
+import path from "path";
+import { defineConfig } from "vite";
+import viteTsConfigPaths from "vite-tsconfig-paths";
 
 /**
  * Configures plugins for React, TypeScript paths, Tailwind CSS, TanStack Start, and Cloudflare.

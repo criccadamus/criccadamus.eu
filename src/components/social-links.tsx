@@ -1,8 +1,9 @@
 import { IconCopy, IconExternalLink } from "@tabler/icons-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
+import { cn } from "@/lib/utils";
 
 export function SocialLinks() {
   const isMobile = useIsMobile();

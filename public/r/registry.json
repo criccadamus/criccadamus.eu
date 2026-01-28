@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema/registry.json",
+  "name": "criccadamus-wow-ui",
+  "homepage": "https://criccadamus.eu/registry",
+  "items": [
+    {
+      "name": "details-profile",
+      "type": "registry:lib",
+      "title": "Details! Profile",
+      "description": "Clean and minimal Details! damage meter profile"
+    },
+    {
+      "name": "plater-profile",
+      "type": "registry:lib",
+      "title": "Plater Profile",
+      "description": "Customized Plater nameplates configuration"
+    },
+    {
+      "name": "elvui-profile",
+      "type": "registry:lib",
+      "title": "ElvUI Profile",
+      "description": "Full ElvUI interface profile"
+    }
+  ]
+}
