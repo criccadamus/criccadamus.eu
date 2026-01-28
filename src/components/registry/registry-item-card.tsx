@@ -5,16 +5,13 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
+import type { WowAddonConfig } from "@/lib/wow-addons";
 
-interface RegistryItem {
+interface RegistryItemCardProps {
   name: string;
   title: string;
   description: string;
-  addon: "details" | "plater" | "elvui" | "weakauras";
-}
-
-interface RegistryItemCardProps {
-  item: RegistryItem;
+  addonConfig: WowAddonConfig;
 }
 
 interface RegistryJsonFile {
@@ -27,26 +24,18 @@ interface RegistryJson {
   files: RegistryJsonFile[];
 }
 
-const addonStyles: Record<string, { border: string; bg: string; text: string }> = {
-  details: { border: "border-orange-500", bg: "bg-orange-500/10", text: "text-orange-400" },
-  plater: { border: "border-purple-500", bg: "bg-purple-500/10", text: "text-purple-400" },
-  elvui: { border: "border-blue-500", bg: "bg-blue-500/10", text: "text-blue-400" },
-  weakauras: { border: "border-red-500", bg: "bg-red-500/10", text: "text-red-400" },
-};
-
-export function RegistryItemCard({ item }: RegistryItemCardProps) {
-  const registryUrl = `https://criccadamus.eu/r/${item.name}.json`;
+export function RegistryItemCard({ name, title, description, addonConfig }: RegistryItemCardProps) {
+  const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
-  const style = addonStyles[item.addon];
 
   useEffect(() => {
-    fetch(`/r/${item.name}.json`)
+    fetch(`/r/${name}.json`)
       .then((res) => res.json() as Promise<RegistryJson>)
       .then((data) => {
         setProfileString(data.files?.[0]?.content ?? null);
       })
       .catch(() => setProfileString(null));
-  }, [item.name]);
+  }, [name]);
 
   const commands = {
     npm: `npx shadcn@latest add ${registryUrl}`,
@@ -62,16 +51,18 @@ export function RegistryItemCard({ item }: RegistryItemCardProps) {
   return (
     <div
       className={cn(
-        "group relative flex flex-col gap-4",
-        "bg-card border border-border rounded-lg p-6",
+        "group relative flex flex-col gap-3",
+        "border rounded-lg p-4",
         "transition-all duration-300 ease-in-out",
-        style.border,
-        style.bg,
+        addonConfig.border,
+        addonConfig.bg,
       )}
     >
-      <div className="space-y-1">
-        <h3 className="text-base font-medium text-foreground">{item.title}</h3>
-        <p className="text-sm text-muted-foreground">{item.description}</p>
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5">
+          <h4 className="text-sm font-medium text-foreground">{title}</h4>
+          <p className="text-xs text-muted-foreground">{description}</p>
+        </div>
       </div>
 
       <Tabs defaultValue="npm" className="w-full">
@@ -90,7 +81,7 @@ export function RegistryItemCard({ item }: RegistryItemCardProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className={cn("shrink-0 h-8 w-8 transition-colors", `group-hover:${style.text}`)}
+                className="shrink-0 h-8 w-8"
                 onClick={() => copy(commands[runtime], "Command copied")}
               >
                 <IconCopy className="h-4 w-4" />

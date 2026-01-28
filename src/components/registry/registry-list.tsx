@@ -1,39 +1,40 @@
+import { profilesByAddon } from "@/data/addons";
+import { wowAddons } from "@/lib/wow-addons";
+
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { RegistryItemCard } from "./registry-item-card";
-
-interface RegistryItem {
-  name: string;
-  title: string;
-  description: string;
-  addon: "details" | "plater" | "elvui" | "weakauras";
-}
-
-const registryItems: RegistryItem[] = [
-  {
-    name: "details-profile",
-    title: "Details! Profile",
-    description: "Clean and minimal Details! damage meter profile",
-    addon: "details",
-  },
-  {
-    name: "plater-profile",
-    title: "Plater Profile",
-    description: "Customized Plater nameplates configuration",
-    addon: "plater",
-  },
-  {
-    name: "elvui-profile",
-    title: "ElvUI Profile",
-    description: "Full ElvUI interface profile",
-    addon: "elvui",
-  },
-];
 
 export function RegistryList() {
   return (
-    <div className="flex flex-col gap-4">
-      {registryItems.map((item) => (
-        <RegistryItemCard key={item.name} item={item} />
-      ))}
-    </div>
+    <Tabs defaultValue={profilesByAddon[0].addon}>
+      <TabsList>
+        {profilesByAddon.map((addonData) => {
+          const addonConfig = wowAddons[addonData.addon];
+          return (
+            <TabsTrigger key={addonData.addon} value={addonData.addon} style={{ color: addonConfig.color }}>
+              {addonConfig.name}
+            </TabsTrigger>
+          );
+        })}
+      </TabsList>
+      {profilesByAddon.map((addonData) => {
+        const addonConfig = wowAddons[addonData.addon];
+        return (
+          <TabsContent key={addonData.addon} value={addonData.addon}>
+            <div className="flex flex-col gap-3 mt-4">
+              {addonData.profiles.map((profile) => (
+                <RegistryItemCard
+                  key={profile.name}
+                  name={profile.name}
+                  title={profile.title}
+                  description={profile.description}
+                  addonConfig={addonConfig}
+                />
+              ))}
+            </div>
+          </TabsContent>
+        );
+      })}
+    </Tabs>
   );
 }
