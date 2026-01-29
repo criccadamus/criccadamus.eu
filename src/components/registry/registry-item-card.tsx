@@ -90,8 +90,8 @@ export function RegistryItemCard({ name, title, description, addonConfig }: Regi
           </TabsContent>
         ))}
         <TabsContent value="string">
-          <div className="flex items-start gap-2 mt-2">
-            <code className="flex-1 rounded bg-muted/50 border border-border px-3 py-2 text-xs font-mono text-muted-foreground whitespace-nowrap overflow-x-auto">
+          <div className="flex items-start gap-2 mt-2 min-w-0">
+            <code className="flex-1 min-w-0 rounded bg-muted/50 border border-border px-3 py-2 text-xs font-mono text-muted-foreground whitespace-nowrap overflow-x-auto">
               {profileString ?? "Loading..."}
             </code>
             <Button

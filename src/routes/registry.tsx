@@ -1,8 +1,10 @@
+import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Header } from "@/components/layout/header";
 import { MacrosList } from "@/components/registry/macros-list";
 import { RegistryList } from "@/components/registry/registry-list";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const Route = createFileRoute("/registry")({
   component: RegistryPage,
@@ -29,17 +31,55 @@ function RegistryPage() {
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">Addon Profiles</h2>
               <p className="text-muted-foreground mt-2">
-                My personal profiles for World of Warcraft. Use with the <code>shadcn</code> CLI or copy the strings
-                directly.
+                My personal addon profiles for World of Warcraft.
+              </p>
+              <p className="text-muted-foreground mt-2">
+                Download them with the <code className="tracking-tight">shadcn</code> CLI or copy
+                the strings directly.
               </p>
             </div>
+            <Alert>
+              <IconInfoCircle className="text-muted-foreground" />
+              <AlertTitle>Fonts used in these profiles</AlertTitle>
+              <AlertDescription>
+                <p>
+                  These profiles are tailored for <span className="font-bold">Pretendard</span> and{" "}
+                  <code className="tracking-tight">Google Sans Code</code>.
+                </p>
+                <p>
+                  {" "}
+                  You can download this addons that will add them to all <code>libSharedMedia</code>
+                  -compatible addons from{" "}
+                  <a
+                    href="https://github.com/criccadamus/SharedMedia_Pretendard"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground hover:text-foreground/80 font-mono"
+                  >
+                    SharedMedia_Pretendard
+                    <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
+                  </a>{" "}
+                  and{" "}
+                  <a
+                    href="https://github.com/criccadamus/SharedMedia_GoogleSansMono"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-foreground hover:text-foreground/80 font-mono"
+                  >
+                    SharedMedia_GoogleSansMono
+                    <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
+                  </a>
+                  .
+                </p>
+                <p>Else, the default font will be used instead, as a fallback.</p>
+              </AlertDescription>
+            </Alert>
             <RegistryList />
           </section>
 
           <section className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">Macros</h2>
-              <p className="text-muted-foreground mt-2">Useful macros for various classes and situations.</p>
             </div>
             <MacrosList />
           </section>

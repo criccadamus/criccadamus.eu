@@ -8,7 +8,15 @@ export interface AddonProfile {
 
 export interface AddonProfiles {
   addon: WowAddon;
+  alerts?: AddonAlert[];
   profiles: AddonProfile[];
+}
+
+export interface AddonAlert {
+  title: string;
+  description: string;
+  variant?: "default" | "destructive";
+  icon?: "info";
 }
 
 export const profilesByAddon: AddonProfiles[] = [
@@ -34,6 +42,14 @@ export const profilesByAddon: AddonProfiles[] = [
   },
   {
     addon: "elvui",
+    alerts: [
+      {
+        title: "ElvUI raid/party frames",
+        description:
+          "This profile does not include raid or party frame configuration. Use it alongside the native Blizzard raid frames.",
+        icon: "info",
+      },
+    ],
     profiles: [
       {
         name: "elvui-profile",
