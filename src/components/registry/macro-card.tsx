@@ -1,10 +1,11 @@
 import { IconCopy } from "@tabler/icons-react";
 import { toast } from "sonner";
 
+import type { WowClassConfig } from "@/lib/wow-classes";
+
 import { Button } from "@/components/ui/button";
 import { macroTokenColors } from "@/lib/macro-syntax";
 import { cn } from "@/lib/utils";
-import type { WowClassConfig } from "@/lib/wow-classes";
 
 interface MacroCardProps {
   name: string;

@@ -1,7 +1,7 @@
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { macrosByClass } from "@/data/macros";
 import { wowClasses } from "@/lib/wow-classes";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MacroCard } from "./macro-card";
 
 export function MacrosList() {
@@ -11,7 +11,11 @@ export function MacrosList() {
         {macrosByClass.map((classData) => {
           const classConfig = wowClasses[classData.class];
           return (
-            <TabsTrigger key={classData.class} value={classData.class} style={{ color: classConfig.color }}>
+            <TabsTrigger
+              key={classData.class}
+              value={classData.class}
+              style={{ color: classConfig.color }}
+            >
               {classConfig.name}
             </TabsTrigger>
           );

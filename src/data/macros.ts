@@ -221,4 +221,37 @@ export const macrosByClass: ClassMacros[] = [
       },
     ],
   },
+  {
+    class: "priest",
+    macros: [
+      {
+        name: "Pain suppression",
+        spec: "Discipline",
+        macro: `/stopcasting
+  #showtooltip Pain suppression
+  /cast [@mouseover] Pain suppression`,
+      },
+      {
+        name: "Plea",
+        spec: "Discipline",
+        macro: `/stopcasting
+  #showtooltip Plea
+  /cast [@mouseover] Plea`,
+      },
+      {
+        name: "Purify",
+        spec: "Discipline/Holy",
+        macro: `/stopcasting
+  #showtooltip Purify
+  /cast [@mouseover] Purify`,
+      },
+      {
+        name: "Power Word: Shield",
+        spec: "General",
+        macro: `/stopcasting
+  #showtooltip Power Word: Shield
+  /cast [@mouseover] Power Word: Shield`,
+      },
+    ],
+  },
 ];

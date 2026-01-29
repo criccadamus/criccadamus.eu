@@ -2,10 +2,11 @@ import { IconCopy } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
+import type { WowAddonConfig } from "@/lib/wow-addons";
+
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
-import type { WowAddonConfig } from "@/lib/wow-addons";
 
 interface RegistryItemCardProps {
   name: string;

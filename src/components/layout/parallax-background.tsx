@@ -48,8 +48,7 @@ export function ParallaxBackground() {
 
   // Calculate translateY with clamping to prevent background from scrolling out
   const rawTranslateY = -scrollY * parallaxSpeed;
-  const maxTranslateY =
-    containerHeight > viewportHeight ? -(containerHeight - viewportHeight) : 0;
+  const maxTranslateY = containerHeight > viewportHeight ? -(containerHeight - viewportHeight) : 0;
   const translateY = Math.max(rawTranslateY, maxTranslateY);
 
   return (
