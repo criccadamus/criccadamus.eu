@@ -47,31 +47,34 @@ function RegistryPage() {
                   <code className="tracking-tight">Google Sans Code</code>.
                 </p>
                 <p>
-                  {" "}
                   You can download this addons that will add them to all <code>libSharedMedia</code>
-                  -compatible addons from{" "}
-                  <a
-                    href="https://github.com/criccadamus/SharedMedia_Pretendard"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-foreground hover:text-foreground/80 font-mono"
-                  >
-                    SharedMedia_Pretendard
-                    <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
-                  </a>{" "}
-                  and{" "}
-                  <a
-                    href="https://github.com/criccadamus/SharedMedia_GoogleSansMono"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-foreground hover:text-foreground/80 font-mono"
-                  >
-                    SharedMedia_GoogleSansMono
-                    <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
-                  </a>
-                  .
+                  -compatible addons here:
                 </p>
-                <p>Else, the default font will be used instead, as a fallback.</p>
+                <ul>
+                  <li>
+                    <a
+                      href="https://github.com/criccadamus/SharedMedia_Pretendard"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-foreground hover:text-foreground/80 font-mono"
+                    >
+                      SharedMedia_Pretendard
+                      <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="https://github.com/criccadamus/SharedMedia_GoogleSansMono"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-foreground hover:text-foreground/80 font-mono"
+                    >
+                      SharedMedia_GoogleSansMono
+                      <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
+                    </a>
+                  </li>
+                </ul>
+                <p>If the fonts are not found, each addon's fallback will be used instead.</p>
               </AlertDescription>
             </Alert>
             <RegistryList />

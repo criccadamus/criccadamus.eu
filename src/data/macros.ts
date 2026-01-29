@@ -228,29 +228,29 @@ export const macrosByClass: ClassMacros[] = [
         name: "Pain suppression",
         spec: "Discipline",
         macro: `/stopcasting
-  #showtooltip Pain suppression
-  /cast [@mouseover] Pain suppression`,
+#showtooltip Pain suppression
+/cast [@mouseover] Pain suppression`,
       },
       {
         name: "Plea",
         spec: "Discipline",
         macro: `/stopcasting
-  #showtooltip Plea
-  /cast [@mouseover] Plea`,
+#showtooltip Plea
+/cast [@mouseover] Plea`,
       },
       {
         name: "Purify",
         spec: "Discipline/Holy",
         macro: `/stopcasting
-  #showtooltip Purify
-  /cast [@mouseover] Purify`,
+#showtooltip Purify
+/cast [@mouseover] Purify`,
       },
       {
         name: "Power Word: Shield",
         spec: "General",
         macro: `/stopcasting
-  #showtooltip Power Word: Shield
-  /cast [@mouseover] Power Word: Shield`,
+#showtooltip Power Word: Shield
+/cast [@mouseover] Power Word: Shield`,
       },
     ],
   },
