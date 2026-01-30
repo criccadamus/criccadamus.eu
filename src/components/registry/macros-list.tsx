@@ -47,9 +47,11 @@ export function MacrosList() {
 
   useEffect(() => {
     let cancelled = false;
+    let loadingTimeout: ReturnType<typeof setTimeout> | null = null;
     const cacheKey = `registry:macros:${activeClass}`;
     const cacheTsKey = `${cacheKey}:ts`;
     const cacheTtlMs = 5 * 60 * 1000;
+    const minSkeletonMs = 300;
 
     const loadMacros = async () => {
       try {
@@ -71,6 +73,7 @@ export function MacrosList() {
         // Ignore localStorage errors and fall back to network
       }
 
+      const loadingStartedAt = Date.now();
       setIsLoading(true);
       try {
         const response = await fetch(`/macros/${activeClass}/json`);
@@ -92,7 +95,17 @@ export function MacrosList() {
           setMacrosByClass((prev) => ({ ...prev, [activeClass]: [] }));
         }
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) {
+          const elapsed = Date.now() - loadingStartedAt;
+          const remaining = Math.max(0, minSkeletonMs - elapsed);
+          if (remaining > 0) {
+            loadingTimeout = setTimeout(() => {
+              if (!cancelled) setIsLoading(false);
+            }, remaining);
+          } else {
+            setIsLoading(false);
+          }
+        }
       }
     };
 
@@ -100,6 +113,7 @@ export function MacrosList() {
 
     return () => {
       cancelled = true;
+      if (loadingTimeout) clearTimeout(loadingTimeout);
     };
   }, [activeClass]);
 
