@@ -64,12 +64,12 @@ function RegistryPage() {
                   </li>
                   <li>
                     <a
-                      href="https://github.com/criccadamus/SharedMedia_GoogleSansMono"
+                      href="https://github.com/criccadamus/SharedMedia_GoogleSansCode"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-foreground hover:text-foreground/80 font-mono"
                     >
-                      SharedMedia_GoogleSansMono
+                      SharedMedia_GoogleSansCode
                       <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
                     </a>
                   </li>
