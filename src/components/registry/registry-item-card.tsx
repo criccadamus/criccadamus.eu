@@ -5,8 +5,8 @@ import { toast } from "sonner";
 
 import type { WowAddonConfig } from "@/lib/wow-addons";
 
-import { Button } from "@/components/ui/button";
 import { RegistryMediaCarousel } from "@/components/registry/registry-media-carousel";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 

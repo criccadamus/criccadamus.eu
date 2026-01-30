@@ -51,8 +51,11 @@ export const Route = createFileRoute("/registry-media/$addon/json")({
               items.push(key);
             }
 
-            cursor = listed.cursor;
-            if (!listed.truncated) break;
+            if (listed.truncated) {
+              cursor = listed.cursor;
+            } else {
+              cursor = undefined;
+            }
           } while (cursor);
         } catch {
           return Response.json({ error: "Failed to list media." }, { status: 502 });

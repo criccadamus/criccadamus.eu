@@ -250,7 +250,9 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => scrollToIndex((currentIndex - 1 + mediaItems.length) % mediaItems.length)}
+                onClick={() =>
+                  scrollToIndex((currentIndex - 1 + mediaItems.length) % mediaItems.length)
+                }
                 className={`absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
                   showControls ? "opacity-100" : "opacity-0 pointer-events-none"
                 }`}
