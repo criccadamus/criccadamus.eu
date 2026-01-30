@@ -1,4 +1,5 @@
 import { IconCopy } from "@tabler/icons-react";
+import { useSearch } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -28,21 +29,56 @@ interface RegistryJson {
 export function RegistryItemCard({ name, title, description, addonConfig }: RegistryItemCardProps) {
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
+  const search = useSearch({ from: "/registry" });
+  const selectedTab =
+    search.tab && ["string", "npm", "pnpm", "bun"].includes(search.tab)
+      ? search.tab
+      : "string";
 
   useEffect(() => {
+    const cacheKey = `registry:profile:${name}`;
+    const cacheTsKey = `${cacheKey}:ts`;
+    const cacheTtlMs = 5 * 60 * 1000;
+
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      const cachedAt = Number(localStorage.getItem(cacheTsKey));
+      if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < cacheTtlMs) {
+        setProfileString(cached);
+        return;
+      }
+    } catch {
+      // Ignore localStorage errors and fall back to network
+    }
+
     fetch(`/r/${name}.json`)
       .then((res) => res.json() as Promise<RegistryJson>)
       .then((data) => {
-        setProfileString(data.files?.[0]?.content ?? null);
+        const content = data.files?.[0]?.content ?? null;
+        setProfileString(content);
+        if (content) {
+          try {
+            localStorage.setItem(cacheKey, content);
+            localStorage.setItem(cacheTsKey, String(Date.now()));
+          } catch {
+            // Ignore localStorage write errors
+          }
+        }
       })
       .catch(() => setProfileString(null));
   }, [name]);
 
-  const commands = {
+  const commands = [
+    { id: "string", label: "string" },
+    { id: "npm", label: "npm" },
+    { id: "pnpm", label: "pnpm" },
+    { id: "bun", label: "bun" },
+  ] as const;
+  const commandValues = {
     npm: `npx shadcn@latest add ${registryUrl}`,
     pnpm: `pnpm dlx shadcn@latest add ${registryUrl}`,
     bun: `bunx shadcn@latest add ${registryUrl}`,
-  };
+  } as const;
 
   const copy = (text: string, message = "Copied") => {
     void navigator.clipboard.writeText(text);
@@ -66,24 +102,25 @@ export function RegistryItemCard({ name, title, description, addonConfig }: Regi
         </div>
       </div>
 
-      <Tabs defaultValue="npm" className="w-full">
+      <Tabs defaultValue={selectedTab} className="w-full">
         <TabsList>
-          <TabsTrigger value="npm">npm</TabsTrigger>
-          <TabsTrigger value="pnpm">pnpm</TabsTrigger>
-          <TabsTrigger value="bun">bun</TabsTrigger>
-          <TabsTrigger value="string">string</TabsTrigger>
+          {commands.map((command) => (
+            <TabsTrigger key={command.id} value={command.id}>
+              {command.label}
+            </TabsTrigger>
+          ))}
         </TabsList>
-        {(Object.keys(commands) as (keyof typeof commands)[]).map((runtime) => (
+        {(["npm", "pnpm", "bun"] as const).map((runtime) => (
           <TabsContent key={runtime} value={runtime}>
             <div className="flex items-center gap-2 mt-2">
               <code className="flex-1 rounded bg-muted/50 border border-border px-3 py-2 text-xs font-mono text-muted-foreground break-all">
-                {commands[runtime]}
+                {commandValues[runtime]}
               </code>
               <Button
                 variant="ghost"
                 size="icon"
                 className="shrink-0 h-8 w-8"
-                onClick={() => copy(commands[runtime], "Command copied")}
+                onClick={() => copy(commandValues[runtime], "Command copied")}
               >
                 <IconCopy className="h-4 w-4" />
               </Button>

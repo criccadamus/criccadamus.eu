@@ -1,6 +1,8 @@
 import { IconInfoCircle } from "@tabler/icons-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useSearch } from "@tanstack/react-router";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profilesByAddon } from "@/data/addons";
 import { wowAddons } from "@/lib/wow-addons";
@@ -8,12 +10,18 @@ import { wowAddons } from "@/lib/wow-addons";
 import { RegistryItemCard } from "./registry-item-card";
 
 export function RegistryList() {
+  const search = useSearch({ from: "/registry" });
+  const defaultAddon =
+    search.profile && wowAddons[search.profile as keyof typeof wowAddons]
+      ? (search.profile as keyof typeof wowAddons)
+      : profilesByAddon[0]?.addon;
+
   const alertIcons = {
     info: IconInfoCircle,
   } as const;
 
   return (
-    <Tabs defaultValue={profilesByAddon[0].addon}>
+    <Tabs defaultValue={defaultAddon}>
       <TabsList>
         {profilesByAddon.map((addonData) => {
           const addonConfig = wowAddons[addonData.addon];

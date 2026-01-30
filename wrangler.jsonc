@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "criccadamus-eu",
-  "main": "@tanstack/react-start/server-entry",
+  "main": "./src/server-entry.ts",
   "workers_dev": false,
   "preview_urls": true,
   "compatibility_date": "2025-11-11",
@@ -10,6 +10,12 @@
     "binding": "ASSETS",
     "directory": "./dist",
   },
+  "kv_namespaces": [
+    {
+      "binding": "REGISTRY_KV",
+      "id": "ea8f47ddfc484952a02e8b5e6071407d",
+    },
+  ],
   "observability": {
     "enabled": false,
   },

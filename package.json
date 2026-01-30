@@ -1,17 +1,17 @@
 {
   "name": "criccadamus.eu",
-  "version": "3.2.1",
+  "version": "3.3.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev --port 3000 --host",
+    "dev": "wrangler types && vite dev --port 3000 --host",
     "build": "vite build",
     "preview": "vite preview",
     "typecheck": "tsgo --noEmit",
     "format": "oxfmt",
-    "lint": "oxlint . --type-aware --fix",
-    "check": "bun typecheck && bun lint",
-    "deploy": "bun cf-typegen && bun typecheck && bun lint && bun format && wrangler deploy",
+    "lint": "oxlint --type-aware",
+    "check": "tsgo --noEmit && oxlint --type-aware --fix ",
+    "deploy": "wrangler types && tsgo --noEmit && oxlint --type-aware && oxfmt && vite build && wrangler deploy",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

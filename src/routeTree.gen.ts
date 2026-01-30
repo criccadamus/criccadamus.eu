@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RNameJsonRouteImport } from './routes/r/$name.json'
 
 const RegistryRoute = RegistryRouteImport.update({
   id: '/registry',
@@ -22,31 +23,40 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RNameJsonRoute = RNameJsonRouteImport.update({
+  id: '/r/$name/json',
+  path: '/r/$name/json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/registry': typeof RegistryRoute
+  '/r/$name/json': typeof RNameJsonRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/registry': typeof RegistryRoute
+  '/r/$name/json': typeof RNameJsonRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/registry': typeof RegistryRoute
+  '/r/$name/json': typeof RNameJsonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/registry'
+  fullPaths: '/' | '/registry' | '/r/$name/json'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/registry'
-  id: '__root__' | '/' | '/registry'
+  to: '/' | '/registry' | '/r/$name/json'
+  id: '__root__' | '/' | '/registry' | '/r/$name/json'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   RegistryRoute: typeof RegistryRoute
+  RNameJsonRoute: typeof RNameJsonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -65,12 +75,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/r/$name/json': {
+      id: '/r/$name/json'
+      path: '/r/$name/json'
+      fullPath: '/r/$name/json'
+      preLoaderRoute: typeof RNameJsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   RegistryRoute: RegistryRoute,
+  RNameJsonRoute: RNameJsonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

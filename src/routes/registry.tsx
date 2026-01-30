@@ -7,6 +7,11 @@ import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export const Route = createFileRoute("/registry")({
+  validateSearch: (search: Record<string, unknown>) => {
+    const profile = typeof search.profile === "string" ? search.profile : undefined;
+    const tab = typeof search.tab === "string" ? search.tab : undefined;
+    return { profile, tab };
+  },
   component: RegistryPage,
   head: () => ({
     meta: [
