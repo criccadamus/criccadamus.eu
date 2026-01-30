@@ -3,14 +3,7 @@ import type { RouteMethodHandlerCtx } from "@tanstack/start-client-core";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { profilesByAddon } from "@/data/addons";
-
-const GIST_OWNER = "criccadamus";
-
-const GIST_BY_PROFILE: Record<string, string> = {
-  "details-profile": "58078b1ab69a4e68f07d118c5d57f321",
-  "plater-profile": "fe2f86c25a62cf654aceb3ec6a4795e4",
-  "elvui-profile": "642482b44a464b84e82284adcf39f9f7",
-};
+import { GIST_OWNER, profileGists } from "@/data/gists";
 
 const registrySchemaUrl = "https://ui.shadcn.com/schema/registry-item.json";
 const fileType = "registry:file";
@@ -40,6 +33,7 @@ async function fetchGistUpdatedAt(gistId: string) {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
         accept: "application/vnd.github+json",
+        "user-agent": "criccadamus.eu",
       },
     });
     if (!response.ok) return undefined;
@@ -112,7 +106,7 @@ export const Route = createFileRoute("/r/$name/json")({
           }
         }
 
-        const gistId = GIST_BY_PROFILE[profile.name];
+        const gistId = profileGists[profile.name];
         if (!gistId) {
           return Response.json({ error: "Profile gist not found." }, { status: 404 });
         }
@@ -128,7 +122,9 @@ export const Route = createFileRoute("/r/$name/json")({
             return Response.json({ error: "Profile content not found." }, { status: 404 });
           }
           content = await response.text();
+          const rawLastModified = response.headers.get("last-modified") ?? undefined;
           updatedAt = await fetchGistUpdatedAt(gistId);
+          if (!updatedAt && rawLastModified) updatedAt = rawLastModified;
         } catch {
           return Response.json({ error: "Failed to load profile content." }, { status: 502 });
         }

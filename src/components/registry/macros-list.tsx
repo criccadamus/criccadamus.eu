@@ -4,6 +4,7 @@ import type { WowClass } from "@/lib/wow-classes";
 
 import { MacroCard } from "@/components/registry/macro-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { classGists } from "@/data/gists";
 import { wowClasses } from "@/lib/wow-classes";
 
 interface Macro {
@@ -58,13 +59,33 @@ export function MacrosList() {
     const cacheTtlMs = 5 * 60 * 1000;
     const minSkeletonMs = 300;
 
+    const fetchUpdatedAtFromGist = async () => {
+      const gistId = classGists[activeClass];
+      if (!gistId) return;
+      try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: { accept: "application/vnd.github+json" },
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { updated_at?: string };
+        if (data.updated_at) {
+          setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: data.updated_at ?? null }));
+          localStorage.setItem(cacheUpdatedAtKey, data.updated_at);
+        }
+      } catch {
+        // Ignore gist API errors
+      }
+    };
+
     const refreshUpdatedAt = async () => {
       try {
         const res = await fetch(`/macros/${activeClass}/json`, { cache: "no-store" });
-        const updatedAt = res.headers.get("x-last-updated");
+        const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         if (updatedAt) {
           setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
           localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+        } else {
+          await fetchUpdatedAtFromGist();
         }
       } catch {
         // Ignore background refresh errors
@@ -103,12 +124,16 @@ export function MacrosList() {
       setIsLoading(true);
       try {
         const response = await fetch(`/macros/${activeClass}/json`);
-        const updatedAt = response.headers.get("x-last-updated");
+        const updatedAt =
+          response.headers.get("x-last-updated") ?? response.headers.get("last-modified");
         const data = (await response.json()) as unknown;
         const macros = Array.isArray(data) ? (data as Macro[]) : [];
         if (!cancelled) {
           setMacrosByClass((prev) => ({ ...prev, [activeClass]: macros }));
           setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
+        }
+        if (!updatedAt) {
+          void fetchUpdatedAtFromGist();
         }
         if (macros.length > 0) {
           try {

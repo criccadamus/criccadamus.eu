@@ -8,6 +8,7 @@ import type { WowAddonConfig } from "@/lib/wow-addons";
 import { RegistryMediaCarousel } from "@/components/registry/registry-media-carousel";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { profileGists } from "@/data/gists";
 import { cn } from "@/lib/utils";
 
 interface RegistryItemCardProps {
@@ -49,13 +50,33 @@ export function RegistryItemCard({
     const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
     const cacheTtlMs = 5 * 60 * 1000;
 
+    const fetchUpdatedAtFromGist = async () => {
+      const gistId = profileGists[name];
+      if (!gistId) return;
+      try {
+        const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+          headers: { accept: "application/vnd.github+json" },
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as { updated_at?: string };
+        if (data.updated_at) {
+          setLastUpdated(data.updated_at);
+          localStorage.setItem(cacheUpdatedAtKey, data.updated_at);
+        }
+      } catch {
+        // Ignore gist API errors
+      }
+    };
+
     const refreshUpdatedAt = async () => {
       try {
         const res = await fetch(`/r/${name}.json`, { cache: "no-store" });
-        const updatedAt = res.headers.get("x-last-updated");
+        const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         if (updatedAt) {
           setLastUpdated(updatedAt);
           localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+        } else {
+          await fetchUpdatedAtFromGist();
         }
       } catch {
         // Ignore background refresh errors
@@ -81,14 +102,18 @@ export function RegistryItemCard({
 
     fetch(`/r/${name}.json`)
       .then(async (res) => {
-        const updatedAt = res.headers.get("x-last-updated");
+        const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         const data = (await res.json()) as RegistryJson;
         return { data, updatedAt };
       })
       .then(({ data, updatedAt }) => {
         const content = data.files?.[0]?.content ?? null;
         setProfileString(content);
-        if (updatedAt) setLastUpdated(updatedAt);
+        if (updatedAt) {
+          setLastUpdated(updatedAt);
+        } else {
+          void fetchUpdatedAtFromGist();
+        }
         if (content) {
           try {
             localStorage.setItem(cacheKey, content);

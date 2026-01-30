@@ -4,9 +4,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import type { WowClass } from "@/lib/wow-classes";
 
+import { GIST_OWNER, classGists } from "@/data/gists";
 import { wowClasses } from "@/lib/wow-classes";
-
-const GIST_OWNER = "criccadamus";
 const kvTtlSeconds = 60 * 60;
 const kvKeyPrefix = "registry:macros:v2:";
 const gistApiBase = "https://api.github.com/gists";
@@ -14,15 +13,6 @@ const gistApiBase = "https://api.github.com/gists";
 type CachedMacros = {
   macros: unknown[];
   updatedAt?: string;
-};
-
-const GIST_BY_CLASS: Record<WowClass, string> = {
-  warrior: "b903af03034235a04fe65dcd24870044",
-  druid: "1a09d5ffad529c02090f44ea93d19e66",
-  evoker: "31c0777eb2529c393be03d46723d4dad",
-  rogue: "9137e2f14fa51a84c748fbd4410528fa",
-  priest: "1dfafd3e60b1249201ccfaf01c321a67",
-  shaman: "ec2c34115e866ba136350115d5a987c5",
 };
 
 function buildRawGistUrl(gistId: string, filename: string) {
@@ -34,6 +24,7 @@ async function fetchGistUpdatedAt(gistId: string) {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
         accept: "application/vnd.github+json",
+        "user-agent": "criccadamus.eu",
       },
     });
     if (!response.ok) return undefined;
@@ -92,7 +83,7 @@ export const Route = createFileRoute("/macros/$class/json")({
           }
         }
 
-        const gistId = GIST_BY_CLASS[classKey];
+        const gistId = classGists[classKey];
         if (!gistId || gistId === "TODO") {
           return Response.json({ error: "Class gist not configured." }, { status: 500 });
         }
@@ -115,7 +106,9 @@ export const Route = createFileRoute("/macros/$class/json")({
           if (!Array.isArray(payload)) {
             return Response.json({ error: "Invalid macros format." }, { status: 502 });
           }
+          const rawLastModified = response.headers.get("last-modified") ?? undefined;
           updatedAt = await fetchGistUpdatedAt(gistId);
+          if (!updatedAt && rawLastModified) updatedAt = rawLastModified;
         } catch {
           return Response.json({ error: "Failed to load macros." }, { status: 502 });
         }
