@@ -60,6 +60,7 @@ export function RegistryList() {
                     name={profile.name}
                     title={profile.title}
                     description={profile.description}
+                    addon={addonData.addon}
                     addonConfig={addonConfig}
                   />
                 ))}

@@ -194,6 +194,15 @@ html {
   scrollbar-gutter: stable;
 }
 
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
 ol {
   padding-left: 1.8em;
   margin: 0.9em 0;

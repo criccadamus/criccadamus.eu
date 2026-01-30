@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RegistryMediaAddonJsonRouteImport } from './routes/registry-media/$addon.json'
 import { Route as RNameJsonRouteImport } from './routes/r/$name.json'
 import { Route as MacrosClassJsonRouteImport } from './routes/macros/$class.json'
 
@@ -22,6 +23,11 @@ const RegistryRoute = RegistryRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegistryMediaAddonJsonRoute = RegistryMediaAddonJsonRouteImport.update({
+  id: '/registry-media/$addon/json',
+  path: '/registry-media/$addon/json',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RNameJsonRoute = RNameJsonRouteImport.update({
@@ -40,12 +46,14 @@ export interface FileRoutesByFullPath {
   '/registry': typeof RegistryRoute
   '/macros/$class/json': typeof MacrosClassJsonRoute
   '/r/$name/json': typeof RNameJsonRoute
+  '/registry-media/$addon/json': typeof RegistryMediaAddonJsonRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/registry': typeof RegistryRoute
   '/macros/$class/json': typeof MacrosClassJsonRoute
   '/r/$name/json': typeof RNameJsonRoute
+  '/registry-media/$addon/json': typeof RegistryMediaAddonJsonRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,30 @@ export interface FileRoutesById {
   '/registry': typeof RegistryRoute
   '/macros/$class/json': typeof MacrosClassJsonRoute
   '/r/$name/json': typeof RNameJsonRoute
+  '/registry-media/$addon/json': typeof RegistryMediaAddonJsonRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/registry' | '/macros/$class/json' | '/r/$name/json'
+  fullPaths:
+    | '/'
+    | '/registry'
+    | '/macros/$class/json'
+    | '/r/$name/json'
+    | '/registry-media/$addon/json'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/registry' | '/macros/$class/json' | '/r/$name/json'
-  id: '__root__' | '/' | '/registry' | '/macros/$class/json' | '/r/$name/json'
+  to:
+    | '/'
+    | '/registry'
+    | '/macros/$class/json'
+    | '/r/$name/json'
+    | '/registry-media/$addon/json'
+  id:
+    | '__root__'
+    | '/'
+    | '/registry'
+    | '/macros/$class/json'
+    | '/r/$name/json'
+    | '/registry-media/$addon/json'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +92,7 @@ export interface RootRouteChildren {
   RegistryRoute: typeof RegistryRoute
   MacrosClassJsonRoute: typeof MacrosClassJsonRoute
   RNameJsonRoute: typeof RNameJsonRoute
+  RegistryMediaAddonJsonRoute: typeof RegistryMediaAddonJsonRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -83,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/registry-media/$addon/json': {
+      id: '/registry-media/$addon/json'
+      path: '/registry-media/$addon/json'
+      fullPath: '/registry-media/$addon/json'
+      preLoaderRoute: typeof RegistryMediaAddonJsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/r/$name/json': {
@@ -107,6 +140,7 @@ const rootRouteChildren: RootRouteChildren = {
   RegistryRoute: RegistryRoute,
   MacrosClassJsonRoute: MacrosClassJsonRoute,
   RNameJsonRoute: RNameJsonRoute,
+  RegistryMediaAddonJsonRoute: RegistryMediaAddonJsonRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

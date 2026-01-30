@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import type { WowAddonConfig } from "@/lib/wow-addons";
 
 import { Button } from "@/components/ui/button";
+import { RegistryMediaCarousel } from "@/components/registry/registry-media-carousel";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ interface RegistryItemCardProps {
   name: string;
   title: string;
   description: string;
+  addon: string;
   addonConfig: WowAddonConfig;
 }
 
@@ -26,7 +28,13 @@ interface RegistryJson {
   files: RegistryJsonFile[];
 }
 
-export function RegistryItemCard({ name, title, description, addonConfig }: RegistryItemCardProps) {
+export function RegistryItemCard({
+  name,
+  title,
+  description,
+  addon,
+  addonConfig,
+}: RegistryItemCardProps) {
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
   const search = useSearch({ from: "/registry" });
@@ -99,6 +107,8 @@ export function RegistryItemCard({ name, title, description, addonConfig }: Regi
           <p className="text-xs text-muted-foreground">{description}</p>
         </div>
       </div>
+
+      <RegistryMediaCarousel addon={addon} />
 
       <Tabs defaultValue={selectedTab} className="w-full">
         <TabsList>

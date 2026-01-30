@@ -16,6 +16,12 @@
       "id": "ea8f47ddfc484952a02e8b5e6071407d",
     },
   ],
+  "r2_buckets": [
+    {
+      "binding": "REGISTRY_MEDIA_BUCKET",
+      "bucket_name": "criccadamus-eu-registry",
+    },
+  ],
   "observability": {
     "enabled": false,
   },
