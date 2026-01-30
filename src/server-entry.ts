@@ -14,6 +14,11 @@ export default {
       url.pathname = `/r/${match[1]}/json`;
       request = new Request(url, request);
     }
+    const macrosMatch = url.pathname.match(/^\/macros\/([^/]+)\.json$/);
+    if (macrosMatch) {
+      url.pathname = `/macros/${macrosMatch[1]}/json`;
+      request = new Request(url, request);
+    }
 
     return handler(request, { context: { env, ctx } });
   },
