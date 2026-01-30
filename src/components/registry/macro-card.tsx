@@ -154,7 +154,7 @@ export function MacroCard({ name, spec, macro, classConfig }: MacroCardProps) {
         </Button>
       </div>
 
-      <pre className="scrollbar-hidden min-w-0 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-sm whitespace-pre">
+      <pre className="scrollbar-hidden min-w-0 overflow-x-auto rounded border border-border/70 bg-background/80 px-3 py-2 font-mono text-sm whitespace-pre text-foreground">
         {highlightMacroSyntax(macro)}
       </pre>
     </div>

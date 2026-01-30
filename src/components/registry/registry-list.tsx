@@ -20,16 +20,22 @@ export function RegistryList() {
 
   return (
     <Tabs defaultValue={defaultAddon}>
-      <TabsList>
+      <TabsList className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
         {profilesByAddon.map((addonData) => {
           const addonConfig = wowAddons[addonData.addon];
           return (
             <TabsTrigger
               key={addonData.addon}
               value={addonData.addon}
-              style={{ color: addonConfig.color }}
+              className="shrink-0 text-foreground/75 data-active:text-foreground"
             >
-              {addonConfig.name}
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className="size-2 rounded-full border border-transparent"
+                  style={{ backgroundColor: addonConfig.color }}
+                />
+                {addonConfig.name}
+              </span>
             </TabsTrigger>
           );
         })}

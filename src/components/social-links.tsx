@@ -11,9 +11,7 @@ export function SocialLinks() {
 
   const copyDiscordUsername = () => {
     void navigator.clipboard.writeText("criccadamus");
-    toast("Discord username copied!", {
-      description: "criccadamus",
-    });
+    toast.success("Discord username copied!");
   };
 
   return (

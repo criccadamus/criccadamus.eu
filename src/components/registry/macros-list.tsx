@@ -119,12 +119,26 @@ export function MacrosList() {
 
   return (
     <Tabs value={activeClass} onValueChange={(value) => setActiveClass(value as WowClass)}>
-      <TabsList>
+      <TabsList className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
         {classOrder.map((classKey) => {
           const classConfig = wowClasses[classKey];
+          const dotBorderColor = classKey === "priest" ? "rgba(15, 23, 42, 0.35)" : "transparent";
           return (
-            <TabsTrigger key={classKey} value={classKey} style={{ color: classConfig.color }}>
-              {classConfig.name}
+            <TabsTrigger
+              key={classKey}
+              value={classKey}
+              className="shrink-0 text-foreground/75 data-active:text-foreground"
+            >
+              <span className="inline-flex items-center gap-2">
+                <span
+                  className="size-2 rounded-full border"
+                  style={{
+                    backgroundColor: classConfig.color,
+                    borderColor: dotBorderColor,
+                  }}
+                />
+                {classConfig.name}
+              </span>
             </TabsTrigger>
           );
         })}

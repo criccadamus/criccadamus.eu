@@ -32,19 +32,19 @@ function RegistryPage() {
       <Header />
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-10">
-          <section className="space-y-6">
+          <section className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">Addon Profiles</h2>
-              <p className="mt-2 text-muted-foreground">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Addon Profiles</h2>
+              <p className="mt-2 text-foreground/75">
                 My personal addon profiles for World of Warcraft.
               </p>
-              <p className="mt-2 text-muted-foreground">
+              <p className="mt-2 text-foreground/75">
                 Download them with the <code className="tracking-tight">shadcn</code> CLI or copy
                 the strings directly.
               </p>
             </div>
-            <Alert>
-              <IconInfoCircle className="text-muted-foreground" />
+            <Alert className="border-border/60 bg-background/70 sm:bg-background/70">
+              <IconInfoCircle className="text-foreground/70" />
               <AlertTitle>Fonts used in these profiles</AlertTitle>
               <AlertDescription>
                 <p>
@@ -61,10 +61,10 @@ function RegistryPage() {
                       href="https://github.com/criccadamus/SharedMedia_Pretendard"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-foreground hover:text-foreground/80"
+                      className="font-mono text-foreground underline decoration-dotted underline-offset-4 hover:text-foreground/80"
                     >
                       SharedMedia_Pretendard
-                      <IconExternalLink className="relative -top-0.5 inline h-3.5 w-3.5 text-muted-foreground" />
+                      <IconExternalLink className="relative -top-0.5 inline h-3.5 w-3.5 text-foreground/60" />
                     </a>
                   </li>
                   <li>
@@ -72,10 +72,10 @@ function RegistryPage() {
                       href="https://github.com/criccadamus/SharedMedia_GoogleSansCode"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-mono text-foreground hover:text-foreground/80"
+                      className="font-mono text-foreground underline decoration-dotted underline-offset-4 hover:text-foreground/80"
                     >
                       SharedMedia_GoogleSansCode
-                      <IconExternalLink className="relative -top-0.5 inline h-3.5 w-3.5 text-muted-foreground" />
+                      <IconExternalLink className="relative -top-0.5 inline h-3.5 w-3.5 text-foreground/60" />
                     </a>
                   </li>
                 </ul>
@@ -85,9 +85,9 @@ function RegistryPage() {
             <RegistryList />
           </section>
 
-          <section className="space-y-6">
+          <section className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-white">Macros</h2>
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">Macros</h2>
             </div>
             <MacrosList />
           </section>

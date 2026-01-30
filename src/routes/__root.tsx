@@ -43,14 +43,31 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en">
       <head>
         <HeadContent />
         <script
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
-                document.documentElement.classList.add('dark');
+                var media = window.matchMedia("(prefers-color-scheme: dark)");
+                var apply = function(isDark) {
+                  if (isDark) {
+                    document.documentElement.classList.add("dark");
+                  } else {
+                    document.documentElement.classList.remove("dark");
+                  }
+                };
+                apply(media.matches);
+                if (typeof media.addEventListener === "function") {
+                  media.addEventListener("change", function(e) {
+                    apply(e.matches);
+                  });
+                } else if (typeof media.addListener === "function") {
+                  media.addListener(function(e) {
+                    apply(e.matches);
+                  });
+                }
               })();
             `,
           }}
@@ -63,14 +80,13 @@ function RootDocument({ children }: { children: ReactNode }) {
       <body className="flex min-h-screen flex-col">
         <ParallaxBackground />
         <Toaster
-          position="bottom-center"
           toastOptions={{
             classNames: {
-              toast: "bg-primary text-primary-foreground border-border",
-              title: "text-primary-foreground font-semibold tracking-tight text-lg font-sans",
-              description: "text-primary-foreground/80 font-mono font-semibold tracking-tight",
+              toast: "font-sans font-semibold text-xl tracking-tight",
             },
           }}
+          richColors
+          position="bottom-center"
         />
 
         <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-3 md:py-8">{children}</div>
