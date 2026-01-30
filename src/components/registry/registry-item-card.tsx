@@ -43,10 +43,24 @@ export function RegistryItemCard({
     search.tab && ["string", "npm", "pnpm", "bun"].includes(search.tab) ? search.tab : "string";
 
   useEffect(() => {
-    const cacheKey = `registry:profile:${name}`;
+    const cacheVersion = "v2";
+    const cacheKey = `registry:profile:${cacheVersion}:${name}`;
     const cacheTsKey = `${cacheKey}:ts`;
     const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
     const cacheTtlMs = 5 * 60 * 1000;
+
+    const refreshUpdatedAt = async () => {
+      try {
+        const res = await fetch(`/r/${name}.json`, { cache: "no-store" });
+        const updatedAt = res.headers.get("x-last-updated");
+        if (updatedAt) {
+          setLastUpdated(updatedAt);
+          localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+        }
+      } catch {
+        // Ignore background refresh errors
+      }
+    };
 
     try {
       const cached = localStorage.getItem(cacheKey);
@@ -54,7 +68,11 @@ export function RegistryItemCard({
       if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < cacheTtlMs) {
         setProfileString(cached);
         const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
-        if (cachedUpdatedAt) setLastUpdated(cachedUpdatedAt);
+        if (cachedUpdatedAt) {
+          setLastUpdated(cachedUpdatedAt);
+        } else {
+          void refreshUpdatedAt();
+        }
         return;
       }
     } catch {

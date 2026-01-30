@@ -51,11 +51,25 @@ export function MacrosList() {
   useEffect(() => {
     let cancelled = false;
     let loadingTimeout: ReturnType<typeof setTimeout> | null = null;
-    const cacheKey = `registry:macros:${activeClass}`;
+    const cacheVersion = "v2";
+    const cacheKey = `registry:macros:${cacheVersion}:${activeClass}`;
     const cacheTsKey = `${cacheKey}:ts`;
     const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
     const cacheTtlMs = 5 * 60 * 1000;
     const minSkeletonMs = 300;
+
+    const refreshUpdatedAt = async () => {
+      try {
+        const res = await fetch(`/macros/${activeClass}/json`, { cache: "no-store" });
+        const updatedAt = res.headers.get("x-last-updated");
+        if (updatedAt) {
+          setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
+          localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+        }
+      } catch {
+        // Ignore background refresh errors
+      }
+    };
 
     const loadMacros = async () => {
       try {
@@ -74,6 +88,9 @@ export function MacrosList() {
                 ...prev,
                 [activeClass]: cachedUpdatedAt,
               }));
+            }
+            if (!localStorage.getItem(cacheUpdatedAtKey)) {
+              void refreshUpdatedAt();
             }
             return;
           }
