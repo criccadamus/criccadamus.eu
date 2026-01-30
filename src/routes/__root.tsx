@@ -60,7 +60,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
         <link rel="manifest" href="/site.webmanifest" />
       </head>
-      <body className="min-h-screen flex flex-col">
+      <body className="flex min-h-screen flex-col">
         <ParallaxBackground />
         <Toaster
           position="bottom-center"
@@ -73,7 +73,7 @@ function RootDocument({ children }: { children: ReactNode }) {
           }}
         />
 
-        <div className="mx-auto w-full max-w-4xl px-4 py-3 md:py-8 flex-1">{children}</div>
+        <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-3 md:py-8">{children}</div>
 
         <Footer />
         <Scripts />

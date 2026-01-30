@@ -11,30 +11,30 @@ export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-card rounded-lg border border-border p-8 text-center shadow-lg">
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-lg">
         <div className="mb-6">
-          <IconAlertTriangle className="w-16 h-16 mx-auto text-red-500 mb-4" />
-          <h1 className="text-2xl font-bold text-foreground mb-2">Something went wrong</h1>
+          <IconAlertTriangle className="mx-auto mb-4 h-16 w-16 text-red-500" />
+          <h1 className="mb-2 text-2xl font-bold text-foreground">Something went wrong</h1>
           <p className="text-muted-foreground">
             An unexpected error occurred while loading this page.
           </p>
         </div>
 
         {error instanceof Error && (
-          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-left">
-            <p className="text-sm font-mono text-red-400 wrap-break-word">{error.message}</p>
+          <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-left">
+            <p className="font-mono text-sm wrap-break-word text-red-400">{error.message}</p>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Button onClick={() => reset()}>
-            <IconRefresh className="w-4 h-4 mr-2" />
+            <IconRefresh className="mr-2 h-4 w-4" />
             Try Again
           </Button>
           <Link to="/">
             <Button variant="outline">
-              <IconHome className="w-4 h-4 mr-2" />
+              <IconHome className="mr-2 h-4 w-4" />
               Go Home
             </Button>
           </Link>
@@ -53,25 +53,25 @@ export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="max-w-md mx-auto bg-card rounded-lg border border-border p-8 text-center shadow-lg">
+    <div className="container mx-auto px-4 py-8">
+      <div className="mx-auto max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-lg">
         <div className="mb-6">
-          <IconAlertTriangle className="w-12 h-12 mx-auto text-red-500 mb-4" />
-          <h2 className="text-xl font-bold text-foreground mb-2">Something went wrong</h2>
-          <p className="text-muted-foreground text-sm">
+          <IconAlertTriangle className="mx-auto mb-4 h-12 w-12 text-red-500" />
+          <h2 className="mb-2 text-xl font-bold text-foreground">Something went wrong</h2>
+          <p className="text-sm text-muted-foreground">
             We encountered an error while loading this content.
           </p>
         </div>
 
         {error instanceof Error && (
-          <div className="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-left">
-            <p className="text-xs font-mono text-red-400 wrap-break-word">{error.message}</p>
+          <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-left">
+            <p className="font-mono text-xs wrap-break-word text-red-400">{error.message}</p>
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Button onClick={() => reset()} size="sm">
-            <IconRefresh className="w-4 h-4 mr-1" />
+            <IconRefresh className="mr-1 h-4 w-4" />
             Try Again
           </Button>
           <Button onClick={() => router.history.back()} variant="outline" size="sm">

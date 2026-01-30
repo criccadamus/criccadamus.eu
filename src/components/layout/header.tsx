@@ -3,14 +3,14 @@ import { Link } from "@tanstack/react-router";
 export function Header() {
   return (
     <header className="border-b border-border">
-      <div className="container mx-auto py-2 md:py-6 flex items-center justify-between">
+      <div className="container mx-auto flex items-center justify-between py-2 md:py-6">
         <Link to="/">
-          <h1 className="text-4xl text-white font-bold tracking-tight">Criccahub</h1>
+          <h1 className="text-4xl font-bold tracking-tight text-white">Criccahub</h1>
         </Link>
         <nav>
           <Link
             to="/registry"
-            className="text-sm font-medium text-muted-foreground hover:text-white transition-colors"
+            className="text-sm font-medium text-muted-foreground transition-colors hover:text-white"
           >
             Registry
           </Link>

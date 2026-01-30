@@ -128,8 +128,8 @@ export function YouTubeCarousel() {
             variant="ghost"
             size="icon"
             onClick={prevItem}
-            className={`absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
-              showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 text-white transition-all duration-300 hover:bg-black/70 ${
+              showControls ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
           >
             <IconChevronLeft className="h-5 w-5" />
@@ -138,8 +138,8 @@ export function YouTubeCarousel() {
             variant="ghost"
             size="icon"
             onClick={nextItem}
-            className={`absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
-              showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+            className={`absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white transition-all duration-300 hover:bg-black/70 ${
+              showControls ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
           >
             <IconChevronRight className="h-5 w-5" />
@@ -147,10 +147,10 @@ export function YouTubeCarousel() {
 
           {/* Playlist indicators with glassmorphic tooltips */}
           <div
-            className={`absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-all duration-300 ${
+            className={`absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-2 backdrop-blur-md transition-all duration-300 ${
               showControls
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 translate-y-2 pointer-events-none"
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none translate-y-2 opacity-0"
             }`}
           >
             {items.map((item, index) => (
@@ -163,15 +163,15 @@ export function YouTubeCarousel() {
                 {/* Tooltip */}
                 {hoveredIndex === index && (
                   <div
-                    className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 px-3 py-1.5 rounded-md bg-black/80 backdrop-blur-xl border border-white/20 text-white text-xs whitespace-nowrap pointer-events-none animate-in fade-in slide-in-from-bottom-2 duration-200"
+                    className="pointer-events-none absolute bottom-full left-1/2 mb-3 -translate-x-1/2 animate-in rounded-md border border-white/20 bg-black/80 px-3 py-1.5 text-xs whitespace-nowrap text-white backdrop-blur-xl duration-200 fade-in slide-in-from-bottom-2"
                     style={{
                       boxShadow: "0 0 20px rgba(139, 92, 246, 0.3)",
                     }}
                   >
                     {item.title}
                     {/* Tooltip arrow */}
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px">
-                      <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-white/20" />
+                    <div className="absolute top-full left-1/2 -mt-px -translate-x-1/2">
+                      <div className="h-0 w-0 border-t-4 border-r-4 border-l-4 border-t-white/20 border-r-transparent border-l-transparent" />
                     </div>
                   </div>
                 )}
@@ -179,13 +179,13 @@ export function YouTubeCarousel() {
                 {/* Indicator button */}
                 <button
                   onClick={() => setCurrentIndex(index)}
-                  className="group relative w-2 h-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black/50"
+                  className="group relative h-2 w-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black/50"
                   aria-label={`Go to ${item.title}`}
                 >
                   {/* Glow effect for active indicator */}
                   {currentIndex === index && (
                     <div
-                      className="absolute inset-0 rounded-full animate-pulse"
+                      className="absolute inset-0 animate-pulse rounded-full"
                       style={{
                         background:
                           "radial-gradient(circle, rgba(139, 92, 246, 0.6) 0%, transparent 70%)",
@@ -197,10 +197,10 @@ export function YouTubeCarousel() {
 
                   {/* Indicator bar */}
                   <div
-                    className={`relative w-full h-full rounded-full transition-all duration-300 ${
+                    className={`relative h-full w-full rounded-full transition-all duration-300 ${
                       currentIndex === index
-                        ? "bg-gradient-to-r from-violet-400 to-purple-500 scale-150 shadow-lg shadow-purple-500/50"
-                        : "bg-white/40 group-hover:bg-white/70 group-hover:scale-125"
+                        ? "scale-150 bg-gradient-to-r from-violet-400 to-purple-500 shadow-lg shadow-purple-500/50"
+                        : "bg-white/40 group-hover:scale-125 group-hover:bg-white/70"
                     }`}
                   />
                 </button>
@@ -210,10 +210,10 @@ export function YouTubeCarousel() {
 
           {/* Current playlist title overlay */}
           <div
-            className={`absolute top-4 left-4 px-3 py-1.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white text-sm font-medium tracking-wide transition-all duration-300 ${
+            className={`absolute top-4 left-4 rounded-md border border-white/10 bg-black/60 px-3 py-1.5 text-sm font-medium tracking-wide text-white backdrop-blur-md transition-all duration-300 ${
               showControls
-                ? "opacity-100 translate-y-0"
-                : "opacity-0 -translate-y-2 pointer-events-none"
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none -translate-y-2 opacity-0"
             }`}
           >
             {currentItem.title}

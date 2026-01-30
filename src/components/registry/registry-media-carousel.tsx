@@ -253,8 +253,8 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
                 onClick={() =>
                   scrollToIndex((currentIndex - 1 + mediaItems.length) % mediaItems.length)
                 }
-                className={`absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
-                  showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+                className={`absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 text-white transition-all duration-300 hover:bg-black/70 ${
+                  showControls ? "opacity-100" : "pointer-events-none opacity-0"
                 }`}
               >
                 <IconChevronLeft className="h-5 w-5" />
@@ -263,18 +263,18 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => scrollToIndex((currentIndex + 1) % mediaItems.length)}
-                className={`absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white transition-all duration-300 ${
-                  showControls ? "opacity-100" : "opacity-0 pointer-events-none"
+                className={`absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white transition-all duration-300 hover:bg-black/70 ${
+                  showControls ? "opacity-100" : "pointer-events-none opacity-0"
                 }`}
               >
                 <IconChevronRight className="h-5 w-5" />
               </Button>
 
               <div
-                className={`absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-2 rounded-full bg-black/40 backdrop-blur-md border border-white/10 transition-all duration-300 ${
+                className={`absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-2 backdrop-blur-md transition-all duration-300 ${
                   showControls
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-2 pointer-events-none"
+                    ? "translate-y-0 opacity-100"
+                    : "pointer-events-none translate-y-2 opacity-0"
                 }`}
               >
                 {mediaItems.map((item, index) => (
@@ -286,7 +286,7 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
                   >
                     {currentIndex === index && (
                       <div
-                        className="absolute inset-0 rounded-full animate-pulse"
+                        className="absolute inset-0 animate-pulse rounded-full"
                         style={{
                           background:
                             "radial-gradient(circle, rgba(148, 163, 184, 0.6) 0%, transparent 70%)",
@@ -298,8 +298,8 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
                     <div
                       className={`relative h-full w-full rounded-full transition-all duration-300 ${
                         currentIndex === index
-                          ? "bg-white/90 scale-150 shadow-lg shadow-white/30"
-                          : "bg-white/40 group-hover:bg-white/70 group-hover:scale-125"
+                          ? "scale-150 bg-white/90 shadow-lg shadow-white/30"
+                          : "bg-white/40 group-hover:scale-125 group-hover:bg-white/70"
                       }`}
                     />
                   </button>

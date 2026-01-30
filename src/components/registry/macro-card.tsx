@@ -137,8 +137,8 @@ export function MacroCard({ name, spec, macro, classConfig }: MacroCardProps) {
   return (
     <div
       className={cn(
-        "group relative flex flex-col gap-3 min-w-0 overflow-hidden",
-        "border rounded-lg p-4",
+        "group relative flex min-w-0 flex-col gap-3 overflow-hidden",
+        "rounded-lg border p-4",
         "transition-all duration-300 ease-in-out",
         classConfig.border,
         classConfig.bg,
@@ -149,12 +149,12 @@ export function MacroCard({ name, spec, macro, classConfig }: MacroCardProps) {
           <h4 className="text-sm font-medium text-foreground">{name}</h4>
           {spec && <p className="text-xs text-muted-foreground">{spec}</p>}
         </div>
-        <Button variant="ghost" size="icon" className="shrink-0 h-8 w-8" onClick={copy}>
+        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={copy}>
           <IconCopy className="h-4 w-4" />
         </Button>
       </div>
 
-      <pre className="scrollbar-hidden min-w-0 rounded bg-muted/50 border border-border px-3 py-2 text-sm font-mono overflow-x-auto whitespace-pre">
+      <pre className="scrollbar-hidden min-w-0 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-sm whitespace-pre">
         {highlightMacroSyntax(macro)}
       </pre>
     </div>

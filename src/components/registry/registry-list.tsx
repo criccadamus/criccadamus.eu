@@ -38,7 +38,7 @@ export function RegistryList() {
         const addonConfig = wowAddons[addonData.addon];
         return (
           <TabsContent key={addonData.addon} value={addonData.addon}>
-            <div className="flex flex-col gap-4 mt-4">
+            <div className="mt-4 flex flex-col gap-4">
               {addonData.alerts?.map((alert) => (
                 <Alert key={alert.title} variant={alert.variant}>
                   {alert.icon

@@ -18,11 +18,11 @@ function MacroCardSkeleton({ color }: { color: string }) {
 
   return (
     <div
-      className="animate-pulse flex flex-col gap-3 min-w-0 overflow-hidden border rounded-lg p-4"
+      className="flex min-w-0 animate-pulse flex-col gap-3 overflow-hidden rounded-lg border p-4"
       style={{ borderColor: color, backgroundColor: surfaceShade }}
     >
       <div className="flex items-center justify-between">
-        <div className="space-y-2 w-full">
+        <div className="w-full space-y-2">
           <div className="h-3 rounded" style={{ backgroundColor: skeletonShade, width: "60%" }} />
           <div className="h-2.5 rounded" style={{ backgroundColor: skeletonShade, width: "40%" }} />
         </div>
@@ -134,7 +134,7 @@ export function MacrosList() {
         const macros = macrosByClass[classKey];
         return (
           <TabsContent key={classKey} value={classKey}>
-            <div className="grid gap-3 md:grid-cols-2 mt-4">
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
               {macros?.map((macro) => (
                 <MacroCard
                   key={macro.name}

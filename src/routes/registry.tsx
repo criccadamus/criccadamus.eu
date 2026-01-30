@@ -35,10 +35,10 @@ function RegistryPage() {
           <section className="space-y-6">
             <div>
               <h2 className="text-2xl font-bold tracking-tight text-white">Addon Profiles</h2>
-              <p className="text-muted-foreground mt-2">
+              <p className="mt-2 text-muted-foreground">
                 My personal addon profiles for World of Warcraft.
               </p>
-              <p className="text-muted-foreground mt-2">
+              <p className="mt-2 text-muted-foreground">
                 Download them with the <code className="tracking-tight">shadcn</code> CLI or copy
                 the strings directly.
               </p>
@@ -61,10 +61,10 @@ function RegistryPage() {
                       href="https://github.com/criccadamus/SharedMedia_Pretendard"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-foreground hover:text-foreground/80 font-mono"
+                      className="font-mono text-foreground hover:text-foreground/80"
                     >
                       SharedMedia_Pretendard
-                      <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
+                      <IconExternalLink className="relative -top-0.5 inline h-3.5 w-3.5 text-muted-foreground" />
                     </a>
                   </li>
                   <li>
@@ -72,10 +72,10 @@ function RegistryPage() {
                       href="https://github.com/criccadamus/SharedMedia_GoogleSansCode"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-foreground hover:text-foreground/80 font-mono"
+                      className="font-mono text-foreground hover:text-foreground/80"
                     >
                       SharedMedia_GoogleSansCode
-                      <IconExternalLink className="text-muted-foreground inline w-3.5 h-3.5 relative -top-0.5" />
+                      <IconExternalLink className="relative -top-0.5 inline h-3.5 w-3.5 text-muted-foreground" />
                     </a>
                   </li>
                 </ul>

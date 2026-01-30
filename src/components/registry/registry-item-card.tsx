@@ -95,7 +95,7 @@ export function RegistryItemCard({
     <div
       className={cn(
         "group relative flex flex-col gap-3",
-        "border rounded-lg p-4",
+        "rounded-lg border p-4",
         "transition-all duration-300 ease-in-out",
         addonConfig.border,
         addonConfig.bg,
@@ -120,14 +120,14 @@ export function RegistryItemCard({
         </TabsList>
         {(["npm", "pnpm", "bun"] as const).map((runtime) => (
           <TabsContent key={runtime} value={runtime}>
-            <div className="flex items-center gap-2 mt-2">
-              <code className="flex-1 rounded bg-muted/50 border border-border px-3 py-2 text-xs font-mono text-muted-foreground break-all">
+            <div className="mt-2 flex items-center gap-2">
+              <code className="flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
                 {commandValues[runtime]}
               </code>
               <Button
                 variant="ghost"
                 size="icon"
-                className="shrink-0 h-8 w-8"
+                className="h-8 w-8 shrink-0"
                 onClick={() => copy(commandValues[runtime], "Command copied")}
               >
                 <IconCopy className="h-4 w-4" />
@@ -136,14 +136,14 @@ export function RegistryItemCard({
           </TabsContent>
         ))}
         <TabsContent value="string">
-          <div className="flex items-start gap-2 mt-2 min-w-0">
-            <code className="flex-1 min-w-0 rounded bg-muted/50 border border-border px-3 py-2 text-xs font-mono text-muted-foreground whitespace-nowrap overflow-x-auto">
+          <div className="mt-2 flex min-w-0 items-start gap-2">
+            <code className="min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
               {profileString ?? "Loading..."}
             </code>
             <Button
               variant="ghost"
               size="icon"
-              className="shrink-0 h-8 w-8"
+              className="h-8 w-8 shrink-0"
               disabled={!profileString}
               onClick={() => profileString && copy(profileString, "Profile string copied")}
             >

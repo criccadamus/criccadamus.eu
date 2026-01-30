@@ -11,24 +11,24 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="w-full select-none border-t border-border mt-auto">
-      <div className="flex items-center justify-center py-4 md:py-6 max-w-2xl mx-auto px-4">
-        <div className="grid place-items-center border-r border-border pr-3 py-6">
+    <footer className="mt-auto w-full border-t border-border select-none">
+      <div className="mx-auto flex max-w-2xl items-center justify-center px-4 py-4 md:py-6">
+        <div className="grid place-items-center border-r border-border py-6 pr-3">
           <div className="grid place-items-center">
-            <span className="font-semibold tracking-tight flex items-center text-white">
+            <span className="flex items-center font-semibold tracking-tight text-white">
               criccadamus.eu
             </span>
           </div>
-          <span className="text-xs font-mono opacity-85 ml-px mt-2 text-white">
+          <span className="mt-2 ml-px font-mono text-xs text-white opacity-85">
             v{VERSION} | {currentYear}
           </span>
         </div>
-        <div className="flex flex-col gap-2 ml-3">
+        <div className="ml-3 flex flex-col gap-2">
           <a
             href="https://github.com/criccadamus/criccadamus.eu"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-white hover:text-[#eeeeee] transition-colors"
+            className="flex items-center gap-2 text-sm text-white transition-colors hover:text-[#eeeeee]"
             aria-label="View source code on GitHub"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@ export function Footer() {
             </svg>
             <span>Source code</span>
           </a>
-          <div className="flex items-center gap-1.5 text-xs text-white/70 hover:text-[#eeeeee] transition-colors cursor-help">
+          <div className="flex cursor-help items-center gap-1.5 text-xs text-white/70 transition-colors hover:text-[#eeeeee]">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
               <path
                 fill="currentColor"
