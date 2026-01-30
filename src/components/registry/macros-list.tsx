@@ -43,6 +43,9 @@ export function MacrosList() {
   const [macrosByClass, setMacrosByClass] = useState<Record<WowClass, Macro[]>>(
     {} as Record<WowClass, Macro[]>,
   );
+  const [updatedAtByClass, setUpdatedAtByClass] = useState<Record<WowClass, string | null>>(
+    {} as Record<WowClass, string | null>,
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
@@ -50,6 +53,7 @@ export function MacrosList() {
     let loadingTimeout: ReturnType<typeof setTimeout> | null = null;
     const cacheKey = `registry:macros:${activeClass}`;
     const cacheTsKey = `${cacheKey}:ts`;
+    const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
     const cacheTtlMs = 5 * 60 * 1000;
     const minSkeletonMs = 300;
 
@@ -65,6 +69,11 @@ export function MacrosList() {
                 ...prev,
                 [activeClass]: cachedMacros as Macro[],
               }));
+              const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
+              setUpdatedAtByClass((prev) => ({
+                ...prev,
+                [activeClass]: cachedUpdatedAt,
+              }));
             }
             return;
           }
@@ -77,15 +86,18 @@ export function MacrosList() {
       setIsLoading(true);
       try {
         const response = await fetch(`/macros/${activeClass}/json`);
+        const updatedAt = response.headers.get("x-last-updated");
         const data = (await response.json()) as unknown;
         const macros = Array.isArray(data) ? (data as Macro[]) : [];
         if (!cancelled) {
           setMacrosByClass((prev) => ({ ...prev, [activeClass]: macros }));
+          setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
         }
         if (macros.length > 0) {
           try {
             localStorage.setItem(cacheKey, JSON.stringify(macros));
             localStorage.setItem(cacheTsKey, String(Date.now()));
+            if (updatedAt) localStorage.setItem(cacheUpdatedAtKey, updatedAt);
           } catch {
             // Ignore localStorage write errors
           }
@@ -146,9 +158,19 @@ export function MacrosList() {
       {classOrder.map((classKey) => {
         const classConfig = wowClasses[classKey];
         const macros = macrosByClass[classKey];
+        const updatedAt = updatedAtByClass[classKey];
+        const formattedUpdatedAt = updatedAt
+          ? new Intl.DateTimeFormat("en-US", {
+              dateStyle: "medium",
+              timeStyle: "short",
+            }).format(new Date(updatedAt))
+          : null;
         return (
           <TabsContent key={classKey} value={classKey}>
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <div className="mt-3 text-[0.625rem] text-muted-foreground">
+              Last updated: {formattedUpdatedAt ?? "Unknown"}
+            </div>
+            <div className="mt-2 grid gap-3 md:grid-cols-2">
               {macros?.map((macro) => (
                 <MacroCard
                   key={macro.name}

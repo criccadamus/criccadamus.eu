@@ -16,6 +16,12 @@ const registrySchemaUrl = "https://ui.shadcn.com/schema/registry-item.json";
 const fileType = "registry:file";
 const kvTtlSeconds = 60 * 60;
 const kvKeyPrefix = "registry:profile:";
+const gistApiBase = "https://api.github.com/gists";
+
+type CachedProfile = {
+  content: string;
+  updatedAt?: string;
+};
 
 function findProfileByName(name: string) {
   for (const addon of profilesByAddon) {
@@ -27,6 +33,21 @@ function findProfileByName(name: string) {
 
 function buildRawGistUrl(gistId: string, filename: string) {
   return `https://gist.githubusercontent.com/${GIST_OWNER}/${gistId}/raw/${filename}`;
+}
+
+async function fetchGistUpdatedAt(gistId: string) {
+  try {
+    const response = await fetch(`${gistApiBase}/${gistId}`, {
+      headers: {
+        accept: "application/vnd.github+json",
+      },
+    });
+    if (!response.ok) return undefined;
+    const data = (await response.json()) as { updated_at?: string };
+    return data.updated_at;
+  } catch {
+    return undefined;
+  }
 }
 
 export const Route = createFileRoute("/r/$name/json")({
@@ -49,6 +70,18 @@ export const Route = createFileRoute("/r/$name/json")({
           try {
             const cached = await env.REGISTRY_KV.get(cacheKey);
             if (cached) {
+              let content = cached;
+              let updatedAt: string | undefined;
+              try {
+                const parsed = JSON.parse(cached) as CachedProfile;
+                if (typeof parsed?.content === "string") {
+                  content = parsed.content;
+                  updatedAt = parsed.updatedAt;
+                }
+              } catch {
+                // cached content was a raw string
+              }
+
               const payload = {
                 $schema: registrySchemaUrl,
                 name: profile.name,
@@ -58,7 +91,7 @@ export const Route = createFileRoute("/r/$name/json")({
                 files: [
                   {
                     path: `${profile.name}.txt`,
-                    content: cached,
+                    content,
                     type: fileType,
                     target: `~/${profile.name}.txt`,
                   },
@@ -70,6 +103,7 @@ export const Route = createFileRoute("/r/$name/json")({
                 headers: {
                   "content-type": "application/json; charset=utf-8",
                   "cache-control": "public, max-age=300",
+                  ...(updatedAt ? { "x-last-updated": updatedAt } : {}),
                 },
               });
             }
@@ -87,19 +121,22 @@ export const Route = createFileRoute("/r/$name/json")({
         const rawUrl = buildRawGistUrl(gistId, filename);
 
         let content = "";
+        let updatedAt: string | undefined;
         try {
           const response = await fetch(rawUrl);
           if (!response.ok) {
             return Response.json({ error: "Profile content not found." }, { status: 404 });
           }
           content = await response.text();
+          updatedAt = await fetchGistUpdatedAt(gistId);
         } catch {
           return Response.json({ error: "Failed to load profile content." }, { status: 502 });
         }
 
         if (env?.REGISTRY_KV) {
           try {
-            await env.REGISTRY_KV.put(cacheKey, content, { expirationTtl: kvTtlSeconds });
+            const cacheValue = JSON.stringify({ content, updatedAt } satisfies CachedProfile);
+            await env.REGISTRY_KV.put(cacheKey, cacheValue, { expirationTtl: kvTtlSeconds });
           } catch {
             // Ignore cache write errors
           }
@@ -126,6 +163,7 @@ export const Route = createFileRoute("/r/$name/json")({
           headers: {
             "content-type": "application/json; charset=utf-8",
             "cache-control": "public, max-age=300",
+            ...(updatedAt ? { "x-last-updated": updatedAt } : {}),
           },
         });
       },

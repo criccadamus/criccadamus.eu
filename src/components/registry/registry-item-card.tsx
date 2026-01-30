@@ -37,6 +37,7 @@ export function RegistryItemCard({
 }: RegistryItemCardProps) {
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const search = useSearch({ from: "/registry" });
   const selectedTab =
     search.tab && ["string", "npm", "pnpm", "bun"].includes(search.tab) ? search.tab : "string";
@@ -44,6 +45,7 @@ export function RegistryItemCard({
   useEffect(() => {
     const cacheKey = `registry:profile:${name}`;
     const cacheTsKey = `${cacheKey}:ts`;
+    const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
     const cacheTtlMs = 5 * 60 * 1000;
 
     try {
@@ -51,6 +53,8 @@ export function RegistryItemCard({
       const cachedAt = Number(localStorage.getItem(cacheTsKey));
       if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < cacheTtlMs) {
         setProfileString(cached);
+        const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
+        if (cachedUpdatedAt) setLastUpdated(cachedUpdatedAt);
         return;
       }
     } catch {
@@ -58,14 +62,20 @@ export function RegistryItemCard({
     }
 
     fetch(`/r/${name}.json`)
-      .then((res) => res.json() as Promise<RegistryJson>)
-      .then((data) => {
+      .then(async (res) => {
+        const updatedAt = res.headers.get("x-last-updated");
+        const data = (await res.json()) as RegistryJson;
+        return { data, updatedAt };
+      })
+      .then(({ data, updatedAt }) => {
         const content = data.files?.[0]?.content ?? null;
         setProfileString(content);
+        if (updatedAt) setLastUpdated(updatedAt);
         if (content) {
           try {
             localStorage.setItem(cacheKey, content);
             localStorage.setItem(cacheTsKey, String(Date.now()));
+            if (updatedAt) localStorage.setItem(cacheUpdatedAtKey, updatedAt);
           } catch {
             // Ignore localStorage write errors
           }
@@ -90,6 +100,13 @@ export function RegistryItemCard({
     void navigator.clipboard.writeText(text);
     toast.success(message);
   };
+
+  const formattedUpdatedAt = lastUpdated
+    ? new Intl.DateTimeFormat("en-US", {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(new Date(lastUpdated))
+    : null;
 
   return (
     <div
@@ -150,6 +167,9 @@ export function RegistryItemCard({
               <IconCopy className="h-4 w-4" />
             </Button>
           </div>
+          <p className="mt-2 text-[0.625rem] text-muted-foreground">
+            Last updated: {formattedUpdatedAt ?? "Unknown"}
+          </p>
         </TabsContent>
       </Tabs>
     </div>
