@@ -52,64 +52,64 @@ export const macrosByClass: ClassMacros[] = [
       {
         name: "Adaptive Swarm",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Adaptive Swarm
+        macro: `/stopcasting
+#showtooltip Adaptive Swarm
 /use [@mouseover, exists] Adaptive Swarm`,
       },
       {
         name: "Cenarion Ward",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Cenarion Ward
+        macro: `/stopcasting
+#showtooltip Cenarion Ward
 /use [@mouseover, exists] Cenarion Ward`,
       },
       {
         name: "Nature's Cure",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Nature's Cure
+        macro: `/stopcasting
+#showtooltip Nature's Cure
 /use [@mouseover, exists] Nature's Cure`,
       },
       {
         name: "Grove Guardians",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Grove Guardians
+        macro: `/stopcasting
+#showtooltip Grove Guardians
 /use [@mouseover, exists] Grove Guardians`,
       },
       {
         name: "Ironbark",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Ironbark
+        macro: `/stopcasting
+#showtooltip Ironbark
 /use [@mouseover, exists] Ironbark`,
       },
       {
         name: "Lifebloom",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Lifebloom
+        macro: `/stopcasting
+#showtooltip Lifebloom
 /use [@mouseover, exists] Lifebloom`,
       },
       {
         name: "Regrowth",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Regrowth
+        macro: `/stopcasting
+#showtooltip Regrowth
 /use [@mouseover, exists] Regrowth`,
       },
       {
         name: "Rejuvenation",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Rejuvenation
+        macro: `/stopcasting
+#showtooltip Rejuvenation
 /use [@mouseover, exists] Rejuvenation`,
       },
       {
         name: "Swiftmend",
         spec: "Restoration",
-        macro: `#showtooltip
-#showcooldown Swiftmend
+        macro: `/stopcasting
+#showtooltip Swiftmend
 /use [@mouseover, exists] Swiftmend`,
       },
     ],
@@ -120,27 +120,29 @@ export const macrosByClass: ClassMacros[] = [
       {
         name: "Emerald Blossom",
         spec: "General",
-        macro: `#showtooltip Emerald Blossom
+        macro: `/stopcasting
+#showtooltip Emerald Blossom
 /use [@mouseover, exists] Emerald Blossom`,
       },
       {
         name: "Verdant Embrace",
         spec: "General",
-        macro: `#showtooltip Verdant Embrace(Green)
+        macro: `/stopcasting
+#showtooltip Verdant Embrace(Green)
 /use [@mouseover, exists] Verdant Embrace(Green)`,
       },
       {
         name: "Cauterizing Flame",
         spec: "General",
-        macro: `#showtooltip Cauterizing Flame(Red)
-/stopcasting
+        macro: `/stopcasting
+#showtooltip Cauterizing Flame(Red)
 /cast [@mouseover,nomod,exists] Cauterizing Flame(Red)`,
       },
       {
         name: "Expunge",
         spec: "General",
-        macro: `#showtooltip Expunge
-/stopcasting
+        macro: `/stopcasting
+#showtooltip Expunge
 /cast [@mouseover,nomod,exists] Expunge`,
       },
       {
@@ -152,27 +154,23 @@ export const macrosByClass: ClassMacros[] = [
       {
         name: "Echo",
         spec: "Preservation",
-        macro: `#showtooltip Echo
+        macro: `/stopcasting
+#showtooltip Echo
 /use [@mouseover, exists] Echo`,
       },
       {
         name: "Reversion",
         spec: "Preservation",
-        macro: `#showtooltip Reversion
+        macro: `/stopcasting
+#showtooltip Reversion
 /use [@mouseover, exists] Reversion`,
       },
       {
         name: "Time Dilation",
         spec: "Preservation",
-        macro: `#showtooltip Time Dilation
+        macro: `/stopcasting
+#showtooltip Time Dilation
 /use [@mouseover, exists] Time Dilation`,
-      },
-      {
-        name: "Prescience",
-        spec: "Augmentation",
-        macro: `#showtooltip Prescience
-/stopcasting
-/cast [@mouseover,nomod,exists] Prescience`,
       },
     ],
   },
@@ -197,21 +195,6 @@ export const macrosByClass: ClassMacros[] = [
         spec: "Subtlety",
         macro: `#showtooltip
 /cast [bonusbar:1] Shadowstrike; Backstab`,
-      },
-      {
-        name: "Vanish + Shadowstrike",
-        spec: "Subtlety",
-        macro: `#showtooltip
-/cast Vanish
-/cast Shadowstrike
-/stopattack`,
-      },
-      {
-        name: "Shadow Dance + Shadowstrike",
-        spec: "Subtlety",
-        macro: `#showtooltip
-/cast Shadow Dance
-/cast Shadowstrike`,
       },
       {
         name: "Ambush / Mutilate",
@@ -251,6 +234,53 @@ export const macrosByClass: ClassMacros[] = [
         macro: `/stopcasting
 #showtooltip Power Word: Shield
 /cast [@mouseover] Power Word: Shield`,
+      },
+    ],
+  },
+  {
+    class: "shaman",
+    macros: [
+      {
+        name: "Chain Heal",
+        spec: "Restoration",
+        macro: `/stopcasting
+#showtooltip Chain Heal
+/cast [@mouseover] Chain Heal`,
+      },
+      {
+        name: "Healing Weave",
+        spec: "Restoration",
+        macro: `/stopcasting
+#showtooltip Healing Weave
+/cast [@mouseover] Healing Weave`,
+      },
+      {
+        name: "Riptide",
+        spec: "Restoration",
+        macro: `/stopcasting
+#showtooltip Riptide
+/cast [@mouseover] Riptide`,
+      },
+      {
+        name: "Purify Spirit",
+        spec: "Restoration",
+        macro: `/stopcasting
+#showtooltip Purify Spirit
+/cast [@mouseover] Purify Spirit`,
+      },
+      {
+        name: "Unleash Life",
+        spec: "Restoration",
+        macro: `/stopcasting
+#showtooltip Unleash Life
+/cast [@mouseover] Unleash Life`,
+      },
+      {
+        name: "Earth Shield",
+        spec: "Restoration",
+        macro: `/stopcasting
+#showtooltip Earth Shield
+/cast [@mouseover] Earth Shield`,
       },
     ],
   },
