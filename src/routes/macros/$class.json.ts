@@ -8,7 +8,7 @@ import { wowClasses } from "@/lib/wow-classes";
 
 const GIST_OWNER = "criccadamus";
 const kvTtlSeconds = 60 * 60;
-const kvKeyPrefix = "registry:macros:";
+const kvKeyPrefix = "registry:macros:v2:";
 const gistApiBase = "https://api.github.com/gists";
 
 type CachedMacros = {
@@ -79,7 +79,10 @@ export const Route = createFileRoute("/macros/$class/json")({
                   "content-type": "application/json; charset=utf-8",
                   "cache-control": "public, max-age=300",
                   ...(cachedPayload?.updatedAt
-                    ? { "x-last-updated": cachedPayload.updatedAt }
+                    ? {
+                        "x-last-updated": cachedPayload.updatedAt,
+                        "last-modified": cachedPayload.updatedAt,
+                      }
                     : {}),
                 },
               });
@@ -135,7 +138,7 @@ export const Route = createFileRoute("/macros/$class/json")({
           headers: {
             "content-type": "application/json; charset=utf-8",
             "cache-control": "public, max-age=300",
-            ...(updatedAt ? { "x-last-updated": updatedAt } : {}),
+            ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
           },
         });
       },

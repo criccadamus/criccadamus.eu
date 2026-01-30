@@ -15,7 +15,7 @@ const GIST_BY_PROFILE: Record<string, string> = {
 const registrySchemaUrl = "https://ui.shadcn.com/schema/registry-item.json";
 const fileType = "registry:file";
 const kvTtlSeconds = 60 * 60;
-const kvKeyPrefix = "registry:profile:";
+const kvKeyPrefix = "registry:profile:v2:";
 const gistApiBase = "https://api.github.com/gists";
 
 type CachedProfile = {
@@ -103,7 +103,7 @@ export const Route = createFileRoute("/r/$name/json")({
                 headers: {
                   "content-type": "application/json; charset=utf-8",
                   "cache-control": "public, max-age=300",
-                  ...(updatedAt ? { "x-last-updated": updatedAt } : {}),
+                  ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
                 },
               });
             }
@@ -163,7 +163,7 @@ export const Route = createFileRoute("/r/$name/json")({
           headers: {
             "content-type": "application/json; charset=utf-8",
             "cache-control": "public, max-age=300",
-            ...(updatedAt ? { "x-last-updated": updatedAt } : {}),
+            ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
           },
         });
       },
