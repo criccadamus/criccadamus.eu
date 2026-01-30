@@ -121,7 +121,7 @@ export function RegistryItemCard({
         {(["npm", "pnpm", "bun"] as const).map((runtime) => (
           <TabsContent key={runtime} value={runtime}>
             <div className="mt-2 flex items-center gap-2">
-              <code className="flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
+              <code className="scrollbar-hidden flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
                 {commandValues[runtime]}
               </code>
               <Button
@@ -137,7 +137,7 @@ export function RegistryItemCard({
         ))}
         <TabsContent value="string">
           <div className="mt-2 flex min-w-0 items-start gap-2">
-            <code className="min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
+            <code className="scrollbar-hidden min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
               {profileString ?? "Loading..."}
             </code>
             <Button
