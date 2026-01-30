@@ -24,7 +24,6 @@
     "cloudflare-env.d.ts",
     "worker-configuration.d.ts",
     "src/routeTree.gen.ts",
-    "src/utils/valid-routes.ts",
     ".wrangler/",
     "node_modules/"
   ]

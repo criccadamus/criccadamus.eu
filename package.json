@@ -10,7 +10,7 @@
     "typecheck": "tsgo --noEmit",
     "format": "oxfmt",
     "lint": "oxlint --type-aware",
-    "check": "tsgo --noEmit && oxlint --type-aware --fix ",
+    "check": "tsgo --noEmit && oxlint --type-aware --fix && oxfmt",
     "deploy": "wrangler types && tsgo --noEmit && oxlint --type-aware && oxfmt && vite build && wrangler deploy",
     "cf-typegen": "wrangler types"
   },

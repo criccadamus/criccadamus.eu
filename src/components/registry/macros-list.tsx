@@ -1,8 +1,7 @@
+import { MacroCard } from "@/components/registry/macro-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { macrosByClass } from "@/data/macros";
 import { wowClasses } from "@/lib/wow-classes";
-
-import { MacroCard } from "./macro-card";
 
 export function MacrosList() {
   return (

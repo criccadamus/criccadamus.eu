@@ -1,5 +1,5 @@
 import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
-import * as React from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
@@ -17,10 +17,10 @@ function parseYouTubeUrl(url: string): { videoId: string; playlistId: string } {
 }
 
 export function YouTubeCarousel() {
-  const [currentIndex, setCurrentIndex] = React.useState(0);
-  const [hoveredIndex, setHoveredIndex] = React.useState<number | null>(null);
-  const [showControls, setShowControls] = React.useState(true);
-  const hideTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [showControls, setShowControls] = useState(true);
+  const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleMouseEnter = () => {
     if (hideTimeoutRef.current) {
@@ -35,7 +35,7 @@ export function YouTubeCarousel() {
     }, 2000);
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Initially hide controls after 3 seconds
     const initialTimeout = setTimeout(() => {
       setShowControls(false);

@@ -1,9 +1,9 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 export function useTheme() {
-  const [isDark, setIsDark] = React.useState<boolean | undefined>(undefined);
+  const [isDark, setIsDark] = useState<boolean | undefined>(undefined);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Check initial theme
     const isDarkMode = document.documentElement.classList.contains("dark");
     setIsDark(isDarkMode);

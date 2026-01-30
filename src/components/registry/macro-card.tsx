@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { IconCopy } from "@tabler/icons-react";
 import { toast } from "sonner";
 
@@ -14,11 +16,11 @@ interface MacroCardProps {
   classConfig: WowClassConfig;
 }
 
-function highlightMacroSyntax(macro: string): React.ReactNode[] {
+function highlightMacroSyntax(macro: string): ReactNode[] {
   const lines = macro.split("\n");
 
   return lines.map((line, lineIndex) => {
-    const parts: React.ReactNode[] = [];
+    const parts: ReactNode[] = [];
     let remaining = line;
     let keyIndex = 0;
 

@@ -31,9 +31,7 @@ export function RegistryItemCard({ name, title, description, addonConfig }: Regi
   const [profileString, setProfileString] = useState<string | null>(null);
   const search = useSearch({ from: "/registry" });
   const selectedTab =
-    search.tab && ["string", "npm", "pnpm", "bun"].includes(search.tab)
-      ? search.tab
-      : "string";
+    search.tab && ["string", "npm", "pnpm", "bun"].includes(search.tab) ? search.tab : "string";
 
   useEffect(() => {
     const cacheKey = `registry:profile:${name}`;

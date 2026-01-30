@@ -1,10 +1,10 @@
-import * as React from "react";
+import { useEffect, useState } from "react";
 
 export function useParallaxScroll() {
-  const [scrollY, setScrollY] = React.useState(0);
-  const [viewportHeight, setViewportHeight] = React.useState(0);
+  const [scrollY, setScrollY] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let ticking = false;
 
     const updateScrollY = () => {

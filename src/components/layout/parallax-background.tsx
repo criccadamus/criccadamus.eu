@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useParallaxScroll } from "@/hooks/use-parallax-scroll";
@@ -6,13 +6,13 @@ import { useParallaxScroll } from "@/hooks/use-parallax-scroll";
 export function ParallaxBackground() {
   const { scrollY, viewportHeight } = useParallaxScroll();
   const isMobile = useIsMobile();
-  const containerRef = React.useRef<HTMLDivElement>(null);
-  const [containerHeight, setContainerHeight] = React.useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerHeight, setContainerHeight] = useState(0);
 
   // Check for reduced motion preference
-  const [prefersReducedMotion, setPrefersReducedMotion] = React.useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     setPrefersReducedMotion(mediaQuery.matches);
 
@@ -25,7 +25,7 @@ export function ParallaxBackground() {
   }, []);
 
   // Track container height for clamping
-  React.useEffect(() => {
+  useEffect(() => {
     if (!containerRef.current) return;
 
     const updateHeight = () => {

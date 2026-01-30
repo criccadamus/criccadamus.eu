@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { Toaster } from "sonner";
 
@@ -39,7 +41,7 @@ export const Route = createRootRoute({
   notFoundComponent: NotFound,
 });
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function RootDocument({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>

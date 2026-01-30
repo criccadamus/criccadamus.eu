@@ -1,13 +1,11 @@
 import { IconInfoCircle } from "@tabler/icons-react";
-
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useSearch } from "@tanstack/react-router";
 
+import { RegistryItemCard } from "@/components/registry/registry-item-card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profilesByAddon } from "@/data/addons";
 import { wowAddons } from "@/lib/wow-addons";
-
-import { RegistryItemCard } from "./registry-item-card";
 
 export function RegistryList() {
   const search = useSearch({ from: "/registry" });

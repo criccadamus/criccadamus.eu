@@ -1,9 +1,9 @@
-import * as React from "react";
+import { useState } from "react";
 
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function TwitchEmbed() {
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   return (
     <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border">
