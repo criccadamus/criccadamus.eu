@@ -2,10 +2,10 @@ import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Header } from "@/components/layout/header";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { MacrosList } from "@/components/registry/macros-list";
 import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export const Route = createFileRoute("/registry")({
   validateSearch: (search: Record<string, unknown>) => {
@@ -39,7 +39,9 @@ function RegistryPage() {
         <div className="space-y-10">
           <section className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur">
             <div>
-              <h2 className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}>Addon Profiles</h2>
+              <h2 className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}>
+                Addon Profiles
+              </h2>
               <p className={`mt-2 ${mobileSubtextClass}`}>
                 My personal addon profiles for World of Warcraft.
               </p>
@@ -63,7 +65,7 @@ function RegistryPage() {
                 <ul>
                   <li>
                     <a
-                      href="https://addons.wago.io/addons/sharedmedia-pretendard" 
+                      href="https://addons.wago.io/addons/sharedmedia-pretendard"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-mono text-foreground underline decoration-dotted underline-offset-4 hover:text-foreground/80"
