@@ -1,13 +1,15 @@
-import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
 
-const MEDIA_BASE_URL = "https://static.criccadamus.eu/registry/";
+const MEDIA_BASE_URL = "https://static.criccadamus.eu/";
 const MEDIA_CACHE_TTL_MS = 5 * 60 * 1000;
 
 interface RegistryMediaCarouselProps {
   addon: string;
+  accentColor: string;
 }
 
 interface RegistryMediaResponse {
@@ -40,19 +42,49 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
   };
 }
 
-export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
+export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarouselProps) {
   const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [zoomedItem, setZoomedItem] = useState<RegistryMediaItem | null>(null);
 
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<HTMLDivElement | null>(null);
   const trackRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const scrollRafRef = useRef<number | null>(null);
+
+  const handleMediaClick = (item: RegistryMediaItem) => {
+    setZoomedItem(item);
+  };
+
+  const handleZoomClose = () => {
+    setZoomedItem(null);
+  };
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (zoomedItem) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [zoomedItem]);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!zoomedItem) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") handleZoomClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [zoomedItem]);
 
   useEffect(() => {
     if (shouldLoad) return;
@@ -212,7 +244,7 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
         >
           <div
             ref={trackRef}
-            className="flex h-full w-full snap-x snap-mandatory overflow-x-auto scroll-smooth"
+            className="scrollbar-hidden flex h-full w-full snap-x snap-mandatory overflow-x-auto scroll-smooth"
             onScroll={handleScroll}
           >
             {mediaItems.map((item, index) => (
@@ -223,24 +255,30 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
                 }}
                 className="relative h-full min-w-full snap-start bg-black"
               >
-                {item.type === "video" ? (
-                  <video
-                    className="h-full w-full object-cover"
-                    src={item.url}
-                    muted
-                    loop
-                    autoPlay
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : (
-                  <img
-                    className="h-full w-full object-cover"
-                    src={item.url}
-                    alt={`${addon} gallery ${item.index}`}
-                    loading="lazy"
-                  />
-                )}
+                <button
+                  onClick={() => handleMediaClick(item)}
+                  className="h-full w-full cursor-zoom-in"
+                  aria-label={`View ${item.type} ${item.index} in full size`}
+                >
+                  {item.type === "video" ? (
+                    <video
+                      className="h-full w-full object-cover"
+                      src={item.url}
+                      muted
+                      loop
+                      autoPlay
+                      playsInline
+                      preload="metadata"
+                    />
+                  ) : (
+                    <img
+                      className="h-full w-full object-cover"
+                      src={item.url}
+                      alt={`${addon} gallery ${item.index}`}
+                      loading="lazy"
+                    />
+                  )}
+                </button>
               </div>
             ))}
           </div>
@@ -271,25 +309,35 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
               </Button>
 
               <div
-                className={`absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/10 bg-black/40 px-3 py-2 backdrop-blur-md transition-all duration-300 ${
+                className={`absolute bottom-3 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full px-3 py-2 backdrop-blur-md transition-all duration-300 ${
                   showControls
                     ? "translate-y-0 opacity-100"
                     : "pointer-events-none translate-y-2 opacity-0"
                 }`}
+                style={{
+                  backgroundColor: `${accentColor}33`,
+                  borderColor: `${accentColor}66`,
+                  borderWidth: 1,
+                }}
               >
                 {mediaItems.map((item, index) => (
                   <button
                     key={item.key}
                     onClick={() => scrollToIndex(index)}
                     aria-label={`Go to media ${index + 1}`}
-                    className="group relative h-2 w-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black/50"
+                    className="group relative h-2 w-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+                    style={
+                      {
+                        "--tw-ring-color": `${accentColor}80`,
+                        "--tw-ring-offset-color": `${accentColor}33`,
+                      } as React.CSSProperties
+                    }
                   >
                     {currentIndex === index && (
                       <div
                         className="absolute inset-0 animate-pulse rounded-full"
                         style={{
-                          background:
-                            "radial-gradient(circle, rgba(148, 163, 184, 0.6) 0%, transparent 70%)",
+                          background: `radial-gradient(circle, ${accentColor}99 0%, transparent 70%)`,
                           filter: "blur(6px)",
                           transform: "scale(2.5)",
                         }}
@@ -297,10 +345,12 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
                     )}
                     <div
                       className={`relative h-full w-full rounded-full transition-all duration-300 ${
-                        currentIndex === index
-                          ? "scale-150 bg-white/90 shadow-lg shadow-white/30"
-                          : "bg-white/40 group-hover:scale-125 group-hover:bg-white/70"
+                        currentIndex === index ? "scale-150" : "group-hover:scale-125"
                       }`}
+                      style={{
+                        backgroundColor: currentIndex === index ? accentColor : `${accentColor}66`,
+                        boxShadow: currentIndex === index ? `0 0 8px ${accentColor}80` : undefined,
+                      }}
                     />
                   </button>
                 ))}
@@ -313,6 +363,48 @@ export function RegistryMediaCarousel({ addon }: RegistryMediaCarouselProps) {
       {!hasError && !isLoading && mediaKeys && mediaItems.length === 0 && (
         <div className="text-xs text-muted-foreground">No media found.</div>
       )}
+
+      {/* Zoom Modal - rendered via portal to escape parent stacking context */}
+      {zoomedItem &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
+            onClick={handleZoomClose}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`${addon} gallery ${zoomedItem.index}`}
+          >
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleZoomClose}
+              className="absolute top-4 right-4 z-10 text-white/70 hover:bg-white/10 hover:text-white"
+              aria-label="Close"
+            >
+              <IconX className="h-6 w-6" />
+            </Button>
+            {zoomedItem.type === "video" ? (
+              <video
+                className="max-h-[90vh] max-w-[90vw]"
+                src={zoomedItem.url}
+                muted
+                loop
+                autoPlay
+                playsInline
+                controls
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <img
+                className="max-h-[90vh] max-w-[90vw] object-contain"
+                src={zoomedItem.url}
+                alt={`${addon} gallery ${zoomedItem.index}`}
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }

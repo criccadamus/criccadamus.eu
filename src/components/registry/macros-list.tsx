@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import type { WowClass } from "@/lib/wow-classes";
 
@@ -48,6 +48,13 @@ export function MacrosList() {
     {} as Record<WowClass, string | null>,
   );
   const [isLoading, setIsLoading] = useState(false);
+  const tabsListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (tabsListRef.current) {
+      tabsListRef.current.scrollLeft = 0;
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -173,7 +180,10 @@ export function MacrosList() {
 
   return (
     <Tabs value={activeClass} onValueChange={(value) => setActiveClass(value as WowClass)}>
-      <TabsList className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
+      <TabsList
+        ref={tabsListRef}
+        className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1"
+      >
         {classOrder.map((classKey) => {
           const classConfig = wowClasses[classKey];
           const dotBorderColor = classKey === "priest" ? "rgba(15, 23, 42, 0.35)" : "transparent";

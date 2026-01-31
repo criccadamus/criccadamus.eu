@@ -1,6 +1,6 @@
 import { IconCopy } from "@tabler/icons-react";
 import { useSearch } from "@tanstack/react-router";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 import type { WowAddonConfig } from "@/lib/wow-addons";
@@ -41,7 +41,16 @@ export function RegistryItemCard({
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const search = useSearch({ from: "/registry" });
   const selectedTab =
-    search.tab && ["string", "npm", "pnpm", "bun"].includes(search.tab) ? search.tab : "string";
+    search.tab && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
+      ? search.tab
+      : "string";
+  const tabsListRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (tabsListRef.current) {
+      tabsListRef.current.scrollLeft = 0;
+    }
+  }, []);
 
   useEffect(() => {
     const cacheVersion = "v2";
@@ -128,13 +137,15 @@ export function RegistryItemCard({
   }, [name]);
 
   const commands = [
-    { id: "string", label: "string" },
-    { id: "npm", label: "npm" },
-    { id: "pnpm", label: "pnpm" },
-    { id: "bun", label: "bun" },
+    { id: "string", label: "string", color: "#6b7280" },
+    { id: "npm", label: "npm", color: "#cb3837" },
+    { id: "yarn", label: "yarn", color: "#2c8ebb" },
+    { id: "pnpm", label: "pnpm", color: "#f9ad00" },
+    { id: "bun", label: "bun", color: "#fbf0df" },
   ] as const;
   const commandValues = {
     npm: `npx shadcn@latest add ${registryUrl}`,
+    yarn: `yarn dlx shadcn@latest add ${registryUrl}`,
     pnpm: `pnpm dlx shadcn@latest add ${registryUrl}`,
     bun: `bunx shadcn@latest add ${registryUrl}`,
   } as const;
@@ -168,17 +179,34 @@ export function RegistryItemCard({
         </div>
       </div>
 
-      <RegistryMediaCarousel addon={addon} />
-
       <Tabs defaultValue={selectedTab} className="w-full">
-        <TabsList>
-          {commands.map((command) => (
-            <TabsTrigger key={command.id} value={command.id}>
-              {command.label}
-            </TabsTrigger>
-          ))}
+        <TabsList
+          ref={tabsListRef}
+          className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1"
+        >
+          {commands.map((command) => {
+            const needsBorder = command.id === "bun";
+            return (
+              <TabsTrigger
+                key={command.id}
+                value={command.id}
+                className="shrink-0 text-foreground/75 data-active:text-foreground"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <span
+                    className="size-2 rounded-full border"
+                    style={{
+                      backgroundColor: command.color,
+                      borderColor: needsBorder ? "rgba(15, 23, 42, 0.35)" : "transparent",
+                    }}
+                  />
+                  {command.label}
+                </span>
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
-        {(["npm", "pnpm", "bun"] as const).map((runtime) => (
+        {(["npm", "yarn", "pnpm", "bun"] as const).map((runtime) => (
           <TabsContent key={runtime} value={runtime}>
             <div className="mt-2 flex items-center gap-2">
               <code className="scrollbar-hidden flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
@@ -210,11 +238,14 @@ export function RegistryItemCard({
               <IconCopy className="h-4 w-4" />
             </Button>
           </div>
-          <p className="mt-2 text-[0.625rem] text-muted-foreground">
-            Last updated: {formattedUpdatedAt ?? "Unknown"}
-          </p>
         </TabsContent>
       </Tabs>
+
+      <p className="text-[0.625rem] text-muted-foreground">
+        Last updated: {formattedUpdatedAt ?? "Unknown"}
+      </p>
+
+      <RegistryMediaCarousel addon={addon} accentColor={addonConfig.color} />
     </div>
   );
 }
