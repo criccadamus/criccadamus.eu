@@ -5,6 +5,7 @@ import type { WowClass } from "@/lib/wow-classes";
 import { MacroCard } from "@/components/registry/macro-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { classGists } from "@/data/gists";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { wowClasses } from "@/lib/wow-classes";
 
 interface Macro {
@@ -39,6 +40,7 @@ function MacroCardSkeleton({ color }: { color: string }) {
 }
 
 export function MacrosList() {
+  const isMobile = useIsMobile();
   const classOrder = Object.keys(wowClasses) as WowClass[];
   const [activeClass, setActiveClass] = useState<WowClass>(classOrder[0]);
   const [macrosByClass, setMacrosByClass] = useState<Record<WowClass, Macro[]>>(
@@ -219,7 +221,7 @@ export function MacrosList() {
           : null;
         return (
           <TabsContent key={classKey} value={classKey}>
-            <div className="mt-3 text-[0.625rem] text-muted-foreground">
+            <div className={`mt-3 text-[0.625rem] ${isMobile ? "text-white/60" : "text-muted-foreground"}`}>
               Last updated: {formattedUpdatedAt ?? "Unknown"}
             </div>
             <div className="mt-2 grid gap-3 md:grid-cols-2">

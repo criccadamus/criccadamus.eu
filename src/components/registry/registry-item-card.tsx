@@ -9,6 +9,7 @@ import { RegistryMediaCarousel } from "@/components/registry/registry-media-caro
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profileGists } from "@/data/gists";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 interface RegistryItemCardProps {
@@ -45,6 +46,7 @@ export function RegistryItemCard({
       ? search.tab
       : "string";
   const tabsListRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (tabsListRef.current) {
@@ -170,6 +172,7 @@ export function RegistryItemCard({
         "transition-all duration-300 ease-in-out",
         addonConfig.border,
         addonConfig.bg,
+        isMobile && "text-foreground **:text-foreground",
       )}
     >
       <div className="flex items-center justify-between">

@@ -2,6 +2,7 @@ import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 import { createFileRoute } from "@tanstack/react-router";
 
 import { Header } from "@/components/layout/header";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { MacrosList } from "@/components/registry/macros-list";
 import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -27,6 +28,10 @@ export const Route = createFileRoute("/registry")({
 });
 
 function RegistryPage() {
+  const isMobile = useIsMobile();
+  const mobileTextClass = isMobile ? "text-white" : "text-foreground";
+  const mobileSubtextClass = isMobile ? "text-white/75" : "text-foreground/75";
+
   return (
     <div className="relative z-10">
       <Header />
@@ -34,11 +39,11 @@ function RegistryPage() {
         <div className="space-y-10">
           <section className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">Addon Profiles</h2>
-              <p className="mt-2 text-foreground/75">
+              <h2 className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}>Addon Profiles</h2>
+              <p className={`mt-2 ${mobileSubtextClass}`}>
                 My personal addon profiles for World of Warcraft.
               </p>
-              <p className="mt-2 text-foreground/75">
+              <p className={`mt-2 ${mobileSubtextClass}`}>
                 Download them with the <code className="tracking-tight">shadcn</code> CLI or copy
                 the strings directly.
               </p>
@@ -87,7 +92,7 @@ function RegistryPage() {
 
           <section className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-foreground">Macros</h2>
+              <h2 className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}>Macros</h2>
             </div>
             <MacrosList />
           </section>
