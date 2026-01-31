@@ -58,7 +58,7 @@ function RegistryPage() {
                 <ul>
                   <li>
                     <a
-                      href="https://github.com/criccadamus/SharedMedia_Pretendard/releases/latest"
+                      href="https://addons.wago.io/addons/sharedmedia-pretendard
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-mono text-foreground underline decoration-dotted underline-offset-4 hover:text-foreground/80"
@@ -69,7 +69,7 @@ function RegistryPage() {
                   </li>
                   <li>
                     <a
-                      href="https://github.com/criccadamus/SharedMedia_GoogleSansCode/releases/latest"
+                      href="https://addons.wago.io/addons/sharedmedia-googlesanscode"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="font-mono text-foreground underline decoration-dotted underline-offset-4 hover:text-foreground/80"
