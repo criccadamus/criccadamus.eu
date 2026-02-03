@@ -5,13 +5,13 @@
     "browser": true,
     "es2022": true
   },
+  "ignorePatterns": ["worker-configuration.d.ts", "**/*.d.ts", ".source/**"],
   "rules": {
-    "oxlint/recommended": "error",
-    "tsgo/no-explicit-any": "error",
-    "tsgo/no-unsafe-assignment": "error",
-    "tsgo/no-unsafe-call": "error",
-    "tsgo/no-unsafe-member-access": "error",
-    "tsgo/no-unsafe-return": "error",
+    "typescript/no-explicit-any": "error",
+    "typescript/no-unsafe-assignment": "error",
+    "typescript/no-unsafe-call": "error",
+    "typescript/no-unsafe-member-access": "error",
+    "typescript/no-unsafe-return": "error",
 
     "no-unused-vars": [
       "error",
