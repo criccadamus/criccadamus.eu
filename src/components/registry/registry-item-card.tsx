@@ -40,7 +40,7 @@ export function RegistryItemCard({
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  const search = useSearch({ from: "/registry" });
+  const search = useSearch({ from: "/registry" }) as { tab?: string };
   const selectedTab =
     search.tab && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
       ? search.tab
@@ -63,12 +63,16 @@ export function RegistryItemCard({
 
     const fetchUpdatedAtFromGist = async () => {
       const gistId = profileGists[name];
-      if (!gistId) return;
+      if (!gistId) {
+        return;
+      }
       try {
         const res = await fetch(`https://api.github.com/gists/${gistId}`, {
           headers: { accept: "application/vnd.github+json" },
         });
-        if (!res.ok) return;
+        if (!res.ok) {
+          return;
+        }
         const data = (await res.json()) as { updated_at?: string };
         if (data.updated_at) {
           setLastUpdated(data.updated_at);
@@ -129,7 +133,9 @@ export function RegistryItemCard({
           try {
             localStorage.setItem(cacheKey, content);
             localStorage.setItem(cacheTsKey, String(Date.now()));
-            if (updatedAt) localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+            if (updatedAt) {
+              localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+            }
           } catch {
             // Ignore localStorage write errors
           }

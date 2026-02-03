@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 
 export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
+  const safeReset = typeof reset === "function" ? (reset as () => void) : undefined;
   useEffect(() => {
     // Log error to console for debugging
     console.error("Application Error:", error);
@@ -28,7 +29,7 @@ export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
         )}
 
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
-          <Button onClick={() => reset()}>
+          <Button onClick={() => safeReset?.()}>
             <IconRefresh className="mr-2 h-4 w-4" />
             Try Again
           </Button>
@@ -45,7 +46,8 @@ export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
 }
 
 export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
-  const router = useRouter();
+  const safeReset = typeof reset === "function" ? (reset as () => void) : undefined;
+  const router = useRouter() as { history: { back: () => void } };
 
   useEffect(() => {
     // Log error to console for debugging
@@ -70,7 +72,7 @@ export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
         )}
 
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
-          <Button onClick={() => reset()} size="sm">
+          <Button onClick={() => safeReset?.()} size="sm">
             <IconRefresh className="mr-1 h-4 w-4" />
             Try Again
           </Button>

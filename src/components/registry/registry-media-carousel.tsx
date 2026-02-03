@@ -29,7 +29,9 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
   const filename = key.split("/").pop() ?? "";
   const baseName = filename.split(".")[0];
   const index = Number.parseInt(baseName, 10);
-  if (!Number.isFinite(index)) return null;
+  if (!Number.isFinite(index)) {
+    return null;
+  }
 
   const lowerKey = key.toLowerCase();
   const type = lowerKey.endsWith(".webm") ? "video" : "image";
@@ -42,6 +44,7 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
   };
 }
 
+// eslint-disable-next-line complexity
 export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarouselProps) {
   const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -78,17 +81,25 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
 
   // Close modal on Escape key
   useEffect(() => {
-    if (!zoomedItem) return;
+    if (!zoomedItem) {
+      return;
+    }
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") handleZoomClose();
+      if (e.key === "Escape") {
+        handleZoomClose();
+      }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [zoomedItem]);
 
   useEffect(() => {
-    if (shouldLoad) return;
-    if (!carouselRef.current) return;
+    if (shouldLoad) {
+      return;
+    }
+    if (!carouselRef.current) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -105,7 +116,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   }, [shouldLoad]);
 
   useEffect(() => {
-    if (!shouldLoad) return;
+    if (!shouldLoad) {
+      return;
+    }
 
     const cacheKey = `registry:media:${addon}`;
     const cacheTsKey = `${cacheKey}:ts`;
@@ -138,7 +151,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
         return res.json() as Promise<RegistryMediaResponse>;
       })
       .then((data) => {
-        if (!isActive) return;
+        if (!isActive) {
+          return;
+        }
         const items = Array.isArray(data.items) ? data.items : [];
         setMediaKeys(items);
         try {
@@ -149,13 +164,17 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
         }
       })
       .catch((error) => {
-        if (!isActive || controller.signal.aborted) return;
+        if (!isActive || controller.signal.aborted) {
+          return;
+        }
         setHasError(true);
         setMediaKeys([]);
         console.error(error);
       })
       .finally(() => {
-        if (isActive) setIsLoading(false);
+        if (isActive) {
+          setIsLoading(false);
+        }
       });
 
     return () => {
@@ -165,7 +184,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   }, [addon, shouldLoad]);
 
   const mediaItems = useMemo(() => {
-    if (!mediaKeys) return [];
+    if (!mediaKeys) {
+      return [];
+    }
     return mediaKeys
       .map((key) => parseMediaItem(key))
       .filter((item): item is RegistryMediaItem => Boolean(item))
@@ -203,20 +224,28 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   }, [currentIndex]);
 
   const scrollToIndex = (index: number) => {
-    if (!trackRef.current) return;
+    if (!trackRef.current) {
+      return;
+    }
     const target = itemRefs.current[index];
-    if (!target) return;
+    if (!target) {
+      return;
+    }
     target.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
     setCurrentIndex(index);
   };
 
   const handleScroll = () => {
-    if (!trackRef.current) return;
+    if (!trackRef.current) {
+      return;
+    }
     if (scrollRafRef.current) {
       cancelAnimationFrame(scrollRafRef.current);
     }
     scrollRafRef.current = requestAnimationFrame(() => {
-      if (!trackRef.current) return;
+      if (!trackRef.current) {
+        return;
+      }
       const width = trackRef.current.clientWidth || 1;
       const nextIndex = Math.round(trackRef.current.scrollLeft / width);
       setCurrentIndex(nextIndex);
@@ -370,6 +399,12 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
             onClick={handleZoomClose}
+            onKeyDown={(event) => {
+              if (event.key === "Escape") {
+                handleZoomClose();
+              }
+            }}
+            tabIndex={0}
             role="dialog"
             aria-modal="true"
             aria-label={`${addon} gallery ${zoomedItem.index}`}
@@ -392,14 +427,14 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 autoPlay
                 playsInline
                 controls
-                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
               />
             ) : (
               <img
                 className="max-h-[90vh] max-w-[90vw] object-contain"
                 src={zoomedItem.url}
                 alt={`${addon} gallery ${zoomedItem.index}`}
-                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
               />
             )}
           </div>,

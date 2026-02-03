@@ -16,116 +16,140 @@ interface MacroCardProps {
   classConfig: WowClassConfig;
 }
 
+type TokenParseResult = {
+  nodes: ReactNode[];
+  consumed: number;
+  keyIndex: number;
+};
+
+function parseNextToken(remaining: string, keyIndex: number): TokenParseResult {
+  const showtooltipMatch = remaining.match(/^(#showtooltip)(\s+.+)?$/);
+  if (showtooltipMatch) {
+    let nextIndex = keyIndex;
+    const nodes: ReactNode[] = [
+      <span key={nextIndex++} className={macroTokenColors.showtooltip}>
+        {showtooltipMatch[1]}
+      </span>,
+    ];
+    if (showtooltipMatch[2]) {
+      nodes.push(
+        <span key={nextIndex++} className={macroTokenColors.spellName}>
+          {showtooltipMatch[2]}
+        </span>,
+      );
+    }
+    return { nodes, consumed: remaining.length, keyIndex: nextIndex };
+  }
+
+  const showcooldownMatch = remaining.match(/^(#showcooldown)(\s+.+)?$/);
+  if (showcooldownMatch) {
+    let nextIndex = keyIndex;
+    const nodes: ReactNode[] = [
+      <span key={nextIndex++} className={macroTokenColors.showcooldown}>
+        {showcooldownMatch[1]}
+      </span>,
+    ];
+    if (showcooldownMatch[2]) {
+      nodes.push(
+        <span key={nextIndex++} className={macroTokenColors.spellName}>
+          {showcooldownMatch[2]}
+        </span>,
+      );
+    }
+    return { nodes, consumed: remaining.length, keyIndex: nextIndex };
+  }
+
+  const commandMatch = remaining.match(/^(\/\w+)/);
+  if (commandMatch) {
+    let nextIndex = keyIndex;
+    return {
+      nodes: [
+        <span key={nextIndex++} className={macroTokenColors.command}>
+          {commandMatch[1]}
+        </span>,
+      ],
+      consumed: commandMatch[0].length,
+      keyIndex: nextIndex,
+    };
+  }
+
+  const conditionalMatch = remaining.match(/^(\[[^\]]*\])/);
+  if (conditionalMatch) {
+    let nextIndex = keyIndex;
+    return {
+      nodes: [
+        <span key={nextIndex++} className={macroTokenColors.conditional}>
+          {conditionalMatch[1]}
+        </span>,
+      ],
+      consumed: conditionalMatch[0].length,
+      keyIndex: nextIndex,
+    };
+  }
+
+  const toggleMatch = remaining.match(/^(!)/);
+  if (toggleMatch) {
+    let nextIndex = keyIndex;
+    return {
+      nodes: [
+        <span key={nextIndex++} className={macroTokenColors.toggle}>
+          {toggleMatch[1]}
+        </span>,
+      ],
+      consumed: toggleMatch[0].length,
+      keyIndex: nextIndex,
+    };
+  }
+
+  const textMatch = remaining.match(/^([^#/[!]+)/);
+  if (textMatch) {
+    let nextIndex = keyIndex;
+    return {
+      nodes: [
+        <span key={nextIndex++} className={macroTokenColors.text}>
+          {textMatch[1]}
+        </span>,
+      ],
+      consumed: textMatch[0].length,
+      keyIndex: nextIndex,
+    };
+  }
+
+  let nextIndex = keyIndex;
+  return {
+    nodes: [
+      <span key={nextIndex++} className={macroTokenColors.fallback}>
+        {remaining[0]}
+      </span>,
+    ],
+    consumed: 1,
+    keyIndex: nextIndex,
+  };
+}
+
+function renderMacroLine(line: string, lineIndex: number) {
+  const parts: ReactNode[] = [];
+  let remaining = line;
+  let keyIndex = 0;
+
+  while (remaining.length > 0) {
+    const result = parseNextToken(remaining, keyIndex);
+    parts.push(...result.nodes);
+    keyIndex = result.keyIndex;
+    remaining = remaining.slice(result.consumed);
+  }
+
+  return (
+    <div key={lineIndex} className="leading-relaxed">
+      {parts.length > 0 ? parts : "\u00A0"}
+    </div>
+  );
+}
+
 function highlightMacroSyntax(macro: string): ReactNode[] {
   const lines = macro.split("\n");
 
-  return lines.map((line, lineIndex) => {
-    const parts: ReactNode[] = [];
-    let remaining = line;
-    let keyIndex = 0;
-
-    while (remaining.length > 0) {
-      // #showtooltip with optional spell name
-      const showtooltipMatch = remaining.match(/^(#showtooltip)(\s+.+)?$/);
-      if (showtooltipMatch) {
-        parts.push(
-          <span key={keyIndex++} className={macroTokenColors.showtooltip}>
-            {showtooltipMatch[1]}
-          </span>,
-        );
-        if (showtooltipMatch[2]) {
-          parts.push(
-            <span key={keyIndex++} className={macroTokenColors.spellName}>
-              {showtooltipMatch[2]}
-            </span>,
-          );
-        }
-        remaining = "";
-        continue;
-      }
-
-      // #showcooldown with spell name
-      const showcooldownMatch = remaining.match(/^(#showcooldown)(\s+.+)?$/);
-      if (showcooldownMatch) {
-        parts.push(
-          <span key={keyIndex++} className={macroTokenColors.showcooldown}>
-            {showcooldownMatch[1]}
-          </span>,
-        );
-        if (showcooldownMatch[2]) {
-          parts.push(
-            <span key={keyIndex++} className={macroTokenColors.spellName}>
-              {showcooldownMatch[2]}
-            </span>,
-          );
-        }
-        remaining = "";
-        continue;
-      }
-
-      // /command (like /cast, /use, /cancelaura, /stopcasting, etc.)
-      const commandMatch = remaining.match(/^(\/\w+)/);
-      if (commandMatch) {
-        parts.push(
-          <span key={keyIndex++} className={macroTokenColors.command}>
-            {commandMatch[1]}
-          </span>,
-        );
-        remaining = remaining.slice(commandMatch[0].length);
-        continue;
-      }
-
-      // [@target] or [mod:shift] style conditionals
-      const conditionalMatch = remaining.match(/^(\[[^\]]*\])/);
-      if (conditionalMatch) {
-        parts.push(
-          <span key={keyIndex++} className={macroTokenColors.conditional}>
-            {conditionalMatch[1]}
-          </span>,
-        );
-        remaining = remaining.slice(conditionalMatch[0].length);
-        continue;
-      }
-
-      // ! prefix for toggle spells
-      const toggleMatch = remaining.match(/^(!)/);
-      if (toggleMatch) {
-        parts.push(
-          <span key={keyIndex++} className={macroTokenColors.toggle}>
-            {toggleMatch[1]}
-          </span>,
-        );
-        remaining = remaining.slice(toggleMatch[0].length);
-        continue;
-      }
-
-      // Regular text (spell names, etc.)
-      const textMatch = remaining.match(/^([^#/[!]+)/);
-      if (textMatch) {
-        parts.push(
-          <span key={keyIndex++} className={macroTokenColors.text}>
-            {textMatch[1]}
-          </span>,
-        );
-        remaining = remaining.slice(textMatch[0].length);
-        continue;
-      }
-
-      // Fallback: single character
-      parts.push(
-        <span key={keyIndex++} className={macroTokenColors.fallback}>
-          {remaining[0]}
-        </span>,
-      );
-      remaining = remaining.slice(1);
-    }
-
-    return (
-      <div key={lineIndex} className="leading-relaxed">
-        {parts.length > 0 ? parts : "\u00A0"}
-      </div>
-    );
-  });
+  return lines.map((line, lineIndex) => renderMacroLine(line, lineIndex));
 }
 
 export function MacroCard({ name, spec, macro, classConfig }: MacroCardProps) {

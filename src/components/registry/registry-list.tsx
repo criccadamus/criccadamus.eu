@@ -8,7 +8,7 @@ import { profilesByAddon } from "@/data/addons";
 import { wowAddons } from "@/lib/wow-addons";
 
 export function RegistryList() {
-  const search = useSearch({ from: "/registry" });
+  const search = useSearch({ from: "/registry" }) as { profile?: string };
   const defaultAddon =
     search.profile && wowAddons[search.profile as keyof typeof wowAddons]
       ? (search.profile as keyof typeof wowAddons)

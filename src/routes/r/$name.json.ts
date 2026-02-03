@@ -1,5 +1,3 @@
-import type { RouteMethodHandlerCtx } from "@tanstack/start-client-core";
-
 import { createFileRoute } from "@tanstack/react-router";
 
 import { profilesByAddon } from "@/data/addons";
@@ -11,15 +9,123 @@ const kvTtlSeconds = 60 * 60;
 const kvKeyPrefix = "registry:profile:v2:";
 const gistApiBase = "https://api.github.com/gists";
 
+type RouteCtx<TParams> = {
+  params: TParams;
+  context: unknown;
+};
+
+function getEnvFromContext(context: unknown) {
+  if (typeof context === "object" && context && "env" in context) {
+    return (context as { env?: Env & { REGISTRY_KV?: KVNamespace } }).env;
+  }
+  return undefined;
+}
+
 type CachedProfile = {
   content: string;
   updatedAt?: string;
 };
 
+type ProfileCacheEntry = {
+  content: string;
+  updatedAt?: string;
+};
+
+function buildProfilePayload(
+  profile: { name: string; title: string; description: string },
+  content: string,
+  filename: string,
+) {
+  return {
+    $schema: registrySchemaUrl,
+    name: profile.name,
+    type: fileType,
+    title: profile.title,
+    description: profile.description,
+    files: [
+      {
+        path: filename,
+        content,
+        type: fileType,
+        target: `~/${profile.name}.txt`,
+      },
+    ],
+  };
+}
+
+function buildProfileResponse(
+  profile: { name: string; title: string; description: string },
+  content: string,
+  filename: string,
+  updatedAt?: string,
+) {
+  const payload = buildProfilePayload(profile, content, filename);
+  return new Response(JSON.stringify(payload, null, 2), {
+    status: 200,
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "public, max-age=300",
+      ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
+    },
+  });
+}
+
+function parseCachedProfile(cached: string): ProfileCacheEntry | null {
+  try {
+    const parsed = JSON.parse(cached) as CachedProfile;
+    if (typeof parsed?.content === "string") {
+      return { content: parsed.content, updatedAt: parsed.updatedAt };
+    }
+  } catch {
+    // ignore
+  }
+
+  return { content: cached };
+}
+
+async function readCachedProfile(
+  env: (Env & { REGISTRY_KV?: KVNamespace }) | undefined,
+  cacheKey: string,
+) {
+  if (!env?.REGISTRY_KV) {
+    return null;
+  }
+
+  try {
+    const cached = await env.REGISTRY_KV.get(cacheKey);
+    if (!cached) {
+      return null;
+    }
+    return parseCachedProfile(cached);
+  } catch {
+    return null;
+  }
+}
+
+async function fetchProfileContent(gistId: string, filename: string) {
+  const rawUrl = buildRawGistUrl(gistId, filename);
+  try {
+    const response = await fetch(rawUrl);
+    if (!response.ok) {
+      return { error: Response.json({ error: "Profile content not found." }, { status: 404 }) };
+    }
+
+    const content = await response.text();
+    const rawLastModified = response.headers.get("last-modified") ?? undefined;
+    const updatedAt = (await fetchGistUpdatedAt(gistId)) ?? rawLastModified ?? undefined;
+
+    return { content, updatedAt };
+  } catch {
+    return { error: Response.json({ error: "Failed to load profile content." }, { status: 502 }) };
+  }
+}
+
 function findProfileByName(name: string) {
   for (const addon of profilesByAddon) {
     const profile = addon.profiles.find((item) => item.name === name);
-    if (profile) return profile;
+    if (profile) {
+      return profile;
+    }
   }
   return null;
 }
@@ -36,7 +142,9 @@ async function fetchGistUpdatedAt(gistId: string) {
         "user-agent": "criccadamus.eu",
       },
     });
-    if (!response.ok) return undefined;
+    if (!response.ok) {
+      return undefined;
+    }
     const data = (await response.json()) as { updated_at?: string };
     return data.updated_at;
   } catch {
@@ -44,11 +152,12 @@ async function fetchGistUpdatedAt(gistId: string) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const Route = createFileRoute("/r/$name/json")({
   server: {
     handlers: {
-      GET: async (ctx: RouteMethodHandlerCtx<any, any, any, { name: string }, any, any>) => {
-        const { params, context } = ctx;
+      GET: async (ctx: RouteCtx<{ name: string }>) => {
+        const { params } = ctx;
         if (!GIST_OWNER) {
           return Response.json({ error: "Registry gist is not configured." }, { status: 500 });
         }
@@ -58,52 +167,13 @@ export const Route = createFileRoute("/r/$name/json")({
           return Response.json({ error: "Profile not found." }, { status: 404 });
         }
 
-        const env = context?.env as (Env & { REGISTRY_KV?: KVNamespace }) | undefined;
+        const env = getEnvFromContext(ctx.context);
         const cacheKey = `${kvKeyPrefix}${profile.name}`;
-        if (env?.REGISTRY_KV) {
-          try {
-            const cached = await env.REGISTRY_KV.get(cacheKey);
-            if (cached) {
-              let content = cached;
-              let updatedAt: string | undefined;
-              try {
-                const parsed = JSON.parse(cached) as CachedProfile;
-                if (typeof parsed?.content === "string") {
-                  content = parsed.content;
-                  updatedAt = parsed.updatedAt;
-                }
-              } catch {
-                // cached content was a raw string
-              }
+        const filename = `${profile.name}.txt`;
 
-              const payload = {
-                $schema: registrySchemaUrl,
-                name: profile.name,
-                type: fileType,
-                title: profile.title,
-                description: profile.description,
-                files: [
-                  {
-                    path: `${profile.name}.txt`,
-                    content,
-                    type: fileType,
-                    target: `~/${profile.name}.txt`,
-                  },
-                ],
-              };
-
-              return new Response(JSON.stringify(payload, null, 2), {
-                status: 200,
-                headers: {
-                  "content-type": "application/json; charset=utf-8",
-                  "cache-control": "public, max-age=300",
-                  ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
-                },
-              });
-            }
-          } catch {
-            // Ignore cache errors and fall back to gist
-          }
+        const cached = await readCachedProfile(env, cacheKey);
+        if (cached) {
+          return buildProfileResponse(profile, cached.content, filename, cached.updatedAt);
         }
 
         const gistId = profileGists[profile.name];
@@ -111,24 +181,12 @@ export const Route = createFileRoute("/r/$name/json")({
           return Response.json({ error: "Profile gist not found." }, { status: 404 });
         }
 
-        const filename = `${params.name}.txt`;
-        const rawUrl = buildRawGistUrl(gistId, filename);
-
-        let content = "";
-        let updatedAt: string | undefined;
-        try {
-          const response = await fetch(rawUrl);
-          if (!response.ok) {
-            return Response.json({ error: "Profile content not found." }, { status: 404 });
-          }
-          content = await response.text();
-          const rawLastModified = response.headers.get("last-modified") ?? undefined;
-          updatedAt = await fetchGistUpdatedAt(gistId);
-          if (!updatedAt && rawLastModified) updatedAt = rawLastModified;
-        } catch {
-          return Response.json({ error: "Failed to load profile content." }, { status: 502 });
+        const profileResult = await fetchProfileContent(gistId, filename);
+        if ("error" in profileResult) {
+          return profileResult.error;
         }
 
+        const { content, updatedAt } = profileResult;
         if (env?.REGISTRY_KV) {
           try {
             const cacheValue = JSON.stringify({ content, updatedAt } satisfies CachedProfile);
@@ -138,30 +196,7 @@ export const Route = createFileRoute("/r/$name/json")({
           }
         }
 
-        const payload = {
-          $schema: registrySchemaUrl,
-          name: profile.name,
-          type: fileType,
-          title: profile.title,
-          description: profile.description,
-          files: [
-            {
-              path: filename,
-              content,
-              type: fileType,
-              target: `~/${profile.name}.txt`,
-            },
-          ],
-        };
-
-        return new Response(JSON.stringify(payload, null, 2), {
-          status: 200,
-          headers: {
-            "content-type": "application/json; charset=utf-8",
-            "cache-control": "public, max-age=300",
-            ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
-          },
-        });
+        return buildProfileResponse(profile, content, filename, updatedAt);
       },
     },
   },

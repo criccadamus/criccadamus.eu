@@ -26,7 +26,9 @@ export function ParallaxBackground() {
 
   // Track container height for clamping
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current) {
+      return;
+    }
 
     const updateHeight = () => {
       if (containerRef.current) {

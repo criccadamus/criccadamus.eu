@@ -7,6 +7,7 @@ import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const Route = createFileRoute("/registry")({
   validateSearch: (search: Record<string, unknown>) => {
     const profile = typeof search.profile === "string" ? search.profile : undefined;

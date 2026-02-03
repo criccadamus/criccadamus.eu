@@ -1,11 +1,21 @@
-import type { RouteMethodHandlerCtx } from "@tanstack/start-client-core";
-
 import { createFileRoute } from "@tanstack/react-router";
 
 import { profilesByAddon } from "@/data/addons";
 
 const mediaExtensions = [".webp", ".webm"];
 const cacheMaxAgeSeconds = 300;
+
+type RouteCtx<TParams> = {
+  params: TParams;
+  context: unknown;
+};
+
+function getEnvFromContext(context: unknown) {
+  if (typeof context === "object" && context && "env" in context) {
+    return (context as { env?: Env & { REGISTRY_MEDIA_BUCKET?: R2Bucket } }).env;
+  }
+  return undefined;
+}
 
 function isAddonKnown(addon: string) {
   return profilesByAddon.some((entry) => entry.addon === addon);
@@ -18,17 +28,18 @@ function extractNumericIndex(key: string) {
   return Number.isFinite(index) ? index : null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 export const Route = createFileRoute("/registry-media/$addon/json")({
   server: {
     handlers: {
-      GET: async (ctx: RouteMethodHandlerCtx<any, any, any, { addon: string }, any, any>) => {
-        const { params, context } = ctx;
+      GET: async (ctx: RouteCtx<{ addon: string }>) => {
+        const { params } = ctx;
         const addon = params.addon;
         if (!addon || !isAddonKnown(addon)) {
           return Response.json({ error: "Addon not found." }, { status: 404 });
         }
 
-        const env = context?.env as (Env & { REGISTRY_MEDIA_BUCKET?: R2Bucket }) | undefined;
+        const env = getEnvFromContext(ctx.context);
         if (!env?.REGISTRY_MEDIA_BUCKET) {
           return Response.json({ error: "Media bucket not configured." }, { status: 500 });
         }
@@ -46,8 +57,12 @@ export const Route = createFileRoute("/registry-media/$addon/json")({
             for (const object of listed.objects) {
               const key = object.key;
               const lowerKey = key.toLowerCase();
-              if (!mediaExtensions.some((ext) => lowerKey.endsWith(ext))) continue;
-              if (extractNumericIndex(key) === null) continue;
+              if (!mediaExtensions.some((ext) => lowerKey.endsWith(ext))) {
+                continue;
+              }
+              if (extractNumericIndex(key) === null) {
+                continue;
+              }
               items.push(key);
             }
 

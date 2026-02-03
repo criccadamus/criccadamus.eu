@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
-import type { WowClass } from "@/lib/wow-classes";
-
 import { MacroCard } from "@/components/registry/macro-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { classGists } from "@/data/gists";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { wowClasses } from "@/lib/wow-classes";
+import { wowClasses, type WowClass } from "@/lib/wow-classes";
 
 interface Macro {
   name: string;
@@ -70,12 +68,16 @@ export function MacrosList() {
 
     const fetchUpdatedAtFromGist = async () => {
       const gistId = classGists[activeClass];
-      if (!gistId) return;
+      if (!gistId) {
+        return;
+      }
       try {
         const res = await fetch(`https://api.github.com/gists/${gistId}`, {
           headers: { accept: "application/vnd.github+json" },
         });
-        if (!res.ok) return;
+        if (!res.ok) {
+          return;
+        }
         const data = (await res.json()) as { updated_at?: string };
         if (data.updated_at) {
           setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: data.updated_at ?? null }));
@@ -101,82 +103,113 @@ export function MacrosList() {
       }
     };
 
-    const loadMacros = async () => {
+    const applyClassState = (macros: Macro[], updatedAt: string | null) => {
+      if (!cancelled) {
+        setMacrosByClass((prev) => ({ ...prev, [activeClass]: macros }));
+        setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
+      }
+    };
+
+    const readCache = () => {
       try {
         const cached = localStorage.getItem(cacheKey);
         const cachedAt = Number(localStorage.getItem(cacheTsKey));
-        if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < cacheTtlMs) {
-          const cachedMacros = JSON.parse(cached) as unknown;
-          if (Array.isArray(cachedMacros)) {
-            if (!cancelled) {
-              setMacrosByClass((prev) => ({
-                ...prev,
-                [activeClass]: cachedMacros as Macro[],
-              }));
-              const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
-              setUpdatedAtByClass((prev) => ({
-                ...prev,
-                [activeClass]: cachedUpdatedAt,
-              }));
-            }
-            if (!localStorage.getItem(cacheUpdatedAtKey)) {
-              void refreshUpdatedAt();
-            }
-            return;
-          }
+        if (!cached || !Number.isFinite(cachedAt) || Date.now() - cachedAt >= cacheTtlMs) {
+          return null;
+        }
+
+        const cachedMacros: unknown = JSON.parse(cached);
+        if (!Array.isArray(cachedMacros)) {
+          return null;
+        }
+
+        return {
+          macros: cachedMacros as Macro[],
+          updatedAt: localStorage.getItem(cacheUpdatedAtKey),
+        };
+      } catch {
+        return null;
+      }
+    };
+
+    const writeCache = (macros: Macro[], updatedAt: string | null) => {
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(macros));
+        localStorage.setItem(cacheTsKey, String(Date.now()));
+        if (updatedAt) {
+          localStorage.setItem(cacheUpdatedAtKey, updatedAt);
         }
       } catch {
-        // Ignore localStorage errors and fall back to network
+        // Ignore localStorage write errors
       }
+    };
 
-      const loadingStartedAt = Date.now();
-      setIsLoading(true);
+    const fetchMacrosFromNetwork = async () => {
       try {
         const response = await fetch(`/macros/${activeClass}/json`);
         const updatedAt =
           response.headers.get("x-last-updated") ?? response.headers.get("last-modified");
-        const data = (await response.json()) as unknown;
+        const data: unknown = await response.json();
         const macros = Array.isArray(data) ? (data as Macro[]) : [];
-        if (!cancelled) {
-          setMacrosByClass((prev) => ({ ...prev, [activeClass]: macros }));
-          setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
-        }
-        if (!updatedAt) {
-          void fetchUpdatedAtFromGist();
-        }
-        if (macros.length > 0) {
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(macros));
-            localStorage.setItem(cacheTsKey, String(Date.now()));
-            if (updatedAt) localStorage.setItem(cacheUpdatedAtKey, updatedAt);
-          } catch {
-            // Ignore localStorage write errors
-          }
-        }
+        return { macros, updatedAt };
       } catch {
-        if (!cancelled) {
-          setMacrosByClass((prev) => ({ ...prev, [activeClass]: [] }));
-        }
-      } finally {
-        if (!cancelled) {
-          const elapsed = Date.now() - loadingStartedAt;
-          const remaining = Math.max(0, minSkeletonMs - elapsed);
-          if (remaining > 0) {
-            loadingTimeout = setTimeout(() => {
-              if (!cancelled) setIsLoading(false);
-            }, remaining);
-          } else {
+        return { macros: null, updatedAt: null };
+      }
+    };
+
+    const finishLoading = (loadingStartedAt: number) => {
+      if (cancelled) {
+        return;
+      }
+
+      const elapsed = Date.now() - loadingStartedAt;
+      const remaining = Math.max(0, minSkeletonMs - elapsed);
+      if (remaining > 0) {
+        loadingTimeout = setTimeout(() => {
+          if (!cancelled) {
             setIsLoading(false);
           }
-        }
+        }, remaining);
+      } else {
+        setIsLoading(false);
       }
+    };
+
+    const loadMacros = async () => {
+      const cached = readCache();
+      if (cached) {
+        applyClassState(cached.macros, cached.updatedAt);
+        if (!cached.updatedAt) {
+          void refreshUpdatedAt();
+        }
+        return;
+      }
+
+      const loadingStartedAt = Date.now();
+      setIsLoading(true);
+      const result = await fetchMacrosFromNetwork();
+      if (result.macros) {
+        applyClassState(result.macros, result.updatedAt);
+        if (!result.updatedAt) {
+          void fetchUpdatedAtFromGist();
+        }
+        if (result.macros.length > 0) {
+          writeCache(result.macros, result.updatedAt);
+        }
+      } else if (!cancelled) {
+        setMacrosByClass((prev) => ({ ...prev, [activeClass]: [] }));
+      }
+
+      finishLoading(loadingStartedAt);
     };
 
     void loadMacros();
 
     return () => {
       cancelled = true;
-      if (loadingTimeout) clearTimeout(loadingTimeout);
+      if (loadingTimeout) {
+        clearTimeout(loadingTimeout);
+      }
     };
   }, [activeClass]);
 
