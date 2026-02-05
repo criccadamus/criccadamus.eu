@@ -48,22 +48,23 @@ export function MacrosList() {
     {} as Record<WowClass, string | null>,
   );
   const [isLoading, setIsLoading] = useState(false);
-  const tabsListRef = useRef<HTMLDivElement>(null);
+  const tabsRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (tabsListRef.current) {
-      tabsListRef.current.scrollLeft = 0;
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    if (tabsList) {
+      tabsList.scrollLeft = 0;
     }
   }, []);
 
   useEffect(() => {
-    const tabsList = tabsListRef.current;
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
     if (!tabsList) {
       return;
     }
 
     const activeTrigger = tabsList.querySelector<HTMLElement>(
-      "[data-slot='tabs-trigger'][data-active]",
+      "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
     );
     if (!activeTrigger) {
       return;
@@ -234,11 +235,9 @@ export function MacrosList() {
   }, [activeClass]);
 
   return (
-    <Tabs value={activeClass} onValueChange={(value) => setActiveClass(value as WowClass)}>
-      <TabsList
-        ref={tabsListRef}
-        className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1"
-      >
+    <div ref={tabsRootRef}>
+      <Tabs value={activeClass} onValueChange={(value) => setActiveClass(value as WowClass)}>
+        <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
         {classOrder.map((classKey) => {
           const classConfig = wowClasses[classKey];
           const dotBorderColor = classKey === "priest" ? "rgba(15, 23, 42, 0.35)" : "transparent";
@@ -261,51 +260,52 @@ export function MacrosList() {
             </TabsTrigger>
           );
         })}
-      </TabsList>
-      {classOrder.map((classKey) => {
-        const classConfig = wowClasses[classKey];
-        const macros = macrosByClass[classKey];
-        const updatedAt = updatedAtByClass[classKey];
-        const formattedUpdatedAt = updatedAt
-          ? new Intl.DateTimeFormat("en-US", {
-              dateStyle: "medium",
-              timeStyle: "short",
-            }).format(new Date(updatedAt))
-          : null;
-        return (
-          <TabsContent key={classKey} value={classKey}>
-            <div
-              className={`mt-3 text-[0.625rem] ${isMobile ? "text-white/60" : "text-muted-foreground"}`}
-            >
-              Last updated: {formattedUpdatedAt ?? "Unknown"}
-            </div>
-            <div className="mt-2 grid gap-3 md:grid-cols-2">
-              {macros?.map((macro) => (
-                <MacroCard
-                  key={macro.name}
-                  name={macro.name}
-                  spec={macro.spec}
-                  macro={macro.macro}
-                  classConfig={classConfig}
-                />
-              ))}
-              {!macros && isLoading && (
-                <>
-                  {Array.from({ length: 4 }).map((_, index) => (
-                    <MacroCardSkeleton
-                      key={`${classKey}-skeleton-${index}`}
-                      color={classConfig.color}
-                    />
-                  ))}
-                </>
-              )}
-              {macros && macros.length === 0 && !isLoading && (
-                <div className="text-xs text-muted-foreground">No macros found.</div>
-              )}
-            </div>
-          </TabsContent>
-        );
-      })}
-    </Tabs>
+        </TabsList>
+        {classOrder.map((classKey) => {
+          const classConfig = wowClasses[classKey];
+          const macros = macrosByClass[classKey];
+          const updatedAt = updatedAtByClass[classKey];
+          const formattedUpdatedAt = updatedAt
+            ? new Intl.DateTimeFormat("en-US", {
+                dateStyle: "medium",
+                timeStyle: "short",
+              }).format(new Date(updatedAt))
+            : null;
+          return (
+            <TabsContent key={classKey} value={classKey}>
+              <div
+                className={`mt-3 text-[0.625rem] ${isMobile ? "text-white/60" : "text-muted-foreground"}`}
+              >
+                Last updated: {formattedUpdatedAt ?? "Unknown"}
+              </div>
+              <div className="mt-2 grid gap-3 md:grid-cols-2">
+                {macros?.map((macro) => (
+                  <MacroCard
+                    key={macro.name}
+                    name={macro.name}
+                    spec={macro.spec}
+                    macro={macro.macro}
+                    classConfig={classConfig}
+                  />
+                ))}
+                {!macros && isLoading && (
+                  <>
+                    {Array.from({ length: 4 }).map((_, index) => (
+                      <MacroCardSkeleton
+                        key={`${classKey}-skeleton-${index}`}
+                        color={classConfig.color}
+                      />
+                    ))}
+                  </>
+                )}
+                {macros && macros.length === 0 && !isLoading && (
+                  <div className="text-xs text-muted-foreground">No macros found.</div>
+                )}
+              </div>
+            </TabsContent>
+          );
+        })}
+      </Tabs>
+    </div>
   );
 }

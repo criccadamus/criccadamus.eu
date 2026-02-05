@@ -45,14 +45,44 @@ export function RegistryItemCard({
     search.tab && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
       ? search.tab
       : "string";
-  const tabsListRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState(selectedTab);
+  const tabsRootRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    if (tabsListRef.current) {
-      tabsListRef.current.scrollLeft = 0;
+    setActiveTab(selectedTab);
+  }, [selectedTab]);
+
+  useEffect(() => {
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    if (tabsList) {
+      tabsList.scrollLeft = 0;
     }
   }, []);
+
+  useEffect(() => {
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    if (!tabsList) {
+      return;
+    }
+
+    const scrollToActive = () => {
+      const activeTrigger = tabsList.querySelector<HTMLElement>(
+        "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
+      );
+      if (!activeTrigger) {
+        return;
+      }
+
+      activeTrigger.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    };
+
+    requestAnimationFrame(scrollToActive);
+  }, [activeTab]);
 
   useEffect(() => {
     const cacheVersion = "v2";
@@ -188,11 +218,9 @@ export function RegistryItemCard({
         </div>
       </div>
 
-      <Tabs defaultValue={selectedTab} className="w-full">
-        <TabsList
-          ref={tabsListRef}
-          className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1"
-        >
+      <div ref={tabsRootRef}>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
           {commands.map((command) => {
             const needsBorder = command.id === "bun";
             return (
@@ -214,41 +242,42 @@ export function RegistryItemCard({
               </TabsTrigger>
             );
           })}
-        </TabsList>
-        {(["npm", "yarn", "pnpm", "bun"] as const).map((runtime) => (
-          <TabsContent key={runtime} value={runtime}>
-            <div className="mt-2 flex items-center gap-2">
-              <code className="scrollbar-hidden flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
-                {commandValues[runtime]}
+          </TabsList>
+          {(["npm", "yarn", "pnpm", "bun"] as const).map((runtime) => (
+            <TabsContent key={runtime} value={runtime}>
+              <div className="mt-2 flex items-center gap-2">
+                <code className="scrollbar-hidden flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
+                  {commandValues[runtime]}
+                </code>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={() => copy(commandValues[runtime], "Command copied")}
+                >
+                  <IconCopy className="h-4 w-4" />
+                </Button>
+              </div>
+            </TabsContent>
+          ))}
+          <TabsContent value="string">
+            <div className="mt-2 flex min-w-0 items-start gap-2">
+              <code className="scrollbar-hidden min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
+                {profileString ?? "Loading..."}
               </code>
               <Button
                 variant="ghost"
                 size="icon"
                 className="h-8 w-8 shrink-0"
-                onClick={() => copy(commandValues[runtime], "Command copied")}
+                disabled={!profileString}
+                onClick={() => profileString && copy(profileString, "Profile string copied")}
               >
                 <IconCopy className="h-4 w-4" />
               </Button>
             </div>
           </TabsContent>
-        ))}
-        <TabsContent value="string">
-          <div className="mt-2 flex min-w-0 items-start gap-2">
-            <code className="scrollbar-hidden min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
-              {profileString ?? "Loading..."}
-            </code>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 shrink-0"
-              disabled={!profileString}
-              onClick={() => profileString && copy(profileString, "Profile string copied")}
-            >
-              <IconCopy className="h-4 w-4" />
-            </Button>
-          </div>
-        </TabsContent>
-      </Tabs>
+        </Tabs>
+      </div>
 
       <p className="text-[0.625rem] text-muted-foreground">
         Last updated: {formattedUpdatedAt ?? "Unknown"}
