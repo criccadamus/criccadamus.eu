@@ -221,27 +221,27 @@ export function RegistryItemCard({
       <div ref={tabsRootRef}>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
-          {commands.map((command) => {
-            const needsBorder = command.id === "bun";
-            return (
-              <TabsTrigger
-                key={command.id}
-                value={command.id}
-                className="shrink-0 text-foreground/75 data-active:text-foreground"
-              >
-                <span className="inline-flex items-center gap-2">
-                  <span
-                    className="size-2 rounded-full border"
-                    style={{
-                      backgroundColor: command.color,
-                      borderColor: needsBorder ? "rgba(15, 23, 42, 0.35)" : "transparent",
-                    }}
-                  />
-                  {command.label}
-                </span>
-              </TabsTrigger>
-            );
-          })}
+            {commands.map((command) => {
+              const needsBorder = command.id === "bun";
+              return (
+                <TabsTrigger
+                  key={command.id}
+                  value={command.id}
+                  className="shrink-0 text-foreground/75 data-active:text-foreground"
+                >
+                  <span className="inline-flex items-center gap-2">
+                    <span
+                      className="size-2 rounded-full border"
+                      style={{
+                        backgroundColor: command.color,
+                        borderColor: needsBorder ? "rgba(15, 23, 42, 0.35)" : "transparent",
+                      }}
+                    />
+                    {command.label}
+                  </span>
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
           {(["npm", "yarn", "pnpm", "bun"] as const).map((runtime) => (
             <TabsContent key={runtime} value={runtime}>
