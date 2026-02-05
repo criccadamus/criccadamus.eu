@@ -57,6 +57,26 @@ export function MacrosList() {
   }, []);
 
   useEffect(() => {
+    const tabsList = tabsListRef.current;
+    if (!tabsList) {
+      return;
+    }
+
+    const activeTrigger = tabsList.querySelector<HTMLElement>(
+      "[data-slot='tabs-trigger'][data-active]",
+    );
+    if (!activeTrigger) {
+      return;
+    }
+
+    activeTrigger.scrollIntoView({
+      block: "nearest",
+      inline: "nearest",
+      behavior: "smooth",
+    });
+  }, [activeClass]);
+
+  useEffect(() => {
     let cancelled = false;
     let loadingTimeout: ReturnType<typeof setTimeout> | null = null;
     const cacheVersion = "v2";
