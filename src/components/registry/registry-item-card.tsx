@@ -170,6 +170,7 @@ export function RegistryItemCard({
             // Ignore localStorage write errors
           }
         }
+        return null;
       })
       .catch(() => setProfileString(null));
   }, [name]);

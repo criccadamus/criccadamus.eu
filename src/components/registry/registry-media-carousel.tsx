@@ -152,7 +152,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
       })
       .then((data) => {
         if (!isActive) {
-          return;
+          return null;
         }
         const items = Array.isArray(data.items) ? data.items : [];
         setMediaKeys(items);
@@ -162,6 +162,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
         } catch {
           // Ignore localStorage errors
         }
+        return null;
       })
       .catch((error) => {
         if (!isActive || controller.signal.aborted) {
@@ -187,10 +188,24 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     if (!mediaKeys) {
       return [];
     }
-    return mediaKeys
+    const parsedItems = mediaKeys
       .map((key) => parseMediaItem(key))
-      .filter((item): item is RegistryMediaItem => Boolean(item))
-      .sort((a, b) => a.index - b.index || a.key.localeCompare(b.key));
+      .filter((item): item is RegistryMediaItem => Boolean(item));
+
+    const sortedItems: RegistryMediaItem[] = [];
+    for (const item of parsedItems) {
+      const insertAt = sortedItems.findIndex(
+        (current) =>
+          current.index > item.index || (current.index === item.index && current.key > item.key),
+      );
+      if (insertAt === -1) {
+        sortedItems.push(item);
+      } else {
+        sortedItems.splice(insertAt, 0, item);
+      }
+    }
+
+    return sortedItems;
   }, [mediaKeys]);
 
   useEffect(() => {

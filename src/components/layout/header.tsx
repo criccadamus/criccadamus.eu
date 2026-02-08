@@ -1,4 +1,3 @@
-import { IconApps } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
 
 export function Header() {
@@ -11,9 +10,8 @@ export function Header() {
         <nav>
           <Link
             to="/registry"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-white/80 transition-colors hover:text-white"
+            className="inline-flex items-center text-sm font-medium text-white/80 transition-colors hover:text-white"
           >
-            <IconApps className="size-4 text-white" aria-hidden />
             Registry
           </Link>
         </nav>

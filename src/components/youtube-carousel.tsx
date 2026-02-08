@@ -116,6 +116,7 @@ export function YouTubeCarousel() {
         key={currentIndex}
         src={embedUrl}
         title={currentItem.title}
+        sandbox="allow-scripts allow-popups allow-presentation"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         className="h-full w-full border-0"
@@ -199,7 +200,7 @@ export function YouTubeCarousel() {
                   <div
                     className={`relative h-full w-full rounded-full transition-all duration-300 ${
                       currentIndex === index
-                        ? "scale-150 bg-gradient-to-r from-violet-400 to-purple-500 shadow-lg shadow-purple-500/50"
+                        ? "scale-150 bg-linear-to-r from-violet-400 to-purple-500 shadow-lg shadow-purple-500/50"
                         : "bg-white/40 group-hover:scale-125 group-hover:bg-white/70"
                     }`}
                   />
