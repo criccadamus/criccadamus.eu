@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-
 import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import { Toaster } from "sonner";
 
 import { ErrorBoundary } from "@/components/error-boundary";

@@ -4,15 +4,15 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "wrangler types && vite dev --port 3000 --host",
     "build": "vite build",
-    "preview": "vite preview",
-    "typecheck": "tsgo --noEmit",
-    "format": "oxfmt",
-    "lint": "oxlint --type-aware",
+    "cf-typegen": "wrangler types",
     "check": "tsgo --noEmit && oxlint --type-aware --fix && oxfmt",
     "deploy": "wrangler types && tsgo --noEmit && oxlint --type-aware && oxfmt && vite build && wrangler deploy",
-    "cf-typegen": "wrangler types"
+    "dev": "wrangler types && vite dev --port 3000 --host",
+    "format": "oxfmt",
+    "lint": "oxlint --type-aware",
+    "preview": "vite preview",
+    "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
     "@base-ui/react": "1.1.0",
