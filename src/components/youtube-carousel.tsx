@@ -116,7 +116,7 @@ export function YouTubeCarousel() {
         key={currentIndex}
         src={embedUrl}
         title={currentItem.title}
-        sandbox="allow-scripts allow-popups allow-presentation"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         className="h-full w-full border-0"
