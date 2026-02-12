@@ -14,7 +14,7 @@
   "experimentalSortImports": {
     "order": "asc",
     "newlinesBetween": true,
-    "internalPattern": ["@/", "~/"],
+    "internalPattern": ["@/"],
     "sortSideEffects": false,
     "groups": [
       ["side-effect"],
