@@ -26,6 +26,10 @@ export const Route = createRootRoute({
         name: "description",
         content: '"why dont you make a linktree?" "i\'m a nerd"',
       },
+      {
+        name: "theme-color",
+        content: "#4f46e5",
+      },
     ],
     links: [
       {
@@ -35,6 +39,10 @@ export const Route = createRootRoute({
       {
         rel: "manifest",
         href: "/manifest.json",
+      },
+      {
+        rel: "apple-touch-icon",
+        href: "/apple-touch-icon.png",
       },
     ],
   }),
