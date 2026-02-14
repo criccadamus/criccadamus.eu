@@ -125,7 +125,7 @@ async function fetchGistUpdatedAt(gistId: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment - prob oxlint type aware bug
 export const Route = createFileRoute("/macros/$class/json")({
   server: {
     handlers: {

@@ -5,7 +5,7 @@ import { SocialLinks } from "@/components/social-links";
 import { TwitchEmbed } from "@/components/twitch-embed";
 import { YouTubeCarousel } from "@/components/youtube-carousel";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment - prob oxlint type aware bug
 export const Route = createFileRoute("/")({ component: App });
 
 function App() {

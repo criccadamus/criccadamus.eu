@@ -13,6 +13,7 @@ export function TwitchEmbed() {
         src="https://player.twitch.tv/?channel=criccadamus&parent=criccadamus.eu&parent=localhost"
         height="100%"
         width="100%"
+        // eslint-disable-next-line @eslint-plugin-react/iframe-missing-sandbox tupid thing doesnt work without both of 'em
         sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
         allowFullScreen
         className="border-0"

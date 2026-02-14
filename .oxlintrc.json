@@ -97,5 +97,14 @@
     "typescript/no-implied-eval": "error",
     "typescript/no-unsafe-type-assertion": "off",
     "typescript/no-unnecessary-type-assertion": "off"
-  }
+  },
+  "overrides": [
+    {
+      "files": ["src/components/registry/registry-media-carousel.tsx"],
+      "rules": {
+        "complexity": "off",
+        "max-statements": "off"
+      }
+    }
+  ]
 }

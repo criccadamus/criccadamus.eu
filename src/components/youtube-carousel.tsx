@@ -116,6 +116,7 @@ export function YouTubeCarousel() {
         key={currentIndex}
         src={embedUrl}
         title={currentItem.title}
+        // eslint-disable-next-line @eslint-plugin-react/iframe-missing-sandbox stupid thing doesnt work without both of 'em
         sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen

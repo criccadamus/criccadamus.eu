@@ -44,7 +44,6 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
   };
 }
 
-// eslint-disable-next-line complexity
 export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarouselProps) {
   const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
