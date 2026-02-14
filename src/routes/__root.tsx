@@ -58,10 +58,6 @@ function RootDocument({ children }: { children: ReactNode }) {
       <head>
         <HeadContent />
         <script src="/theme-init.js" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="manifest" href="/site.webmanifest" />
       </head>
       <body className="flex min-h-screen flex-col">
         <ParallaxBackground />
@@ -74,11 +70,18 @@ function RootDocument({ children }: { children: ReactNode }) {
           richColors
           position="bottom-center"
         />
-
         <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-3 md:py-8">{children}</div>
-
         <Footer />
         <Scripts />
+        <a href="https://github.com/criccadamus" className="sr-only" rel="me">
+          GitHub
+        </a>
+        <a href="https://twitter.com/criccadamus" className="sr-only" rel="me">
+          Twitter
+        </a>
+        <a href="https://bsky.app/profile/criccadamus.eu" className="sr-only" rel="me">
+          Bluesky
+        </a>
       </body>
     </html>
   );
