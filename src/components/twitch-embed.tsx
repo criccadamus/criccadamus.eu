@@ -10,11 +10,12 @@ export function TwitchEmbed() {
       <h2 className="sr-only">Twitch</h2>
       {isLoading && <Skeleton className="absolute inset-0" />}
       <iframe
-        src="https://player.twitch.tv/?channel=criccadamus&parent=criccadamus.eu&parent=localhost"
+        src="https://player.twitch.tv/?channel=criccadamus&parent=criccadamus.eu&parent=localhost&autoplay=false&muted=true"
         height="100%"
         width="100%"
-        // eslint-disable-next-line @eslint-plugin-react/iframe-missing-sandbox tupid thing doesnt work without both of 'em
-        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+        // eslint-disable-next-line @eslint-plugin-react/iframe-missing-sandbox - Twitch player requires these capabilities.
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-autoplay"
+        allow="autoplay; fullscreen"
         allowFullScreen
         className="border-0"
         title="Twitch Stream"
