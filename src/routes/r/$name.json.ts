@@ -24,11 +24,13 @@ function getEnvFromContext(context: unknown) {
 type CachedProfile = {
   content: string;
   updatedAt?: string;
+  commitMessage?: string;
 };
 
 type ProfileCacheEntry = {
   content: string;
   updatedAt?: string;
+  commitMessage?: string;
 };
 
 function buildProfilePayload(
@@ -58,6 +60,7 @@ function buildProfileResponse(
   content: string,
   filename: string,
   updatedAt?: string,
+  commitMessage?: string,
 ) {
   const payload = buildProfilePayload(profile, content, filename);
   return new Response(JSON.stringify(payload, null, 2), {
@@ -66,6 +69,7 @@ function buildProfileResponse(
       "content-type": "application/json; charset=utf-8",
       "cache-control": "public, max-age=300",
       ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
+      ...(commitMessage ? { "x-gist-commit-message": encodeURIComponent(commitMessage) } : {}),
     },
   });
 }
@@ -74,7 +78,11 @@ function parseCachedProfile(cached: string): ProfileCacheEntry | null {
   try {
     const parsed = JSON.parse(cached) as CachedProfile;
     if (typeof parsed?.content === "string") {
-      return { content: parsed.content, updatedAt: parsed.updatedAt };
+      return {
+        content: parsed.content,
+        updatedAt: parsed.updatedAt,
+        commitMessage: parsed.commitMessage,
+      };
     }
   } catch {
     // ignore
@@ -112,9 +120,10 @@ async function fetchProfileContent(gistId: string, filename: string) {
 
     const content = await response.text();
     const rawLastModified = response.headers.get("last-modified") ?? undefined;
-    const updatedAt = (await fetchGistUpdatedAt(gistId)) ?? rawLastModified ?? undefined;
+    const metadata = await fetchGistMetadata(gistId);
+    const updatedAt = metadata.updatedAt ?? rawLastModified ?? undefined;
 
-    return { content, updatedAt };
+    return { content, updatedAt, commitMessage: metadata.commitMessage };
   } catch {
     return { error: Response.json({ error: "Failed to load profile content." }, { status: 502 }) };
   }
@@ -134,7 +143,12 @@ function buildRawGistUrl(gistId: string, filename: string) {
   return `https://gist.githubusercontent.com/${GIST_OWNER}/${gistId}/raw/${filename}`;
 }
 
-async function fetchGistUpdatedAt(gistId: string) {
+function normalizeCommitMessage(commitMessage?: string | null) {
+  const message = commitMessage?.trim();
+  return message ? message : undefined;
+}
+
+async function fetchGistMetadata(gistId: string) {
   try {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
@@ -143,12 +157,15 @@ async function fetchGistUpdatedAt(gistId: string) {
       },
     });
     if (!response.ok) {
-      return undefined;
+      return { updatedAt: undefined, commitMessage: undefined };
     }
-    const data = (await response.json()) as { updated_at?: string };
-    return data.updated_at;
+    const data = (await response.json()) as { updated_at?: string; description?: string };
+    return {
+      updatedAt: data.updated_at,
+      commitMessage: normalizeCommitMessage(data.description),
+    };
   } catch {
-    return undefined;
+    return { updatedAt: undefined, commitMessage: undefined };
   }
 }
 
@@ -173,7 +190,13 @@ export const Route = createFileRoute("/r/$name/json")({
 
         const cached = await readCachedProfile(env, cacheKey);
         if (cached) {
-          return buildProfileResponse(profile, cached.content, filename, cached.updatedAt);
+          return buildProfileResponse(
+            profile,
+            cached.content,
+            filename,
+            cached.updatedAt,
+            cached.commitMessage,
+          );
         }
 
         const gistId = profileGists[profile.name];
@@ -186,17 +209,21 @@ export const Route = createFileRoute("/r/$name/json")({
           return profileResult.error;
         }
 
-        const { content, updatedAt } = profileResult;
+        const { content, updatedAt, commitMessage } = profileResult;
         if (env?.REGISTRY_KV) {
           try {
-            const cacheValue = JSON.stringify({ content, updatedAt } satisfies CachedProfile);
+            const cacheValue = JSON.stringify({
+              content,
+              updatedAt,
+              commitMessage,
+            } satisfies CachedProfile);
             await env.REGISTRY_KV.put(cacheKey, cacheValue, { expirationTtl: kvTtlSeconds });
           } catch {
             // Ignore cache write errors
           }
         }
 
-        return buildProfileResponse(profile, content, filename, updatedAt);
+        return buildProfileResponse(profile, content, filename, updatedAt, commitMessage);
       },
     },
   },

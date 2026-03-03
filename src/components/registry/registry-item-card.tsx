@@ -1,4 +1,4 @@
-import { IconCopy } from "@tabler/icons-react";
+import { IconCopy, IconMessage2 } from "@tabler/icons-react";
 import { useSearch } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
@@ -39,6 +39,7 @@ export function RegistryItemCard({
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [commitMessage, setCommitMessage] = useState<string | null>(null);
   const search = useSearch({ from: "/registry" }) as { tab?: string };
   const selectedTab =
     search.tab && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
@@ -84,13 +85,44 @@ export function RegistryItemCard({
   }, [activeTab]);
 
   useEffect(() => {
-    const cacheVersion = "v2";
+    const cacheVersion = "v3";
     const cacheKey = `registry:profile:${cacheVersion}:${name}`;
     const cacheTsKey = `${cacheKey}:ts`;
     const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
+    const cacheCommitMessageKey = `${cacheKey}:commitMessage`;
     const cacheTtlMs = 5 * 60 * 1000;
 
-    const fetchUpdatedAtFromGist = async () => {
+    const decodeCommitMessage = (value: string | null) => {
+      if (!value) {
+        return null;
+      }
+      try {
+        const decoded = decodeURIComponent(value).trim();
+        return decoded.length > 0 ? decoded : null;
+      } catch {
+        const trimmed = value.trim();
+        return trimmed.length > 0 ? trimmed : null;
+      }
+    };
+
+    const storeUpdatedAt = (updatedAt: string | null) => {
+      if (updatedAt) {
+        setLastUpdated(updatedAt);
+        localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+      }
+    };
+
+    const storeCommitMessage = (message: string | null) => {
+      if (message) {
+        setCommitMessage(message);
+        localStorage.setItem(cacheCommitMessageKey, message);
+        return;
+      }
+      setCommitMessage(null);
+      localStorage.setItem(cacheCommitMessageKey, "");
+    };
+
+    const fetchMetadataFromGist = async () => {
       const gistId = profileGists[name];
       if (!gistId) {
         return;
@@ -102,25 +134,29 @@ export function RegistryItemCard({
         if (!res.ok) {
           return;
         }
-        const data = (await res.json()) as { updated_at?: string };
+        const data = (await res.json()) as { updated_at?: string; description?: string };
         if (data.updated_at) {
-          setLastUpdated(data.updated_at);
-          localStorage.setItem(cacheUpdatedAtKey, data.updated_at);
+          storeUpdatedAt(data.updated_at);
         }
+        storeCommitMessage(data.description?.trim() || null);
       } catch {
         // Ignore gist API errors
       }
     };
 
-    const refreshUpdatedAt = async () => {
+    const refreshMetadata = async () => {
       try {
         const res = await fetch(`/r/${name}.json`, { cache: "no-store" });
         const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
+        const headerCommitMessage = decodeCommitMessage(res.headers.get("x-gist-commit-message"));
         if (updatedAt) {
-          setLastUpdated(updatedAt);
-          localStorage.setItem(cacheUpdatedAtKey, updatedAt);
-        } else {
-          await fetchUpdatedAtFromGist();
+          storeUpdatedAt(updatedAt);
+        }
+        if (headerCommitMessage !== null) {
+          storeCommitMessage(headerCommitMessage);
+        }
+        if (!updatedAt || headerCommitMessage === null) {
+          await fetchMetadataFromGist();
         }
       } catch {
         // Ignore background refresh errors
@@ -135,8 +171,13 @@ export function RegistryItemCard({
         const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
         if (cachedUpdatedAt) {
           setLastUpdated(cachedUpdatedAt);
-        } else {
-          void refreshUpdatedAt();
+        }
+        const cachedCommitMessageRaw = localStorage.getItem(cacheCommitMessageKey);
+        if (cachedCommitMessageRaw !== null) {
+          setCommitMessage(cachedCommitMessageRaw || null);
+        }
+        if (!cachedUpdatedAt || cachedCommitMessageRaw === null) {
+          void refreshMetadata();
         }
         return;
       }
@@ -147,16 +188,21 @@ export function RegistryItemCard({
     fetch(`/r/${name}.json`)
       .then(async (res) => {
         const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
+        const headerCommitMessage = decodeCommitMessage(res.headers.get("x-gist-commit-message"));
         const data = (await res.json()) as RegistryJson;
-        return { data, updatedAt };
+        return { data, updatedAt, headerCommitMessage };
       })
-      .then(({ data, updatedAt }) => {
+      .then(({ data, updatedAt, headerCommitMessage }) => {
         const content = data.files?.[0]?.content ?? null;
         setProfileString(content);
         if (updatedAt) {
-          setLastUpdated(updatedAt);
-        } else {
-          void fetchUpdatedAtFromGist();
+          storeUpdatedAt(updatedAt);
+        }
+        if (headerCommitMessage !== null) {
+          storeCommitMessage(headerCommitMessage);
+        }
+        if (!updatedAt || headerCommitMessage === null) {
+          void fetchMetadataFromGist();
         }
         if (content) {
           try {
@@ -164,6 +210,9 @@ export function RegistryItemCard({
             localStorage.setItem(cacheTsKey, String(Date.now()));
             if (updatedAt) {
               localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+            }
+            if (headerCommitMessage !== null) {
+              localStorage.setItem(cacheCommitMessageKey, headerCommitMessage);
             }
           } catch {
             // Ignore localStorage write errors
@@ -279,9 +328,14 @@ export function RegistryItemCard({
         </Tabs>
       </div>
 
-      <p className="text-[0.625rem] text-muted-foreground">
-        Last updated: {formattedUpdatedAt ?? "Unknown"}
-      </p>
+      <div className="space-y-0.5 text-[0.625rem] text-muted-foreground">
+        <p>Last updated: {formattedUpdatedAt ?? "Unknown"}</p>
+        <p className="inline-flex items-start gap-1.5 break-words">
+          <IconMessage2 aria-hidden="true" className="mt-px h-3 w-3 shrink-0" />
+          <span className="sr-only">Commit message: </span>
+          <span>{commitMessage ?? "None"}</span>
+        </p>
+      </div>
 
       <RegistryMediaCarousel addon={addon} accentColor={addonConfig.color} />
     </div>

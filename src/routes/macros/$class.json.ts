@@ -14,6 +14,7 @@ type RouteCtx<TParams> = {
 type CachedMacros = {
   macros: unknown[];
   updatedAt?: string;
+  commitMessage?: string;
 };
 
 function getEnvFromContext(context: unknown) {
@@ -23,13 +24,14 @@ function getEnvFromContext(context: unknown) {
   return undefined;
 }
 
-function buildMacrosResponse(macros: unknown[], updatedAt?: string) {
+function buildMacrosResponse(macros: unknown[], updatedAt?: string, commitMessage?: string) {
   return new Response(JSON.stringify(macros, null, 2), {
     status: 200,
     headers: {
       "content-type": "application/json; charset=utf-8",
       "cache-control": "public, max-age=300",
       ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
+      ...(commitMessage ? { "x-gist-commit-message": encodeURIComponent(commitMessage) } : {}),
     },
   });
 }
@@ -38,7 +40,11 @@ function parseCachedMacros(cached: string) {
   try {
     const parsed = JSON.parse(cached) as CachedMacros;
     if (Array.isArray(parsed?.macros)) {
-      return { macros: parsed.macros, updatedAt: parsed.updatedAt };
+      return {
+        macros: parsed.macros,
+        updatedAt: parsed.updatedAt,
+        commitMessage: parsed.commitMessage,
+      };
     }
   } catch {
     // ignore
@@ -95,9 +101,10 @@ async function fetchMacrosFromGist(classKey: WowClass, gistId: string) {
     }
 
     const rawLastModified = response.headers.get("last-modified") ?? undefined;
-    const updatedAt = (await fetchGistUpdatedAt(gistId)) ?? rawLastModified ?? undefined;
+    const metadata = await fetchGistMetadata(gistId);
+    const updatedAt = metadata.updatedAt ?? rawLastModified ?? undefined;
 
-    return { macros: payload as unknown[], updatedAt };
+    return { macros: payload as unknown[], updatedAt, commitMessage: metadata.commitMessage };
   } catch {
     return { error: Response.json({ error: "Failed to load macros." }, { status: 502 }) };
   }
@@ -107,7 +114,12 @@ function buildRawGistUrl(gistId: string, filename: string) {
   return `https://gist.githubusercontent.com/${GIST_OWNER}/${gistId}/raw/${filename}`;
 }
 
-async function fetchGistUpdatedAt(gistId: string) {
+function normalizeCommitMessage(commitMessage?: string | null) {
+  const message = commitMessage?.trim();
+  return message ? message : undefined;
+}
+
+async function fetchGistMetadata(gistId: string) {
   try {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
@@ -116,12 +128,15 @@ async function fetchGistUpdatedAt(gistId: string) {
       },
     });
     if (!response.ok) {
-      return undefined;
+      return { updatedAt: undefined, commitMessage: undefined };
     }
-    const data = (await response.json()) as { updated_at?: string };
-    return data.updated_at;
+    const data = (await response.json()) as { updated_at?: string; description?: string };
+    return {
+      updatedAt: data.updated_at,
+      commitMessage: normalizeCommitMessage(data.description),
+    };
   } catch {
-    return undefined;
+    return { updatedAt: undefined, commitMessage: undefined };
   }
 }
 
@@ -140,7 +155,7 @@ export const Route = createFileRoute("/macros/$class/json")({
         const cacheKey = `${kvKeyPrefix}${classKey}`;
         const cached = await readCachedMacros(env, cacheKey);
         if (cached) {
-          return buildMacrosResponse(cached.macros, cached.updatedAt);
+          return buildMacrosResponse(cached.macros, cached.updatedAt, cached.commitMessage);
         }
 
         const gistId = classGists[classKey];
@@ -153,12 +168,13 @@ export const Route = createFileRoute("/macros/$class/json")({
           return macrosResult.error;
         }
 
-        const { macros, updatedAt } = macrosResult;
+        const { macros, updatedAt, commitMessage } = macrosResult;
         if (env?.REGISTRY_KV) {
           try {
             const cacheValue = JSON.stringify({
               macros,
               updatedAt,
+              commitMessage,
             } satisfies CachedMacros);
             await env.REGISTRY_KV.put(cacheKey, cacheValue, { expirationTtl: kvTtlSeconds });
           } catch {
@@ -166,7 +182,7 @@ export const Route = createFileRoute("/macros/$class/json")({
           }
         }
 
-        return buildMacrosResponse(macros, updatedAt);
+        return buildMacrosResponse(macros, updatedAt, commitMessage);
       },
     },
   },

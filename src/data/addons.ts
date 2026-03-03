@@ -26,7 +26,7 @@ export const profilesByAddon: AddonProfiles[] = [
       {
         name: "details-profile",
         title: "Details! Profile",
-        description: "Clean and minimal Details! damage meter profile",
+        description: '"honestly: just use the native damage meter"',
       },
     ],
   },
@@ -36,7 +36,7 @@ export const profilesByAddon: AddonProfiles[] = [
       {
         name: "plater-profile",
         title: "Plater Profile",
-        description: "Customized Plater nameplates configuration",
+        description: '"don\'t bother with the native nameplates lmao"',
       },
     ],
   },
@@ -44,9 +44,9 @@ export const profilesByAddon: AddonProfiles[] = [
     addon: "elvui",
     alerts: [
       {
-        title: "ElvUI raid/party frames",
+        title: "Heads up!",
         description:
-          "This profile does not include raid or party frame configuration. Use it alongside the native Blizzard raid frames.",
+          "This profile does not include raid or party frame configuration. Use it alongside the native raid frames",
         icon: "info",
       },
     ],
@@ -54,7 +54,7 @@ export const profilesByAddon: AddonProfiles[] = [
       {
         name: "elvui-profile",
         title: "ElvUI Profile",
-        description: "Full ElvUI interface profile",
+        description: '"3-expansions old profile. honed and perfected (maybe)"',
       },
     ],
   },
