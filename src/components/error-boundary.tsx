@@ -1,40 +1,53 @@
-import { IconAlertTriangle, IconHome, IconRefresh } from "@tabler/icons-react";
+import { IconAlertTriangle, IconArrowLeft, IconHome, IconRefresh } from "@tabler/icons-react";
 import { Link, ErrorComponentProps, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 
+function ErrorMessage({ message }: { message: string | null }) {
+  if (!message) {
+    return null;
+  }
+
+  return (
+    <pre className="scrollbar-hidden max-h-40 overflow-auto rounded border border-destructive/30 bg-background/70 px-3 py-2 font-mono text-xs break-words whitespace-pre-wrap text-destructive/90">
+      {message}
+    </pre>
+  );
+}
+
 export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
   const safeReset = typeof reset === "function" ? (reset as () => void) : undefined;
+  const errorMessage = error instanceof Error ? error.message : null;
   useEffect(() => {
     // Log error to console for debugging
     console.error("Application Error:", error);
   }, [error]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <div className="w-full max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-lg">
-        <div className="mb-6">
-          <IconAlertTriangle className="mx-auto mb-4 h-16 w-16 text-red-500" />
-          <h1 className="mb-2 text-2xl font-bold text-foreground">Something went wrong</h1>
-          <p className="text-muted-foreground">
-            An unexpected error occurred while loading this page.
-          </p>
+    <div className="flex min-h-[60vh] items-center justify-center px-4 py-8">
+      <div className="group relative flex w-full max-w-lg flex-col gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
+        <div className="flex items-start gap-3">
+          <div className="rounded-md border border-destructive/40 bg-background/80 p-2">
+            <IconAlertTriangle className="h-4 w-4 text-destructive" />
+          </div>
+          <div className="space-y-1">
+            <h1 className="text-sm font-medium text-foreground">Something went wrong</h1>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              An unexpected error occurred while loading this page.
+            </p>
+          </div>
         </div>
 
-        {error instanceof Error && (
-          <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4 text-left">
-            <p className="font-mono text-sm wrap-break-word text-red-400">{error.message}</p>
-          </div>
-        )}
+        <ErrorMessage message={errorMessage} />
 
-        <div className="flex flex-col justify-center gap-3 sm:flex-row">
-          <Button onClick={() => safeReset?.()}>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button size="sm" onClick={() => safeReset?.()}>
             <IconRefresh className="mr-2 h-4 w-4" />
             Try Again
           </Button>
           <Link to="/">
-            <Button variant="outline">
+            <Button variant="ghost" size="sm">
               <IconHome className="mr-2 h-4 w-4" />
               Go Home
             </Button>
@@ -48,6 +61,7 @@ export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
 export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
   const safeReset = typeof reset === "function" ? (reset as () => void) : undefined;
   const router = useRouter() as { history: { back: () => void } };
+  const errorMessage = error instanceof Error ? error.message : null;
 
   useEffect(() => {
     // Log error to console for debugging
@@ -55,28 +69,29 @@ export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
   }, [error]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mx-auto max-w-md rounded-lg border border-border bg-card p-8 text-center shadow-lg">
-        <div className="mb-6">
-          <IconAlertTriangle className="mx-auto mb-4 h-12 w-12 text-red-500" />
-          <h2 className="mb-2 text-xl font-bold text-foreground">Something went wrong</h2>
-          <p className="text-sm text-muted-foreground">
-            We encountered an error while loading this content.
-          </p>
+    <div className="mx-auto w-full max-w-lg px-4 py-8">
+      <div className="group relative flex flex-col gap-3 rounded-lg border border-destructive/40 bg-destructive/10 p-4">
+        <div className="flex items-start gap-3">
+          <div className="rounded-md border border-destructive/40 bg-background/80 p-2">
+            <IconAlertTriangle className="h-4 w-4 text-destructive" />
+          </div>
+          <div className="space-y-1">
+            <h2 className="text-sm font-medium text-foreground">Something went wrong</h2>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              We encountered an error while loading this content.
+            </p>
+          </div>
         </div>
 
-        {error instanceof Error && (
-          <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-left">
-            <p className="font-mono text-xs wrap-break-word text-red-400">{error.message}</p>
-          </div>
-        )}
+        <ErrorMessage message={errorMessage} />
 
-        <div className="flex flex-col justify-center gap-3 sm:flex-row">
+        <div className="flex flex-col gap-2 sm:flex-row">
           <Button onClick={() => safeReset?.()} size="sm">
             <IconRefresh className="mr-1 h-4 w-4" />
             Try Again
           </Button>
-          <Button onClick={() => router.history.back()} variant="outline" size="sm">
+          <Button onClick={() => router.history.back()} variant="ghost" size="sm">
+            <IconArrowLeft className="mr-1 h-4 w-4" />
             Go Back
           </Button>
         </div>
