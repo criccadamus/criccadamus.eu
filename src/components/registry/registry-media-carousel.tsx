@@ -1,5 +1,5 @@
 import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { Button } from "@/components/ui/button";
@@ -58,38 +58,116 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   const trackRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const scrollRafRef = useRef<number | null>(null);
+  const zoomModalRef = useRef<HTMLDivElement | null>(null);
 
   const handleMediaClick = (item: RegistryMediaItem) => {
     setZoomedItem(item);
   };
 
-  const handleZoomClose = () => {
+  const handleZoomClose = useCallback(() => {
     setZoomedItem(null);
-  };
+  }, []);
+
+  const mediaItems = useMemo(() => {
+    if (!mediaKeys) {
+      return [];
+    }
+    const parsedItems = mediaKeys
+      .map((key) => parseMediaItem(key))
+      .filter((item): item is RegistryMediaItem => Boolean(item));
+
+    const sortedItems: RegistryMediaItem[] = [];
+    for (const item of parsedItems) {
+      const insertAt = sortedItems.findIndex(
+        (current) =>
+          current.index > item.index || (current.index === item.index && current.key > item.key),
+      );
+      if (insertAt === -1) {
+        sortedItems.push(item);
+      } else {
+        sortedItems.splice(insertAt, 0, item);
+      }
+    }
+
+    return sortedItems;
+  }, [mediaKeys]);
+
+  const moveZoom = useCallback(
+    (delta: number) => {
+      if (mediaItems.length < 2) {
+        return;
+      }
+
+      setZoomedItem((current) => {
+        if (!current) {
+          return current;
+        }
+
+        const currentZoomIndex = mediaItems.findIndex((item) => item.key === current.key);
+        if (currentZoomIndex === -1) {
+          return current;
+        }
+
+        const nextIndex = (currentZoomIndex + delta + mediaItems.length) % mediaItems.length;
+        return mediaItems[nextIndex] ?? current;
+      });
+    },
+    [mediaItems],
+  );
 
   // Lock body scroll when modal is open
-  useEffect(() => {
-    if (zoomedItem) {
-      const originalOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.body.style.overflow = originalOverflow;
-      };
-    }
-  }, [zoomedItem]);
-
-  // Close modal on Escape key
   useEffect(() => {
     if (!zoomedItem) {
       return;
     }
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
+
+    const ownerDocument = zoomModalRef.current?.ownerDocument ?? document;
+    const originalOverflow = ownerDocument.body.style.overflow;
+    ownerDocument.body.style.overflow = "hidden";
+
+    return () => {
+      ownerDocument.body.style.overflow = originalOverflow;
+    };
+  }, [zoomedItem]);
+
+  // Close modal or navigate zoomed media with keyboard
+  useEffect(() => {
+    if (!zoomedItem) {
+      return;
+    }
+
+    const ownerDocument = zoomModalRef.current?.ownerDocument ?? document;
+    const ownerWindow = ownerDocument.defaultView ?? window;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
         handleZoomClose();
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        moveZoom(1);
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        moveZoom(-1);
       }
     };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    ownerWindow.addEventListener("keydown", handleKeyDown);
+    return () => ownerWindow.removeEventListener("keydown", handleKeyDown);
+  }, [handleZoomClose, moveZoom, zoomedItem]);
+
+  useEffect(() => {
+    if (!zoomedItem) {
+      return;
+    }
+
+    zoomModalRef.current?.focus();
   }, [zoomedItem]);
 
   useEffect(() => {
@@ -183,30 +261,6 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     };
   }, [addon, shouldLoad]);
 
-  const mediaItems = useMemo(() => {
-    if (!mediaKeys) {
-      return [];
-    }
-    const parsedItems = mediaKeys
-      .map((key) => parseMediaItem(key))
-      .filter((item): item is RegistryMediaItem => Boolean(item));
-
-    const sortedItems: RegistryMediaItem[] = [];
-    for (const item of parsedItems) {
-      const insertAt = sortedItems.findIndex(
-        (current) =>
-          current.index > item.index || (current.index === item.index && current.key > item.key),
-      );
-      if (insertAt === -1) {
-        sortedItems.push(item);
-      } else {
-        sortedItems.splice(insertAt, 0, item);
-      }
-    }
-
-    return sortedItems;
-  }, [mediaKeys]);
-
   useEffect(() => {
     setCurrentIndex(0);
   }, [addon, mediaItems.length]);
@@ -267,6 +321,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   };
 
   const hasItems = mediaItems.length > 0;
+  const hasZoomNavigation = mediaItems.length > 1;
 
   return (
     <div ref={carouselRef} className="space-y-2">
@@ -411,8 +466,13 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
       {zoomedItem &&
         createPortal(
           <div
+            ref={zoomModalRef}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
-            onClick={handleZoomClose}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                handleZoomClose();
+              }
+            }}
             onKeyDown={(event) => {
               if (event.key === "Escape") {
                 handleZoomClose();
@@ -432,6 +492,28 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
             >
               <IconX className="h-6 w-6" />
             </Button>
+            {hasZoomNavigation && (
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => moveZoom(-1)}
+                  className="absolute top-1/2 left-4 z-10 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
+                  aria-label="Previous media"
+                >
+                  <IconChevronLeft className="h-6 w-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => moveZoom(1)}
+                  className="absolute top-1/2 right-4 z-10 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
+                  aria-label="Next media"
+                >
+                  <IconChevronRight className="h-6 w-6" />
+                </Button>
+              </>
+            )}
             {zoomedItem.type === "video" ? (
               <video
                 className="max-h-[90vh] max-w-[90vw]"
@@ -441,14 +523,12 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 autoPlay
                 playsInline
                 controls
-                onPointerDown={(e) => e.stopPropagation()}
               />
             ) : (
               <img
                 className="max-h-[90vh] max-w-[90vw] object-contain"
                 src={zoomedItem.url}
                 alt={`${addon} gallery ${zoomedItem.index}`}
-                onPointerDown={(e) => e.stopPropagation()}
               />
             )}
           </div>,

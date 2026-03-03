@@ -10,8 +10,8 @@ export function useTheme() {
 
     // Listen for theme changes
     const observer = new MutationObserver(() => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setIsDark(isDarkMode);
+      const nextIsDarkMode = document.documentElement.classList.contains("dark");
+      setIsDark(nextIsDarkMode);
     });
 
     observer.observe(document.documentElement, {
