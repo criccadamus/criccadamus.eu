@@ -78,8 +78,5 @@ pnpm-debug.log*
 .env*
 !.env.example
 
-# test folder
-example-projects
-
-# please dissapear
-/web/portal/components/about/packages.ts
+# machine-memory
+**/*.db-*

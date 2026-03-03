@@ -8,6 +8,7 @@ export interface WowAddonConfig {
 }
 
 export const wowAddons: Record<WowAddon, WowAddonConfig> = {
+  elvui: { name: "ElvUI", color: "#3b82f6", border: "border-[#3b82f6]", bg: "bg-[#3b82f6]/10" },
   details: {
     name: "Details!",
     color: "#f97316",
@@ -15,7 +16,6 @@ export const wowAddons: Record<WowAddon, WowAddonConfig> = {
     bg: "bg-[#f97316]/10",
   },
   plater: { name: "Plater", color: "#a855f7", border: "border-[#a855f7]", bg: "bg-[#a855f7]/10" },
-  elvui: { name: "ElvUI", color: "#3b82f6", border: "border-[#3b82f6]", bg: "bg-[#3b82f6]/10" },
   weakauras: {
     name: "WeakAuras",
     color: "#ef4444",
