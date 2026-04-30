@@ -12,11 +12,17 @@ export interface AddonProfiles {
   profiles: AddonProfile[];
 }
 
+export interface AddonAlertLink {
+  text: string;
+  url: string;
+}
+
 export interface AddonAlert {
   title: string;
   description: string;
   variant?: "default" | "destructive";
-  icon?: "info";
+  icon?: "info" | "download";
+  link?: AddonAlertLink;
 }
 
 export const profilesByAddon: AddonProfiles[] = [
@@ -53,6 +59,16 @@ export const profilesByAddon: AddonProfiles[] = [
   {
     addon: "elvui",
     alerts: [
+      {
+        title: "Tweaks required",
+        description:
+          "This profile requires ElvUI WindTools to be complete and for icons, text and fonts to be properly shown.",
+        icon: "download",
+        link: {
+          text: "ElvUI WindTools on Wago",
+          url: "https://addons.wago.io/addons/elvui-windtools",
+        },
+      },
       {
         title: "Heads up!",
         description:
