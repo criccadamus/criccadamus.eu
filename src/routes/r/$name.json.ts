@@ -177,12 +177,7 @@ export const Route = createFileRoute("/r/$name/json")({
 
         const cached = await readCachedProfile(env, cacheKey);
         if (cached) {
-          return buildProfileResponse(
-            profile,
-            cached.content,
-            filename,
-            cached.updatedAt,
-          );
+          return buildProfileResponse(profile, cached.content, filename, cached.updatedAt);
         }
 
         const gistId = profileGists[profile.name];

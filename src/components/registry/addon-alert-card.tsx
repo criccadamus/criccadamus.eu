@@ -5,7 +5,7 @@ import type { AddonAlert } from "@/data/addons";
 
 const alertIcons = {
   info: IconInfoCircle,
-  download: IconDownload
+  download: IconDownload,
 } as const;
 
 export function AddonAlertCard({ alert }: { alert: AddonAlert }) {

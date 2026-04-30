@@ -1,5 +1,5 @@
 import projectPackage from "../../../package.json";
-const VERSION = String(projectPackage.version);
+const VERSION = projectPackage.version;
 
 /**
  * Footer component displaying app information and links.

@@ -130,10 +130,7 @@ export function MacrosList() {
       }
     };
 
-    const applyClassState = (
-      macros: Macro[],
-      updatedAt: string | null,
-    ) => {
+    const applyClassState = (macros: Macro[], updatedAt: string | null) => {
       if (!cancelled) {
         setMacrosByClass((prev) => ({ ...prev, [activeClass]: macros }));
         setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
@@ -162,10 +159,7 @@ export function MacrosList() {
       }
     };
 
-    const writeCache = (
-      macros: Macro[],
-      updatedAt: string | null,
-    ) => {
+    const writeCache = (macros: Macro[], updatedAt: string | null) => {
       try {
         localStorage.setItem(cacheKey, JSON.stringify(macros));
         localStorage.setItem(cacheTsKey, String(Date.now()));

@@ -96,7 +96,9 @@
     "react/no-danger": "error",
     "typescript/no-implied-eval": "error",
     "typescript/no-unsafe-type-assertion": "off",
-    "typescript/no-unnecessary-type-assertion": "off"
+    "typescript/no-unnecessary-type-assertion": "off",
+
+    "consistent-return": "off"
   },
   "overrides": [
     {

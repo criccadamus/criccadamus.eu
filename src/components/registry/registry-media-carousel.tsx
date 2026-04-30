@@ -478,7 +478,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 handleZoomClose();
               }
             }}
-            tabIndex={0}
+            tabIndex={-1}
             role="dialog"
             aria-modal="true"
             aria-label={`${addon} gallery ${zoomedItem.index}`}
