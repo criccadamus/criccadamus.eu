@@ -21,6 +21,16 @@ export interface AddonAlert {
 
 export const profilesByAddon: AddonProfiles[] = [
   {
+    addon: "edit-mode",
+    profiles: [
+      {
+        name: "edit-mode-profile",
+        title: "Edit Mode Layout",
+        description: '"shared edit mode layout"',
+      },
+    ],
+  },
+  {
     addon: "details",
     profiles: [
       {

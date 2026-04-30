@@ -1,4 +1,4 @@
-export type WowAddon = "details" | "plater" | "elvui" | "weakauras";
+export type WowAddon = "details" | "plater" | "elvui" | "weakauras" | "edit-mode";
 
 export interface WowAddonConfig {
   name: string;
@@ -21,5 +21,11 @@ export const wowAddons: Record<WowAddon, WowAddonConfig> = {
     color: "#ef4444",
     border: "border-[#ef4444]",
     bg: "bg-[#ef4444]/10",
+  },
+  "edit-mode": {
+    name: "Edit Mode",
+    color: "#10b981",
+    border: "border-[#10b981]",
+    bg: "bg-[#10b981]/10",
   },
 };

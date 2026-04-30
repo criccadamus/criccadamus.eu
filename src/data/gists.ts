@@ -6,6 +6,7 @@ export const profileGists: Record<string, string> = {
   "details-profile": "58078b1ab69a4e68f07d118c5d57f321",
   "plater-profile": "fe2f86c25a62cf654aceb3ec6a4795e4",
   "elvui-profile": "642482b44a464b84e82284adcf39f9f7",
+  "edit-mode-profile": "6ce6306dd998d5654950f4de29f6ed48",
 };
 
 export const classGists: Record<WowClass, string> = {
