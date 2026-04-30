@@ -24,13 +24,11 @@ function getEnvFromContext(context: unknown) {
 type CachedProfile = {
   content: string;
   updatedAt?: string;
-  commitMessage?: string;
 };
 
 type ProfileCacheEntry = {
   content: string;
   updatedAt?: string;
-  commitMessage?: string;
 };
 
 function buildProfilePayload(
@@ -60,7 +58,6 @@ function buildProfileResponse(
   content: string,
   filename: string,
   updatedAt?: string,
-  commitMessage?: string,
 ) {
   const payload = buildProfilePayload(profile, content, filename);
   return new Response(JSON.stringify(payload, null, 2), {
@@ -69,7 +66,6 @@ function buildProfileResponse(
       "content-type": "application/json; charset=utf-8",
       "cache-control": "public, max-age=300",
       ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
-      ...(commitMessage ? { "x-gist-commit-message": encodeURIComponent(commitMessage) } : {}),
     },
   });
 }
@@ -81,7 +77,6 @@ function parseCachedProfile(cached: string): ProfileCacheEntry | null {
       return {
         content: parsed.content,
         updatedAt: parsed.updatedAt,
-        commitMessage: parsed.commitMessage,
       };
     }
   } catch {
@@ -123,7 +118,7 @@ async function fetchProfileContent(gistId: string, filename: string) {
     const metadata = await fetchGistMetadata(gistId);
     const updatedAt = metadata.updatedAt ?? rawLastModified ?? undefined;
 
-    return { content, updatedAt, commitMessage: metadata.commitMessage };
+    return { content, updatedAt };
   } catch {
     return { error: Response.json({ error: "Failed to load profile content." }, { status: 502 }) };
   }
@@ -143,11 +138,6 @@ function buildRawGistUrl(gistId: string, filename: string) {
   return `https://gist.githubusercontent.com/${GIST_OWNER}/${gistId}/raw/${filename}`;
 }
 
-function normalizeCommitMessage(commitMessage?: string | null) {
-  const message = commitMessage?.trim();
-  return message ? message : undefined;
-}
-
 async function fetchGistMetadata(gistId: string) {
   try {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
@@ -157,15 +147,12 @@ async function fetchGistMetadata(gistId: string) {
       },
     });
     if (!response.ok) {
-      return { updatedAt: undefined, commitMessage: undefined };
+      return { updatedAt: undefined };
     }
-    const data = (await response.json()) as { updated_at?: string; description?: string };
-    return {
-      updatedAt: data.updated_at,
-      commitMessage: normalizeCommitMessage(data.description),
-    };
+    const data = (await response.json()) as { updated_at?: string };
+    return { updatedAt: data.updated_at };
   } catch {
-    return { updatedAt: undefined, commitMessage: undefined };
+    return { updatedAt: undefined };
   }
 }
 
@@ -195,7 +182,6 @@ export const Route = createFileRoute("/r/$name/json")({
             cached.content,
             filename,
             cached.updatedAt,
-            cached.commitMessage,
           );
         }
 
@@ -209,13 +195,12 @@ export const Route = createFileRoute("/r/$name/json")({
           return profileResult.error;
         }
 
-        const { content, updatedAt, commitMessage } = profileResult;
+        const { content, updatedAt } = profileResult;
         if (env?.REGISTRY_KV) {
           try {
             const cacheValue = JSON.stringify({
               content,
               updatedAt,
-              commitMessage,
             } satisfies CachedProfile);
             await env.REGISTRY_KV.put(cacheKey, cacheValue, { expirationTtl: kvTtlSeconds });
           } catch {
@@ -223,7 +208,7 @@ export const Route = createFileRoute("/r/$name/json")({
           }
         }
 
-        return buildProfileResponse(profile, content, filename, updatedAt, commitMessage);
+        return buildProfileResponse(profile, content, filename, updatedAt);
       },
     },
   },

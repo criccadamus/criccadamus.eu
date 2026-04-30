@@ -47,9 +47,6 @@ export function MacrosList() {
   const [updatedAtByClass, setUpdatedAtByClass] = useState<Record<WowClass, string | null>>(
     {} as Record<WowClass, string | null>,
   );
-  const [commitMessageByClass, setCommitMessageByClass] = useState<Record<WowClass, string | null>>(
-    {} as Record<WowClass, string | null>,
-  );
   const [isLoading, setIsLoading] = useState(false);
   const tabsRootRef = useRef<HTMLDivElement>(null);
 
@@ -87,22 +84,8 @@ export function MacrosList() {
     const cacheKey = `registry:macros:${cacheVersion}:${activeClass}`;
     const cacheTsKey = `${cacheKey}:ts`;
     const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
-    const cacheCommitMessageKey = `${cacheKey}:commitMessage`;
     const cacheTtlMs = 5 * 60 * 1000;
     const minSkeletonMs = 300;
-
-    const decodeCommitMessage = (value: string | null) => {
-      if (!value) {
-        return null;
-      }
-      try {
-        const decoded = decodeURIComponent(value).trim();
-        return decoded.length > 0 ? decoded : null;
-      } catch {
-        const trimmed = value.trim();
-        return trimmed.length > 0 ? trimmed : null;
-      }
-    };
 
     const storeUpdatedAt = (updatedAt: string | null) => {
       if (!updatedAt) {
@@ -110,15 +93,6 @@ export function MacrosList() {
       }
       setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
       localStorage.setItem(cacheUpdatedAtKey, updatedAt);
-    };
-
-    const storeCommitMessage = (message: string | null) => {
-      setCommitMessageByClass((prev) => ({ ...prev, [activeClass]: message }));
-      if (message) {
-        localStorage.setItem(cacheCommitMessageKey, message);
-        return;
-      }
-      localStorage.setItem(cacheCommitMessageKey, "");
     };
 
     const fetchMetadataFromGist = async () => {
@@ -133,11 +107,10 @@ export function MacrosList() {
         if (!res.ok) {
           return;
         }
-        const data = (await res.json()) as { updated_at?: string; description?: string };
+        const data = (await res.json()) as { updated_at?: string };
         if (data.updated_at) {
           storeUpdatedAt(data.updated_at);
         }
-        storeCommitMessage(data.description?.trim() || null);
       } catch {
         // Ignore gist API errors
       }
@@ -147,14 +120,9 @@ export function MacrosList() {
       try {
         const res = await fetch(`/macros/${activeClass}/json`, { cache: "no-store" });
         const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
-        const commitMessage = decodeCommitMessage(res.headers.get("x-gist-commit-message"));
         if (updatedAt) {
           storeUpdatedAt(updatedAt);
-        }
-        if (commitMessage !== null) {
-          storeCommitMessage(commitMessage);
-        }
-        if (!updatedAt || commitMessage === null) {
+        } else {
           await fetchMetadataFromGist();
         }
       } catch {
@@ -165,12 +133,10 @@ export function MacrosList() {
     const applyClassState = (
       macros: Macro[],
       updatedAt: string | null,
-      commitMessage: string | null,
     ) => {
       if (!cancelled) {
         setMacrosByClass((prev) => ({ ...prev, [activeClass]: macros }));
         setUpdatedAtByClass((prev) => ({ ...prev, [activeClass]: updatedAt }));
-        setCommitMessageByClass((prev) => ({ ...prev, [activeClass]: commitMessage }));
       }
     };
 
@@ -190,8 +156,6 @@ export function MacrosList() {
         return {
           macros: cachedMacros as Macro[],
           updatedAt: localStorage.getItem(cacheUpdatedAtKey),
-          commitMessage: localStorage.getItem(cacheCommitMessageKey) || null,
-          hasCommitMessageCache: localStorage.getItem(cacheCommitMessageKey) !== null,
         };
       } catch {
         return null;
@@ -201,18 +165,12 @@ export function MacrosList() {
     const writeCache = (
       macros: Macro[],
       updatedAt: string | null,
-      commitMessage: string | null,
     ) => {
       try {
         localStorage.setItem(cacheKey, JSON.stringify(macros));
         localStorage.setItem(cacheTsKey, String(Date.now()));
         if (updatedAt) {
           localStorage.setItem(cacheUpdatedAtKey, updatedAt);
-        }
-        if (commitMessage) {
-          localStorage.setItem(cacheCommitMessageKey, commitMessage);
-        } else {
-          localStorage.removeItem(cacheCommitMessageKey);
         }
       } catch {
         // Ignore localStorage write errors
@@ -224,12 +182,11 @@ export function MacrosList() {
         const response = await fetch(`/macros/${activeClass}/json`);
         const updatedAt =
           response.headers.get("x-last-updated") ?? response.headers.get("last-modified");
-        const commitMessage = decodeCommitMessage(response.headers.get("x-gist-commit-message"));
         const data: unknown = await response.json();
         const macros = Array.isArray(data) ? (data as Macro[]) : [];
-        return { macros, updatedAt, commitMessage };
+        return { macros, updatedAt };
       } catch {
-        return { macros: null, updatedAt: null, commitMessage: null };
+        return { macros: null, updatedAt: null };
       }
     };
 
@@ -254,8 +211,8 @@ export function MacrosList() {
     const loadMacros = async () => {
       const cached = readCache();
       if (cached) {
-        applyClassState(cached.macros, cached.updatedAt, cached.commitMessage);
-        if (!cached.updatedAt || !cached.hasCommitMessageCache) {
+        applyClassState(cached.macros, cached.updatedAt);
+        if (!cached.updatedAt) {
           void refreshMetadata();
         }
         return;
@@ -265,12 +222,12 @@ export function MacrosList() {
       setIsLoading(true);
       const result = await fetchMacrosFromNetwork();
       if (result.macros) {
-        applyClassState(result.macros, result.updatedAt, result.commitMessage);
-        if (!result.updatedAt || result.commitMessage === null) {
+        applyClassState(result.macros, result.updatedAt);
+        if (!result.updatedAt) {
           void fetchMetadataFromGist();
         }
         if (result.macros.length > 0) {
-          writeCache(result.macros, result.updatedAt, result.commitMessage);
+          writeCache(result.macros, result.updatedAt);
         }
       } else if (!cancelled) {
         setMacrosByClass((prev) => ({ ...prev, [activeClass]: [] }));
@@ -320,7 +277,6 @@ export function MacrosList() {
           const classConfig = wowClasses[classKey];
           const macros = macrosByClass[classKey];
           const updatedAt = updatedAtByClass[classKey];
-          const commitMessage = commitMessageByClass[classKey];
           const formattedUpdatedAt = updatedAt
             ? new Intl.DateTimeFormat("en-US", {
                 dateStyle: "medium",
@@ -341,7 +297,6 @@ export function MacrosList() {
                     name={macro.name}
                     spec={macro.spec}
                     macro={macro.macro}
-                    commitMessage={commitMessage}
                     classConfig={classConfig}
                   />
                 ))}

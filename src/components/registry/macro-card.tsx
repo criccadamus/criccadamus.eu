@@ -1,4 +1,4 @@
-import { IconCopy, IconMessage2 } from "@tabler/icons-react";
+import { IconCopy } from "@tabler/icons-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -11,7 +11,6 @@ interface MacroCardProps {
   name: string;
   spec?: string;
   macro: string;
-  commitMessage?: string | null;
   classConfig: WowClassConfig;
 }
 
@@ -151,7 +150,7 @@ function highlightMacroSyntax(macro: string): ReactNode[] {
   return lines.map((line, lineIndex) => renderMacroLine(line, lineIndex));
 }
 
-export function MacroCard({ name, spec, macro, commitMessage, classConfig }: MacroCardProps) {
+export function MacroCard({ name, spec, macro, classConfig }: MacroCardProps) {
   const copy = () => {
     void navigator.clipboard.writeText(macro);
     toast.success("Macro copied");
@@ -171,11 +170,6 @@ export function MacroCard({ name, spec, macro, commitMessage, classConfig }: Mac
         <div className="space-y-0.5">
           <h4 className="text-sm font-medium text-foreground">{name}</h4>
           {spec && <p className="text-xs text-muted-foreground">{spec}</p>}
-          <p className="inline-flex items-start gap-1.5 text-[0.625rem] break-words text-muted-foreground">
-            <IconMessage2 aria-hidden="true" className="mt-px h-3 w-3 shrink-0" />
-            <span className="sr-only">Commit message: </span>
-            <span>{commitMessage ?? "None"}</span>
-          </p>
         </div>
         <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={copy}>
           <IconCopy className="h-4 w-4" />
