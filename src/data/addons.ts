@@ -32,7 +32,7 @@ export const profilesByAddon: AddonProfiles[] = [
       {
         name: "edit-mode-profile",
         title: "Edit Mode Layout",
-        description: '"shared edit mode layout"',
+        description: '"the skeleton',
       },
     ],
   },
