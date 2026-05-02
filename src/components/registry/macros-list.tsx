@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { MacroCard } from "@/components/registry/macro-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -40,7 +41,23 @@ function MacroCardSkeleton({ color }: { color: string }) {
 export function MacrosList() {
   const isMobile = useIsMobile();
   const classOrder = Object.keys(wowClasses) as WowClass[];
-  const [activeClass, setActiveClass] = useState<WowClass>(classOrder[0]);
+  const search = useSearch({ from: "/registry" }) as { macro?: string };
+  const navigate = useNavigate({ from: "/registry" });
+  const initialClass =
+    search.macro && wowClasses[search.macro as WowClass]
+      ? (search.macro as WowClass)
+      : classOrder[0];
+  const [activeClass, setActiveClass] = useState<WowClass>(initialClass);
+
+  const handleClassChange = (value: string) => {
+    const classKey = value as WowClass;
+    setActiveClass(classKey);
+    navigate({
+      search: (prev: { profile?: string; macro?: string }) => ({ ...prev, macro: classKey }),
+      replace: true,
+      resetScroll: false,
+    });
+  };
   const [macrosByClass, setMacrosByClass] = useState<Record<WowClass, Macro[]>>(
     {} as Record<WowClass, Macro[]>,
   );
@@ -242,7 +259,7 @@ export function MacrosList() {
 
   return (
     <div ref={tabsRootRef}>
-      <Tabs value={activeClass} onValueChange={(value) => setActiveClass(value as WowClass)}>
+      <Tabs value={activeClass} onValueChange={handleClassChange}>
         <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
           {classOrder.map((classKey) => {
             const classConfig = wowClasses[classKey];

@@ -1,20 +1,32 @@
-import { useSearch } from "@tanstack/react-router";
+import { useState } from "react";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 
 import { AddonAlertCard } from "@/components/registry/addon-alert-card";
 import { RegistryItemCard } from "@/components/registry/registry-item-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profilesByAddon } from "@/data/addons";
-import { wowAddons } from "@/lib/wow-addons";
+import { wowAddons, type WowAddon } from "@/lib/wow-addons";
 
 export function RegistryList() {
-  const search = useSearch({ from: "/registry" }) as { profile?: string };
-  const defaultAddon =
-    search.profile && wowAddons[search.profile as keyof typeof wowAddons]
-      ? (search.profile as keyof typeof wowAddons)
+  const search = useSearch({ from: "/registry" }) as { profile?: string; macro?: string };
+  const navigate = useNavigate({ from: "/registry" });
+  const initialAddon =
+    search.profile && wowAddons[search.profile as WowAddon]
+      ? (search.profile as WowAddon)
       : profilesByAddon[0]?.addon;
+  const [activeAddon, setActiveAddon] = useState(initialAddon);
+
+  const handleAddonChange = (value: string) => {
+    setActiveAddon(value as WowAddon);
+    navigate({
+      search: (prev: { profile?: string; macro?: string }) => ({ ...prev, profile: value }),
+      replace: true,
+      resetScroll: false,
+    });
+  };
 
   return (
-    <Tabs defaultValue={defaultAddon}>
+    <Tabs value={activeAddon} onValueChange={handleAddonChange}>
       <TabsList className="scrollbar-hidden w-full max-w-full gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
         {profilesByAddon.map((addonData) => {
           const addonConfig = wowAddons[addonData.addon];
