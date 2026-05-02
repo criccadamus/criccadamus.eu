@@ -11,8 +11,8 @@ import { useIsMobile } from "@/hooks/use-mobile";
 export const Route = createFileRoute("/registry")({
   validateSearch: (search: Record<string, unknown>) => {
     const profile = typeof search.profile === "string" ? search.profile : undefined;
-    const tab = typeof search.tab === "string" ? search.tab : undefined;
-    return { profile, tab };
+    const macro = typeof search.macro === "string" ? search.macro : undefined;
+    return { profile, macro };
   },
   component: RegistryPage,
   head: () => ({
