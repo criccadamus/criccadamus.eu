@@ -129,7 +129,7 @@ async function fetchGistMetadata(gistId: string) {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment - prob oxlint type aware bug
+// oxlint-disable-next-line typescript/no-unsafe-assignment
 export const Route = createFileRoute("/macros/$class/json")({
   server: {
     handlers: {
