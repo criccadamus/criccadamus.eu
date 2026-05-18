@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 
 import { MacroCard } from "@/components/registry/macro-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,6 +42,7 @@ export function MacrosList() {
   const isMobile = useIsMobile();
   const classOrder = Object.keys(wowClasses) as WowClass[];
   const search = useSearch({ from: "/registry" }) as { macro?: string };
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
   const navigate = useNavigate({ from: "/registry" });
   const initialClass =
     search.macro && wowClasses[search.macro as WowClass]
@@ -52,6 +53,7 @@ export function MacrosList() {
   const handleClassChange = (value: string) => {
     const classKey = value as WowClass;
     setActiveClass(classKey);
+    // oxlint-disable-next-line typescript/no-unsafe-call
     navigate({
       search: (prev: { profile?: string; macro?: string }) => ({ ...prev, macro: classKey }),
       replace: true,

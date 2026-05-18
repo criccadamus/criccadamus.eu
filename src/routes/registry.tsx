@@ -1,6 +1,6 @@
-import { useEffect, useRef } from "react";
 import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
 import { createFileRoute, useSearch } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
 import { Header } from "@/components/layout/header";
 import { MacrosList } from "@/components/registry/macros-list";
@@ -8,7 +8,7 @@ import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment - prob oxlint type aware bug
+// oxlint-disable-next-line typescript/no-unsafe-assignment
 export const Route = createFileRoute("/registry")({
   validateSearch: (search: Record<string, unknown>) => {
     const profile = typeof search.profile === "string" ? search.profile : undefined;

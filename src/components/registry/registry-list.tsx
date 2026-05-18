@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
+import { useState } from "react";
 
 import { AddonAlertCard } from "@/components/registry/addon-alert-card";
 import { RegistryItemCard } from "@/components/registry/registry-item-card";
@@ -9,6 +9,7 @@ import { wowAddons, type WowAddon } from "@/lib/wow-addons";
 
 export function RegistryList() {
   const search = useSearch({ from: "/registry" }) as { profile?: string; macro?: string };
+  // oxlint-disable-next-line typescript/no-unsafe-assignment
   const navigate = useNavigate({ from: "/registry" });
   const initialAddon =
     search.profile && wowAddons[search.profile as WowAddon]
@@ -18,6 +19,7 @@ export function RegistryList() {
 
   const handleAddonChange = (value: string) => {
     setActiveAddon(value as WowAddon);
+    // oxlint-disable-next-line typescript/no-unsafe-call
     navigate({
       search: (prev: { profile?: string; macro?: string }) => ({ ...prev, profile: value }),
       replace: true,
