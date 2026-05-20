@@ -28,6 +28,26 @@ export interface AddonAlert {
 export const profilesByAddon: AddonProfiles[] = [
   {
     addon: "edit-mode",
+    alerts: [
+      {
+        title: "Extend the Cooldown Manager",
+        description: "This layout uses SenseiClassResourceBar instead of the ElvUI solution.",
+        icon: "download",
+        link: {
+          text: "SenseiClassResourceBar",
+          url: "https://addons.wago.io/addons/sensei-class-resource-bar",
+        },
+      },
+      {
+        title: "More QoL for you",
+        description: "Goated Plumber. Just use it.",
+        icon: "download",
+        link: {
+          text: "Plumber",
+          url: "https://addons.wago.io/addons/plumber",
+        },
+      },
+    ],
     profiles: [
       {
         name: "edit-mode-profile",
