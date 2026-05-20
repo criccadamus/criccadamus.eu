@@ -31,7 +31,7 @@ export const profilesByAddon: AddonProfiles[] = [
     alerts: [
       {
         title: "Extend the Cooldown Manager",
-        description: "This layout uses SenseiClassResourceBar instead of the ElvUI solution for better control and placement. Blizzard kinda sucks for some reason for this and so does ElvUI.",
+        description: "ElvUI is not flexible enough, so we use this for better customization.",
         icon: "download",
         link: {
           text: "SenseiClassResourceBar on Wago",
@@ -40,7 +40,7 @@ export const profilesByAddon: AddonProfiles[] = [
       },
       {
         title: "More QoL for you",
-        description: "Goated addon with so many knobs and options, this should just be native Blizzard. Trust!",
+        description: "GOATed addon with so many knobs and options. You should try it!",
         icon: "download",
         link: {
           text: "Plumber on Wago",
