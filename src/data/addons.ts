@@ -31,19 +31,19 @@ export const profilesByAddon: AddonProfiles[] = [
     alerts: [
       {
         title: "Extend the Cooldown Manager",
-        description: "This layout uses SenseiClassResourceBar instead of the ElvUI solution.",
+        description: "This layout uses SenseiClassResourceBar instead of the ElvUI solution for better control and placement. Blizzard kinda sucks for some reason for this and so does ElvUI.",
         icon: "download",
         link: {
-          text: "SenseiClassResourceBar",
+          text: "SenseiClassResourceBar on Wago",
           url: "https://addons.wago.io/addons/sensei-class-resource-bar",
         },
       },
       {
         title: "More QoL for you",
-        description: "Goated Plumber. Just use it.",
+        description: "Goated addon with so many knobs and options, this should just be native Blizzard. Trust!",
         icon: "download",
         link: {
-          text: "Plumber",
+          text: "Plumber on Wago",
           url: "https://addons.wago.io/addons/plumber",
         },
       },
