@@ -31,8 +31,7 @@ export const profilesByAddon: AddonProfiles[] = [
     alerts: [
       {
         title: "Extend the Cooldown Manager",
-        description:
-          "This layout uses SenseiClassResourceBar instead of the ElvUI solution.",
+        description: "This layout uses SenseiClassResourceBar instead of the ElvUI solution.",
         icon: "download",
         link: {
           text: "SenseiClassResourceBar",
@@ -41,8 +40,7 @@ export const profilesByAddon: AddonProfiles[] = [
       },
       {
         title: "More QoL for you",
-        description:
-          "Goated Plumber. Just use it.",
+        description: "Goated Plumber. Just use it.",
         icon: "download",
         link: {
           text: "Plumber",
