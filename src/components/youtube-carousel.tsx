@@ -56,7 +56,7 @@ export function YouTubeCarousel() {
         src={embedUrl}
         title={currentItem.title}
         // oxlint-disable-next-line react/iframe-missing-sandbox
-        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-popups-to-escape-sandbox"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         className="h-full w-full border-0"
