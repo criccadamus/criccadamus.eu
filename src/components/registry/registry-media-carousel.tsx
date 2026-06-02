@@ -377,7 +377,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                       autoPlay
                       playsInline
                       preload="metadata"
-                      aria-label={`${addon} gallery video ${item.index}`}
+                      aria-label={`${addon} gallery preview ${item.index}`}
                     />
                   ) : (
                     <img
@@ -478,7 +478,13 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
         createPortal(
           <dialog
             ref={zoomModalRef}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 open:flex"
+            className="fixed inset-0 z-50 m-0 flex h-screen max-h-screen w-screen max-w-screen items-center justify-center border-0 bg-black/95 p-0"
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                handleZoomClose();
+              }
+            }}
+            onClose={handleZoomClose}
             aria-label={`${addon} gallery ${zoomedItem.index}`}
           >
             <Button
@@ -512,6 +518,27 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 </Button>
               </>
             )}
+            {zoomedItem.type === "video" ? (
+              <video
+                className="max-h-[90vh] max-w-[90vw]"
+                src={zoomedItem.url}
+                muted
+                loop
+                autoPlay
+                playsInline
+                controls
+                aria-label={`${addon} gallery video ${zoomedItem.index}`}
+              />
+            ) : (
+              <img
+                className="max-h-[90vh] max-w-[90vw] object-contain"
+                src={zoomedItem.url}
+                alt={`${addon} gallery ${zoomedItem.index}`}
+              />
+            )}
+          </dialog>,
+          document.body,
+        )}
             {zoomedItem.type === "video" ? (
               <video
                 className="max-h-[90vh] max-w-[90vw]"
