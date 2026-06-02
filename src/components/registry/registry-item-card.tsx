@@ -34,6 +34,11 @@ interface RegistryJson {
   files: RegistryJsonFile[];
 }
 
+function copy(text: string, message = "Copied") {
+  void navigator.clipboard.writeText(text);
+  toast.success(message);
+}
+
 export function RegistryItemCard({
   name,
   title,

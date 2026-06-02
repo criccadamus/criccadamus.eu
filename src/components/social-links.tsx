@@ -10,6 +10,11 @@ const copyDiscordUsername = () => {
   toast.success("Discord username copied!");
 };
 
+function copyDiscordUsername() {
+  void navigator.clipboard.writeText("criccadamus");
+  toast.success("Discord username copied!");
+}
+
 export function SocialLinks() {
   const isMobile = useIsMobile();
   const isDark = useTheme();
