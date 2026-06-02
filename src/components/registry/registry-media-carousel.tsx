@@ -58,7 +58,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   const trackRef = useRef<HTMLDivElement | null>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const scrollRafRef = useRef<number | null>(null);
-  const zoomModalRef = useRef<HTMLDivElement | null>(null);
+  const zoomModalRef = useRef<HTMLDialogElement | null>(null);
 
   const handleMediaClick = (item: RegistryMediaItem) => {
     setZoomedItem(item);
@@ -163,12 +163,22 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   }, [handleZoomClose, moveZoom, zoomedItem]);
 
   useEffect(() => {
-    if (!zoomedItem) {
+    const dialog = zoomModalRef.current;
+    if (!dialog) {
       return;
     }
 
-    zoomModalRef.current?.focus();
-  }, [zoomedItem]);
+    dialog.focus();
+
+    const handleClick = (event: MouseEvent) => {
+      if (event.target === event.currentTarget) {
+        handleZoomClose();
+      }
+    };
+
+    dialog.addEventListener("click", handleClick);
+    return () => dialog.removeEventListener("click", handleClick);
+  }, [zoomedItem, handleZoomClose]);
 
   useEffect(() => {
     if (shouldLoad) {
@@ -367,6 +377,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                       autoPlay
                       playsInline
                       preload="metadata"
+                      aria-label={`${addon} gallery preview ${item.index}`}
                     />
                   ) : (
                     <img
@@ -465,22 +476,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
       {/* Zoom Modal - rendered via portal to escape parent stacking context */}
       {zoomedItem &&
         createPortal(
-          <div
+          <dialog
             ref={zoomModalRef}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/95"
-            onClick={(event) => {
-              if (event.target === event.currentTarget) {
-                handleZoomClose();
-              }
-            }}
-            onKeyDown={(event) => {
-              if (event.key === "Escape") {
-                handleZoomClose();
-              }
-            }}
-            tabIndex={-1}
-            role="dialog"
-            aria-modal="true"
+            className="fixed inset-0 z-50 m-0 flex h-screen max-h-screen w-screen max-w-screen items-center justify-center border-0 bg-black/95 p-0"
             aria-label={`${addon} gallery ${zoomedItem.index}`}
           >
             <Button
@@ -523,6 +521,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 autoPlay
                 playsInline
                 controls
+                aria-label={`${addon} gallery video ${zoomedItem.index}`}
               />
             ) : (
               <img
@@ -531,7 +530,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 alt={`${addon} gallery ${zoomedItem.index}`}
               />
             )}
-          </div>,
+          </dialog>,
           document.body,
         )}
     </div>

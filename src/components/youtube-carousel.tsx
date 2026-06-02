@@ -2,19 +2,7 @@ import { IconChevronLeft, IconChevronRight } from "@tabler/icons-react";
 import { useEffect, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/button";
-
-interface PlaylistItem {
-  videoId: string;
-  playlistId: string;
-  title: string;
-}
-
-function parseYouTubeUrl(url: string): { videoId: string; playlistId: string } {
-  const urlParams = new URLSearchParams(url.split("?")[1]);
-  const videoId = urlParams.get("v") || "";
-  const playlistId = urlParams.get("list") || "";
-  return { videoId, playlistId };
-}
+import { playlistItems } from "@/data/playlists";
 
 export function YouTubeCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -36,63 +24,14 @@ export function YouTubeCarousel() {
   };
 
   useEffect(() => {
-    // Initially hide controls after 3 seconds
-    const initialTimeout = setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
-
     return () => {
-      clearTimeout(initialTimeout);
       if (hideTimeoutRef.current) {
         clearTimeout(hideTimeoutRef.current);
       }
     };
   }, [currentIndex]);
 
-  const items: PlaylistItem[] = [
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=BBxqw9r5FZU&list=PLoGa9G4mB1GhdBdQdwnrnyYZLdCrQENxo",
-      ),
-      title: "FFXIV: Dawntrail post-game",
-    },
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=tC_akewvR0o&list=PLoGa9G4mB1GhuIYeYE-6WKmQbe7Ags6OC",
-      ),
-      title: "FFXIV: Dawntrail MSQ",
-    },
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=O4jALVwmpGA&list=PLoGa9G4mB1Gha-vfKxoS8yHWYCeUd4ZYk",
-      ),
-      title: "FFXIV: Endwalker",
-    },
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=6mgUiB2Fuao&list=PLoGa9G4mB1GgUtOByPIgVHFpM-JrnKVxr",
-      ),
-      title: "FFXVI",
-    },
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=OTArZvgOSYg&list=PLoGa9G4mB1Gjp1XLknZJPNskHtgpg-gko",
-      ),
-      title: "Crisis Core: a FF Story",
-    },
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=4FJjiFFe4xg&list=PLoGa9G4mB1GiCRnSKzuIJ3ilHrsfdFGP9",
-      ),
-      title: "FFXV",
-    },
-    {
-      ...parseYouTubeUrl(
-        "https://www.youtube.com/watch?v=xDp9uChxJls&list=PLoGa9G4mB1GhCiHDLtemmfq6b1cge42AW",
-      ),
-      title: "FFVII Remake",
-    },
-  ];
+  const items = playlistItems;
 
   const nextItem = () => {
     setCurrentIndex((prev) => (prev + 1) % items.length);
@@ -117,7 +56,7 @@ export function YouTubeCarousel() {
         src={embedUrl}
         title={currentItem.title}
         // oxlint-disable-next-line react/iframe-missing-sandbox
-        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-popups-to-escape-sandbox"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         className="h-full w-full border-0"
@@ -181,7 +120,7 @@ export function YouTubeCarousel() {
                 {/* Indicator button */}
                 <button
                   onClick={() => setCurrentIndex(index)}
-                  className="group relative h-2 w-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black/50"
+                  className="group relative flex h-5 w-5 cursor-pointer items-center justify-center rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-black/50"
                   aria-label={`Go to ${item.title}`}
                 >
                   {/* Glow effect for active indicator */}
@@ -199,7 +138,7 @@ export function YouTubeCarousel() {
 
                   {/* Indicator bar */}
                   <div
-                    className={`relative h-full w-full rounded-full transition-all duration-300 ${
+                    className={`h-2 w-2 rounded-full transition-all duration-300 ${
                       currentIndex === index
                         ? "scale-150 bg-linear-to-r from-violet-400 to-purple-500 shadow-lg shadow-purple-500/50"
                         : "bg-white/40 group-hover:scale-125 group-hover:bg-white/70"

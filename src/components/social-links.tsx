@@ -5,14 +5,14 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { useTheme } from "@/hooks/use-theme";
 import { cn } from "@/lib/utils";
 
+const copyDiscordUsername = () => {
+  void navigator.clipboard.writeText("criccadamus");
+  toast.success("Discord username copied!");
+};
+
 export function SocialLinks() {
   const isMobile = useIsMobile();
   const isDark = useTheme();
-
-  const copyDiscordUsername = () => {
-    void navigator.clipboard.writeText("criccadamus");
-    toast.success("Discord username copied!");
-  };
 
   return (
     <div className="space-y-4">

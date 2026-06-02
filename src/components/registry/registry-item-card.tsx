@@ -11,6 +11,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import type { WowAddonConfig } from "@/lib/wow-addons";
 
+const copy = (text: string, message = "Copied") => {
+  void navigator.clipboard.writeText(text);
+  toast.success(message);
+};
+
 interface RegistryItemCardProps {
   name: string;
   title: string;
@@ -194,11 +199,6 @@ export function RegistryItemCard({
     pnpm: `pnpm dlx shadcn@latest add ${registryUrl}`,
     bun: `bunx shadcn@latest add ${registryUrl}`,
   } as const;
-
-  const copy = (text: string, message = "Copied") => {
-    void navigator.clipboard.writeText(text);
-    toast.success(message);
-  };
 
   const formattedUpdatedAt = lastUpdated
     ? new Intl.DateTimeFormat("en-US", {

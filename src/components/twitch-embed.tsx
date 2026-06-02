@@ -14,7 +14,7 @@ export function TwitchEmbed() {
         height="100%"
         width="100%"
         // oxlint-disable-next-line react/iframe-missing-sandbox
-        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-popups-to-escape-sandbox"
         allow="autoplay; fullscreen"
         allowFullScreen
         className="border-0"
