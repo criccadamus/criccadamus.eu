@@ -9,25 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as RegistryMediaAddonJsonRouteImport } from './routes/registry-media/$addon.json'
-import { Route as RNameJsonRouteImport } from './routes/r/$name.json'
+import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as MacrosClassJsonRouteImport } from './routes/macros/$class.json'
+import { Route as RNameJsonRouteImport } from './routes/r/$name.json'
+import { Route as RegistryMediaAddonJsonRouteImport } from './routes/registry-media/$addon.json'
 
-const RegistryRoute = RegistryRouteImport.update({
-  id: '/registry',
-  path: '/registry',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const RegistryMediaAddonJsonRoute = RegistryMediaAddonJsonRouteImport.update({
-  id: '/registry-media/$addon/json',
-  path: '/registry-media/$addon/json',
+const RegistryRoute = RegistryRouteImport.update({
+  id: '/registry',
+  path: '/registry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MacrosClassJsonRoute = MacrosClassJsonRouteImport.update({
+  id: '/macros/$class/json',
+  path: '/macros/$class/json',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RNameJsonRoute = RNameJsonRouteImport.update({
@@ -35,9 +35,9 @@ const RNameJsonRoute = RNameJsonRouteImport.update({
   path: '/r/$name/json',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MacrosClassJsonRoute = MacrosClassJsonRouteImport.update({
-  id: '/macros/$class/json',
-  path: '/macros/$class/json',
+const RegistryMediaAddonJsonRoute = RegistryMediaAddonJsonRouteImport.update({
+  id: '/registry-media/$addon/json',
+  path: '/registry-media/$addon/json',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -97,13 +97,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/registry': {
-      id: '/registry'
-      path: '/registry'
-      fullPath: '/registry'
-      preLoaderRoute: typeof RegistryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -111,11 +104,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/registry-media/$addon/json': {
-      id: '/registry-media/$addon/json'
-      path: '/registry-media/$addon/json'
-      fullPath: '/registry-media/$addon/json'
-      preLoaderRoute: typeof RegistryMediaAddonJsonRouteImport
+    '/registry': {
+      id: '/registry'
+      path: '/registry'
+      fullPath: '/registry'
+      preLoaderRoute: typeof RegistryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/macros/$class/json': {
+      id: '/macros/$class/json'
+      path: '/macros/$class/json'
+      fullPath: '/macros/$class/json'
+      preLoaderRoute: typeof MacrosClassJsonRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/r/$name/json': {
@@ -125,11 +125,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RNameJsonRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/macros/$class/json': {
-      id: '/macros/$class/json'
-      path: '/macros/$class/json'
-      fullPath: '/macros/$class/json'
-      preLoaderRoute: typeof MacrosClassJsonRouteImport
+    '/registry-media/$addon/json': {
+      id: '/registry-media/$addon/json'
+      path: '/registry-media/$addon/json'
+      fullPath: '/registry-media/$addon/json'
+      preLoaderRoute: typeof RegistryMediaAddonJsonRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
