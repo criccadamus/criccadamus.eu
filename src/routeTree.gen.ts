@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProfilesRouteImport } from './routes/profiles'
 import { Route as RegistryRouteImport } from './routes/registry'
 import { Route as MacrosClassJsonRouteImport } from './routes/macros/$class.json'
 import { Route as RNameJsonRouteImport } from './routes/r/$name.json'
@@ -18,6 +19,11 @@ import { Route as RegistryMediaAddonJsonRouteImport } from './routes/registry-me
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfilesRoute = ProfilesRouteImport.update({
+  id: '/profiles',
+  path: '/profiles',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegistryRoute = RegistryRouteImport.update({
@@ -43,6 +49,7 @@ const RegistryMediaAddonJsonRoute = RegistryMediaAddonJsonRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/profiles': typeof ProfilesRoute
   '/registry': typeof RegistryRoute
   '/macros/$class/json': typeof MacrosClassJsonRoute
   '/r/$name/json': typeof RNameJsonRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/profiles': typeof ProfilesRoute
   '/registry': typeof RegistryRoute
   '/macros/$class/json': typeof MacrosClassJsonRoute
   '/r/$name/json': typeof RNameJsonRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/profiles': typeof ProfilesRoute
   '/registry': typeof RegistryRoute
   '/macros/$class/json': typeof MacrosClassJsonRoute
   '/r/$name/json': typeof RNameJsonRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/profiles'
     | '/registry'
     | '/macros/$class/json'
     | '/r/$name/json'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/profiles'
     | '/registry'
     | '/macros/$class/json'
     | '/r/$name/json'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/profiles'
     | '/registry'
     | '/macros/$class/json'
     | '/r/$name/json'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ProfilesRoute: typeof ProfilesRoute
   RegistryRoute: typeof RegistryRoute
   MacrosClassJsonRoute: typeof MacrosClassJsonRoute
   RNameJsonRoute: typeof RNameJsonRoute
@@ -102,6 +115,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profiles': {
+      id: '/profiles'
+      path: '/profiles'
+      fullPath: '/profiles'
+      preLoaderRoute: typeof ProfilesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/registry': {
@@ -137,6 +157,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ProfilesRoute: ProfilesRoute,
   RegistryRoute: RegistryRoute,
   MacrosClassJsonRoute: MacrosClassJsonRoute,
   RNameJsonRoute: RNameJsonRoute,

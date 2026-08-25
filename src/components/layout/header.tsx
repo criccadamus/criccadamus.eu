@@ -11,10 +11,10 @@ export function Header() {
         </Link>
         <nav>
           <Link
-            to="/registry"
+            to="/profiles"
             className="inline-flex items-center text-sm font-medium text-white/80 transition-colors hover:text-white"
           >
-            Registry
+            Profiles
           </Link>
         </nav>
       </div>

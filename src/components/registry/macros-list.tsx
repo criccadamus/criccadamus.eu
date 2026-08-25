@@ -64,9 +64,9 @@ export function MacrosList() {
   const isMobile = useIsMobile();
   // SAFETY: wowClasses is defined with WowClass keys; Object.keys returns those exact keys at runtime
   const classOrder = Object.keys(wowClasses) as WowClass[];
-  // SAFETY: /registry search is validated to { macro?: string, profile?: string }; shape trusted from validateSearch
-  const search = useSearch({ from: "/registry" });
-  const navigate = useNavigate({ from: "/registry" });
+  // SAFETY: /profiles search is validated to { macro?: string, profile?: string }; shape trusted from validateSearch
+  const search = useSearch({ from: "/profiles" });
+  const navigate = useNavigate({ from: "/profiles" });
   const initialClass =
     search.macro !== undefined &&
     isWowClass(search.macro) &&

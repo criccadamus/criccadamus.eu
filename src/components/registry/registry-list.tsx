@@ -12,8 +12,8 @@ function isWowAddon(value: string): value is WowAddon {
 }
 
 export function RegistryList() {
-  const search = useSearch({ from: "/registry" });
-  const navigate = useNavigate({ from: "/registry" });
+  const search = useSearch({ from: "/profiles" });
+  const navigate = useNavigate({ from: "/profiles" });
   const initialAddon =
     search.profile !== undefined &&
     isWowAddon(search.profile) &&

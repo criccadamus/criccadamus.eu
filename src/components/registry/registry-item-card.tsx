@@ -1,10 +1,9 @@
 import { IconCopy } from "@tabler/icons-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { RegistryMediaCarousel } from "@/components/registry/registry-media-carousel";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getProfileGist } from "@/data/gists";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -68,39 +67,13 @@ export function RegistryItemCard({
   addon,
   addonConfig,
 }: RegistryItemCardProps) {
-  const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(
     () => readFreshProfileCache(name)?.content ?? null,
   );
   const [lastUpdated, setLastUpdated] = useState<string | null>(
     () => readFreshProfileCache(name)?.updatedAt ?? null,
   );
-  const [activeTab, setActiveTab] = useState("string");
-  const tabsRootRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-
-  useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
-      "[data-slot='tabs-list']",
-    );
-    if (tabsList) {
-      tabsList.scrollLeft = 0;
-    }
-  }, []);
-
-  const handleTabChange = (value: string) => {
-    setActiveTab(value);
-    requestAnimationFrame(() => {
-      const activeTrigger = tabsRootRef.current?.querySelector<HTMLElement>(
-        "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
-      );
-      activeTrigger?.scrollIntoView({
-        block: "nearest",
-        inline: "nearest",
-        behavior: "smooth",
-      });
-    });
-  };
 
   useEffect(() => {
     const storeUpdatedAt = (value: string | null) => {
@@ -192,20 +165,6 @@ export function RegistryItemCard({
       .catch(() => setProfileString(null));
   }, [name]);
 
-  const commands = [
-    { id: "string", label: "string", color: "#6b7280" },
-    { id: "npm", label: "npm", color: "#cb3837" },
-    { id: "yarn", label: "yarn", color: "#2c8ebb" },
-    { id: "pnpm", label: "pnpm", color: "#f9ad00" },
-    { id: "bun", label: "bun", color: "#fbf0df" },
-  ] as const;
-  const commandValues = {
-    npm: `npx shadcn@latest add ${registryUrl}`,
-    yarn: `yarn dlx shadcn@latest add ${registryUrl}`,
-    pnpm: `pnpm dlx shadcn@latest add ${registryUrl}`,
-    bun: `bunx shadcn@latest add ${registryUrl}`,
-  } as const;
-
   const formattedUpdatedAt = lastUpdated
     ? new Intl.DateTimeFormat("en-US", {
         dateStyle: "medium",
@@ -231,73 +190,21 @@ export function RegistryItemCard({
         </div>
       </div>
 
-      <div ref={tabsRootRef}>
-        <Tabs
-          value={activeTab}
-          onValueChange={handleTabChange}
-          className="w-full"
+      <div className="mt-2 flex min-w-0 items-start gap-2">
+        <code className="scrollbar-hidden min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
+          {profileString ?? "Loading..."}
+        </code>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 shrink-0"
+          disabled={!profileString}
+          onClick={() =>
+            profileString && copy(profileString, "Profile string copied")
+          }
         >
-          <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
-            {commands.map((command) => {
-              const needsBorder = command.id === "bun";
-              return (
-                <TabsTrigger
-                  key={command.id}
-                  value={command.id}
-                  className="shrink-0 text-foreground/75 data-active:text-foreground"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className="size-2 rounded-full border"
-                      style={{
-                        backgroundColor: command.color,
-                        borderColor: needsBorder
-                          ? "rgba(15, 23, 42, 0.35)"
-                          : "transparent",
-                      }}
-                    />
-                    {command.label}
-                  </span>
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
-          {(["npm", "yarn", "pnpm", "bun"] as const).map((runtime) => (
-            <TabsContent key={runtime} value={runtime}>
-              <div className="mt-2 flex items-center gap-2">
-                <code className="scrollbar-hidden flex-1 rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs break-all text-muted-foreground">
-                  {commandValues[runtime]}
-                </code>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0"
-                  onClick={() => copy(commandValues[runtime], "Command copied")}
-                >
-                  <IconCopy className="h-4 w-4" />
-                </Button>
-              </div>
-            </TabsContent>
-          ))}
-          <TabsContent value="string">
-            <div className="mt-2 flex min-w-0 items-start gap-2">
-              <code className="scrollbar-hidden min-w-0 flex-1 overflow-x-auto rounded border border-border bg-muted/50 px-3 py-2 font-mono text-xs whitespace-nowrap text-muted-foreground">
-                {profileString ?? "Loading..."}
-              </code>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 shrink-0"
-                disabled={!profileString}
-                onClick={() =>
-                  profileString && copy(profileString, "Profile string copied")
-                }
-              >
-                <IconCopy className="h-4 w-4" />
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
+          <IconCopy className="h-4 w-4" />
+        </Button>
       </div>
 
       <div className="space-y-0.5 text-[0.625rem] text-muted-foreground">
