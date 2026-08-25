@@ -1,5 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "jsPlugins": [{ "name": "anti-slop", "specifier": "./tools/oxlint/anti-slop/index.ts" }],
   "plugins": ["eslint", "react", "typescript", "jsx-a11y", "unicorn", "oxc", "import", "promise"],
   "categories": {
     "correctness": "error",
@@ -9,7 +10,7 @@
     "browser": true,
     "es2022": true
   },
-  "ignorePatterns": ["worker-configuration.d.ts", "**/*.d.ts", ".source/**"],
+  "ignorePatterns": ["worker-configuration.d.ts", "**/*.d.ts", ".source/**", "tools/**"],
   "rules": {
     "typescript/no-explicit-any": "error",
     "typescript/no-unsafe-assignment": "error",
@@ -97,6 +98,22 @@
     "typescript/no-implied-eval": "error",
     "typescript/no-unsafe-type-assertion": "off",
     "typescript/no-unnecessary-type-assertion": "off",
+
+    "anti-slop/no-chained-type-assertions": "error",
+    "anti-slop/no-conditional-empty-object-spread": "error",
+    "anti-slop/no-known-value-widening": "error",
+    "anti-slop/no-module-mocking": "error",
+    "anti-slop/no-object-parameters": "error",
+    "anti-slop/no-reflect-apply": "error",
+    "anti-slop/no-reflect-get": "error",
+    "anti-slop/no-runtime-typeof": "error",
+    "anti-slop/no-shape-in-symbol-names": "error",
+    "anti-slop/no-unknown-parameters": "error",
+    "anti-slop/no-unknown-returns": "error",
+    "anti-slop/no-unknown-type-aliases": "error",
+    "anti-slop/no-unsafe-dictionary-type": "error",
+    "anti-slop/no-widen-then-assert": "error",
+    "anti-slop/require-safety-comment-for-type-assertion": "error",
 
     "consistent-return": "off"
   },

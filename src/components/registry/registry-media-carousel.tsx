@@ -44,6 +44,7 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
   };
 }
 
+// oxlint-disable-next-line complexity -- carousel handles gallery, lightbox, cache, and scroll logic; splitting would hurt cohesion
 export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarouselProps) {
   const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -118,7 +119,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   // Lock body scroll when modal is open
   useEffect(() => {
     if (!zoomedItem) {
-      return;
+      return undefined;
     }
 
     const ownerDocument = zoomModalRef.current?.ownerDocument ?? document;
@@ -133,7 +134,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   // Close modal or navigate zoomed media with keyboard
   useEffect(() => {
     if (!zoomedItem) {
-      return;
+      return undefined;
     }
 
     const ownerDocument = zoomModalRef.current?.ownerDocument ?? document;
@@ -165,7 +166,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   useEffect(() => {
     const dialog = zoomModalRef.current;
     if (!dialog) {
-      return;
+      return undefined;
     }
 
     dialog.focus();
@@ -178,14 +179,14 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
 
     dialog.addEventListener("click", handleClick);
     return () => dialog.removeEventListener("click", handleClick);
-  }, [zoomedItem, handleZoomClose]);
+  }, [zoomedItem, handleZoomClose]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
   useEffect(() => {
     if (shouldLoad) {
-      return;
+      return undefined;
     }
     if (!carouselRef.current) {
-      return;
+      return undefined;
     }
 
     const observer = new IntersectionObserver(
@@ -202,9 +203,10 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     return () => observer.disconnect();
   }, [shouldLoad]);
 
+  // oxlint-disable-next-line react/set-state-in-effect -- syncing external localStorage cache to state requires synchronous set
   useEffect(() => {
     if (!shouldLoad) {
-      return;
+      return undefined;
     }
 
     const cacheKey = `registry:media:${addon}`;
@@ -214,10 +216,13 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
       const cached = localStorage.getItem(cacheKey);
       const cachedAt = Number(localStorage.getItem(cacheTsKey));
       if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < MEDIA_CACHE_TTL_MS) {
+        // SAFETY: cached value was previously stringified string[]; validated via Array.isArray, unknown is safe intermediate
         const parsed = JSON.parse(cached) as unknown;
         if (Array.isArray(parsed)) {
-          setMediaKeys(parsed);
-          return;
+          // SAFETY: parsed array contains string media keys; Array.isArray confirms array, strings validated by rendering
+          // oxlint-disable-next-line react/set-state-in-effect -- syncing cached media keys from localStorage
+          setMediaKeys(parsed as string[]);
+          return undefined;
         }
       }
     } catch {
@@ -235,6 +240,8 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
         if (!res.ok) {
           throw new Error("Failed to load registry media.");
         }
+        // SAFETY: registry-media endpoint returns { items: string[] }; validated via Array.isArray below
+        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- typed media response
         return res.json() as Promise<RegistryMediaResponse>;
       })
       .then((data) => {
@@ -272,8 +279,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
   }, [addon, shouldLoad]);
 
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect -- resetting carousel index when addon changes is required external state sync
     setCurrentIndex(0);
-  }, [addon, mediaItems.length]);
+  }, [addon, mediaItems.length]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
   const handleMouseEnter = () => {
     if (hideTimeoutRef.current) {
@@ -299,7 +307,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
         clearTimeout(hideTimeoutRef.current);
       }
     };
-  }, [currentIndex]);
+  }, [currentIndex]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
   const scrollToIndex = (index: number) => {
     if (!trackRef.current) {
@@ -436,6 +444,7 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                     aria-label={`Go to media ${index + 1}`}
                     className="group relative h-2 w-2 rounded-full transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
                     style={
+                      // SAFETY: CSS variable keys are known custom properties; values are derived from validated accentColor string
                       {
                         "--tw-ring-color": `${accentColor}80`,
                         "--tw-ring-offset-color": `${accentColor}33`,

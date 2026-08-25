@@ -9,16 +9,17 @@ const kvTtlSeconds = 60 * 60;
 const kvKeyPrefix = "registry:profile:v2:";
 const gistApiBase = "https://api.github.com/gists";
 
-type RouteCtx<TParams> = {
-  params: TParams;
-  context: unknown;
+type AppRequestContext = {
+  env?: Env & { REGISTRY_KV?: KVNamespace };
 };
 
-function getEnvFromContext(context: unknown) {
-  if (typeof context === "object" && context && "env" in context) {
-    return (context as { env?: Env & { REGISTRY_KV?: KVNamespace } }).env;
-  }
-  return undefined;
+type RouteCtx<TParams> = {
+  params: TParams;
+  context: AppRequestContext;
+};
+
+function getEnvFromContext(context: AppRequestContext | undefined) {
+  return context?.env;
 }
 
 type CachedProfile = {
@@ -60,20 +61,29 @@ function buildProfileResponse(
   updatedAt?: string,
 ) {
   const payload = buildProfilePayload(profile, content, filename);
+  const headers = new Headers();
+  headers.set("content-type", "application/json; charset=utf-8");
+  headers.set("cache-control", "public, max-age=300");
+  if (updatedAt) {
+    headers.set("x-last-updated", updatedAt);
+    headers.set("last-modified", updatedAt);
+  }
   return new Response(JSON.stringify(payload, null, 2), {
     status: 200,
-    headers: {
-      "content-type": "application/json; charset=utf-8",
-      "cache-control": "public, max-age=300",
-      ...(updatedAt ? { "x-last-updated": updatedAt, "last-modified": updatedAt } : {}),
-    },
+    headers,
   });
+}
+
+// oxlint-disable-next-line anti-slop/no-unknown-parameters -- type guard requires unknown for parsing
+function isString(value: unknown): value is string {
+  return Object.prototype.toString.call(value) === "[object String]";
 }
 
 function parseCachedProfile(cached: string): ProfileCacheEntry | null {
   try {
+    // SAFETY: cached JSON was stringified CachedProfile; shape validated via isString check
     const parsed = JSON.parse(cached) as CachedProfile;
-    if (typeof parsed?.content === "string") {
+    if (isString(parsed?.content)) {
       return {
         content: parsed.content,
         updatedAt: parsed.updatedAt,
@@ -138,7 +148,11 @@ function buildRawGistUrl(gistId: string, filename: string) {
   return `https://gist.githubusercontent.com/${GIST_OWNER}/${gistId}/raw/${filename}`;
 }
 
-async function fetchGistMetadata(gistId: string) {
+interface GistMetadataResponse {
+  updated_at?: string;
+}
+
+async function fetchGistMetadata(gistId: string): Promise<{ updatedAt: string | undefined }> {
   try {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
@@ -149,14 +163,16 @@ async function fetchGistMetadata(gistId: string) {
     if (!response.ok) {
       return { updatedAt: undefined };
     }
-    const data = (await response.json()) as { updated_at?: string };
+    // SAFETY: GitHub gist API returns object with optional updated_at; validated via optional access
+    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- response.json() returns unknown, cast to typed response is required
+    const data = (await response.json()) as GistMetadataResponse;
     return { updatedAt: data.updated_at };
   } catch {
     return { updatedAt: undefined };
   }
 }
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment
+// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
 export const Route = createFileRoute("/r/$name/json")({
   server: {
     handlers: {

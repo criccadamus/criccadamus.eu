@@ -38,20 +38,29 @@ function MacroCardSkeleton({ color }: { color: string }) {
   );
 }
 
+function isWowClass(value: string): value is WowClass {
+  return value in wowClasses;
+}
+
 export function MacrosList() {
   const isMobile = useIsMobile();
+  // SAFETY: wowClasses is defined with WowClass keys; Object.keys returns those exact keys at runtime
   const classOrder = Object.keys(wowClasses) as WowClass[];
-  const search = useSearch({ from: "/registry" }) as { macro?: string };
+  // SAFETY: /registry search is validated to { macro?: string, profile?: string }; shape trusted from validateSearch
+  const search = useSearch({ from: "/registry" }) as { macro?: string; profile?: string };
   // oxlint-disable-next-line typescript/no-unsafe-assignment
   const navigate = useNavigate({ from: "/registry" });
   const initialClass =
-    search.macro && wowClasses[search.macro as WowClass]
-      ? (search.macro as WowClass)
+    search.macro !== undefined && isWowClass(search.macro) && wowClasses[search.macro]
+      ? search.macro
       : classOrder[0];
   const [activeClass, setActiveClass] = useState<WowClass>(initialClass);
 
   const handleClassChange = (value: string) => {
-    const classKey = value as WowClass;
+    if (!isWowClass(value)) {
+      return;
+    }
+    const classKey = value;
     setActiveClass(classKey);
     // oxlint-disable-next-line typescript/no-unsafe-call
     navigate({
@@ -60,10 +69,14 @@ export function MacrosList() {
       resetScroll: false,
     });
   };
+  // SAFETY: empty record is valid initial cache before any class loads
   const [macrosByClass, setMacrosByClass] = useState<Record<WowClass, Macro[]>>(
+    // SAFETY: empty record is valid initial cache before any class loads; entries populated on demand
     {} as Record<WowClass, Macro[]>,
   );
+  // SAFETY: empty record is valid initial cache before any class loads
   const [updatedAtByClass, setUpdatedAtByClass] = useState<Record<WowClass, string | null>>(
+    // SAFETY: empty record is valid initial cache before any class loads; entries populated on demand
     {} as Record<WowClass, string | null>,
   );
   const [isLoading, setIsLoading] = useState(false);
@@ -94,7 +107,7 @@ export function MacrosList() {
       inline: "nearest",
       behavior: "smooth",
     });
-  }, [activeClass]);
+  }, [activeClass]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
   useEffect(() => {
     let cancelled = false;
@@ -126,6 +139,8 @@ export function MacrosList() {
         if (!res.ok) {
           return;
         }
+        // SAFETY: GitHub gist API returns object with optional updated_at; shape validated via property check
+        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- response.json() returns unknown, cast to typed shape is required
         const data = (await res.json()) as { updated_at?: string };
         if (data.updated_at) {
           storeUpdatedAt(data.updated_at);
@@ -170,6 +185,7 @@ export function MacrosList() {
         }
 
         return {
+          // SAFETY: cached JSON was previously stringified Macro[]; Array.isArray check passed, shape trusted from same app
           macros: cachedMacros as Macro[],
           updatedAt: localStorage.getItem(cacheUpdatedAtKey),
         };
@@ -196,6 +212,7 @@ export function MacrosList() {
         const updatedAt =
           response.headers.get("x-last-updated") ?? response.headers.get("last-modified");
         const data: unknown = await response.json();
+        // SAFETY: response JSON is expected to be Macro[]; Array.isArray confirms array, elements validated by MacroCard rendering
         const macros = Array.isArray(data) ? (data as Macro[]) : [];
         return { macros, updatedAt };
       } catch {

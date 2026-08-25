@@ -4,7 +4,12 @@ export interface PlaylistItem {
   title: string;
 }
 
-function parseYouTubeUrl(url: string): { videoId: string; playlistId: string } {
+interface ParsedYouTubeIds {
+  videoId: string;
+  playlistId: string;
+}
+
+function parseYouTubeUrl(url: string): ParsedYouTubeIds {
   const urlParams = new URLSearchParams(url.split("?")[1]);
   const videoId = urlParams.get("v") || "";
   const playlistId = urlParams.get("list") || "";

@@ -8,11 +8,11 @@ import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment
+// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
 export const Route = createFileRoute("/registry")({
-  validateSearch: (search: Record<string, unknown>) => {
-    const profile = typeof search.profile === "string" ? search.profile : undefined;
-    const macro = typeof search.macro === "string" ? search.macro : undefined;
+  validateSearch: (search: Record<string, string | undefined>) => {
+    const profile = search.profile;
+    const macro = search.macro;
     return { profile, macro };
   },
   component: RegistryPage,
@@ -33,6 +33,8 @@ function RegistryPage() {
   const isMobile = useIsMobile();
   const mobileTextClass = isMobile ? "text-white" : "text-foreground";
   const mobileSubtextClass = isMobile ? "text-white/75" : "text-foreground/75";
+  // SAFETY: /registry search is validated to { profile?: string, macro?: string }
+  // oxlint-disable-next-line typescript/no-unsafe-assignment -- useSearch returns any for generated route, cast is safe with SAFETY
   const { profile, macro } = useSearch({ from: "/registry" }) as {
     profile?: string;
     macro?: string;

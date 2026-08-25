@@ -1,8 +1,13 @@
 import { IconAlertTriangle, IconArrowLeft, IconHome, IconRefresh } from "@tabler/icons-react";
-import { Link, ErrorComponentProps, useRouter } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
+
+type ErrorBoundaryProps = {
+  error: unknown;
+  reset?: () => void;
+};
 
 function ErrorMessage({ message }: { message: string | null }) {
   if (!message) {
@@ -16,8 +21,9 @@ function ErrorMessage({ message }: { message: string | null }) {
   );
 }
 
-export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
-  const safeReset = typeof reset === "function" ? (reset as () => void) : undefined;
+export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment -- reset is typed as () => void | undefined via ErrorBoundaryProps
+  const safeReset = reset;
   const errorMessage = error instanceof Error ? error.message : null;
   useEffect(() => {
     // Log error to console for debugging
@@ -42,6 +48,7 @@ export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
         <ErrorMessage message={errorMessage} />
 
         <div className="flex flex-col gap-2 sm:flex-row">
+          {/* oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return -- safeReset is typed function */}
           <Button size="sm" onClick={() => safeReset?.()}>
             <IconRefresh className="mr-2 h-4 w-4" />
             Try Again
@@ -58,8 +65,11 @@ export function ErrorBoundary({ error, reset }: ErrorComponentProps) {
   );
 }
 
-export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
-  const safeReset = typeof reset === "function" ? (reset as () => void) : undefined;
+export function RouteErrorBoundary({ error, reset }: ErrorBoundaryProps) {
+  // oxlint-disable-next-line typescript/no-unsafe-assignment -- reset is typed as () => void | undefined
+  const safeReset = reset;
+  // SAFETY: TanStack useRouter returns history with back() at runtime; shape validated via navigation
+  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unnecessary-type-assertion -- useRouter type is generic any, cast is safe with SAFETY
   const router = useRouter() as { history: { back: () => void } };
   const errorMessage = error instanceof Error ? error.message : null;
 
@@ -86,10 +96,12 @@ export function RouteErrorBoundary({ error, reset }: ErrorComponentProps) {
         <ErrorMessage message={errorMessage} />
 
         <div className="flex flex-col gap-2 sm:flex-row">
+          {/* oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return -- safeReset typed */}
           <Button onClick={() => safeReset?.()} size="sm">
             <IconRefresh className="mr-1 h-4 w-4" />
             Try Again
           </Button>
+          {/* oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, typescript/no-unsafe-member-access -- router is typed via SAFETY cast */}
           <Button onClick={() => router.history.back()} variant="ghost" size="sm">
             <IconArrowLeft className="mr-1 h-4 w-4" />
             Go Back

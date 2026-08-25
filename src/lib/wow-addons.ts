@@ -7,7 +7,7 @@ export interface WowAddonConfig {
   bg: string;
 }
 
-export const wowAddons: Record<WowAddon, WowAddonConfig> = {
+export const wowAddons = {
   elvui: { name: "ElvUI", color: "#3b82f6", border: "border-[#3b82f6]", bg: "bg-[#3b82f6]/10" },
   details: {
     name: "Details!",
@@ -28,4 +28,4 @@ export const wowAddons: Record<WowAddon, WowAddonConfig> = {
     border: "border-[#10b981]",
     bg: "bg-[#10b981]/10",
   },
-};
+} satisfies Record<WowAddon, WowAddonConfig>;

@@ -10,11 +10,16 @@ export function ParallaxBackground() {
   const [containerHeight, setContainerHeight] = useState(0);
 
   // Check for reduced motion preference
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    try {
+      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    } catch {
+      return false;
+    }
+  });
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = () => {
       setPrefersReducedMotion(mediaQuery.matches);
@@ -27,7 +32,7 @@ export function ParallaxBackground() {
   // Track container height for clamping
   useEffect(() => {
     if (!containerRef.current) {
-      return;
+      return undefined;
     }
 
     const updateHeight = () => {

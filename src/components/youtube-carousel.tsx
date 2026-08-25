@@ -29,7 +29,7 @@ export function YouTubeCarousel() {
         clearTimeout(hideTimeoutRef.current);
       }
     };
-  }, [currentIndex]);
+  }, []);
 
   const items = playlistItems;
 

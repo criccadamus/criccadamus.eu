@@ -7,18 +7,26 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { profilesByAddon } from "@/data/addons";
 import { wowAddons, type WowAddon } from "@/lib/wow-addons";
 
+function isWowAddon(value: string): value is WowAddon {
+  return value in wowAddons;
+}
+
 export function RegistryList() {
+  // SAFETY: /registry search is validated to { profile?: string, macro?: string }; shape trusted from validateSearch
   const search = useSearch({ from: "/registry" }) as { profile?: string; macro?: string };
   // oxlint-disable-next-line typescript/no-unsafe-assignment
   const navigate = useNavigate({ from: "/registry" });
   const initialAddon =
-    search.profile && wowAddons[search.profile as WowAddon]
-      ? (search.profile as WowAddon)
+    search.profile !== undefined && isWowAddon(search.profile) && wowAddons[search.profile]
+      ? search.profile
       : profilesByAddon[0]?.addon;
   const [activeAddon, setActiveAddon] = useState(initialAddon);
 
   const handleAddonChange = (value: string) => {
-    setActiveAddon(value as WowAddon);
+    if (!isWowAddon(value)) {
+      return;
+    }
+    setActiveAddon(value);
     // oxlint-disable-next-line typescript/no-unsafe-call
     navigate({
       search: (prev: { profile?: string; macro?: string }) => ({ ...prev, profile: value }),

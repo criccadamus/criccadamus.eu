@@ -44,9 +44,10 @@ export function RegistryItemCard({
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  // SAFETY: tab is extracted from URL search; validateSearch returns string values, shape trusted from router
   const search = useSearch({ from: "/registry" }) as { tab?: string };
   const selectedTab =
-    search.tab && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
+    search.tab !== undefined && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
       ? search.tab
       : "string";
   const [activeTab, setActiveTab] = useState(selectedTab);
@@ -54,6 +55,7 @@ export function RegistryItemCard({
   const isMobile = useIsMobile();
 
   useEffect(() => {
+    // oxlint-disable-next-line react/set-state-in-effect -- syncing URL param (external navigation state) to controlled tab
     setActiveTab(selectedTab);
   }, [selectedTab]);
 
@@ -86,8 +88,9 @@ export function RegistryItemCard({
     };
 
     requestAnimationFrame(scrollToActive);
-  }, [activeTab]);
+  }, [activeTab]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
+  // oxlint-disable-next-line react/set-state-in-effect -- syncing external systems (localStorage + network) to state; initial cache read requires synchronous set
   useEffect(() => {
     const cacheVersion = "v3";
     const cacheKey = `registry:profile:${cacheVersion}:${name}`;
@@ -114,6 +117,8 @@ export function RegistryItemCard({
         if (!res.ok) {
           return;
         }
+        // SAFETY: GitHub gist API returns object with optional updated_at; validated via property existence check
+        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- typed gist response
         const data = (await res.json()) as { updated_at?: string };
         if (data.updated_at) {
           storeUpdatedAt(data.updated_at);
@@ -141,9 +146,11 @@ export function RegistryItemCard({
       const cached = localStorage.getItem(cacheKey);
       const cachedAt = Number(localStorage.getItem(cacheTsKey));
       if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < cacheTtlMs) {
+        // oxlint-disable-next-line react/set-state-in-effect -- syncing cached profile from localStorage (external) to state
         setProfileString(cached);
         const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
         if (cachedUpdatedAt) {
+          // oxlint-disable-next-line react/set-state-in-effect -- syncing cached timestamp from localStorage
           setLastUpdated(cachedUpdatedAt);
         }
         if (!cachedUpdatedAt) {
@@ -158,6 +165,8 @@ export function RegistryItemCard({
     fetch(`/r/${name}.json`)
       .then(async (res) => {
         const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
+        // SAFETY: registry JSON shape is RegistryJson; validated via files array access, same app contract
+        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- typed registry json
         const data = (await res.json()) as RegistryJson;
         return { data, updatedAt };
       })

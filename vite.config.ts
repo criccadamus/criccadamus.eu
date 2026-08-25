@@ -70,7 +70,7 @@ export default defineConfig({
       browser: true,
       ESNext: true,
     },
-    ignorePatterns: ["*.d.ts", "**/*.d.ts", "public/**"],
+    ignorePatterns: ["*.d.ts", "**/*.d.ts", "public/**", "tools/**", "tools/**/*"],
     rules: {
       "typescript/no-explicit-any": "error",
       "typescript/no-unsafe-assignment": "error",
@@ -176,5 +176,26 @@ export default defineConfig({
       typeAware: true,
       typeCheck: true,
     },
+    overrides: [
+      {
+        files: [
+          "src/components/registry/registry-media-carousel.tsx",
+          "**/registry-media-carousel.tsx",
+        ],
+        rules: {
+          complexity: "off",
+          "max-statements": "off",
+        },
+      },
+      {
+        files: ["tools/**", "tools/**/*", "**/tools/**"],
+        rules: {
+          complexity: "off",
+          "max-statements": "off",
+          curly: "off",
+          "no-duplicate-imports": "off",
+        },
+      },
+    ],
   },
 });

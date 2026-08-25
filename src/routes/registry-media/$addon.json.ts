@@ -5,16 +5,17 @@ import { profilesByAddon } from "@/data/addons";
 const mediaExtensions = [".webp", ".webm"];
 const cacheMaxAgeSeconds = 300;
 
-type RouteCtx<TParams> = {
-  params: TParams;
-  context: unknown;
+type AppRequestContext = {
+  env?: Env & { REGISTRY_MEDIA_BUCKET?: R2Bucket };
 };
 
-function getEnvFromContext(context: unknown) {
-  if (typeof context === "object" && context && "env" in context) {
-    return (context as { env?: Env & { REGISTRY_MEDIA_BUCKET?: R2Bucket } }).env;
-  }
-  return undefined;
+type RouteCtx<TParams> = {
+  params: TParams;
+  context: AppRequestContext;
+};
+
+function getEnvFromContext(context: AppRequestContext | undefined) {
+  return context?.env;
 }
 
 function isAddonKnown(addon: string) {
@@ -28,7 +29,7 @@ function extractNumericIndex(key: string) {
   return Number.isFinite(index) ? index : null;
 }
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment
+// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
 export const Route = createFileRoute("/registry-media/$addon/json")({
   server: {
     handlers: {
