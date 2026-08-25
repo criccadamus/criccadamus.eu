@@ -24,7 +24,7 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   fmt: {
-    printWidth: 100,
+    printWidth: 80,
     tabWidth: 2,
     useTabs: false,
     endOfLine: "lf",
