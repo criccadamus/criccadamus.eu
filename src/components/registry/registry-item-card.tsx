@@ -232,7 +232,11 @@ export function RegistryItemCard({
       </div>
 
       <div ref={tabsRootRef}>
-        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+        <Tabs
+          value={activeTab}
+          onValueChange={handleTabChange}
+          className="w-full"
+        >
           <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
             {commands.map((command) => {
               const needsBorder = command.id === "bun";
@@ -301,7 +305,11 @@ export function RegistryItemCard({
       </div>
 
       {/* key resets all carousel state (index, cache, errors) when the addon changes */}
-      <RegistryMediaCarousel key={addon} addon={addon} accentColor={addonConfig.color} />
+      <RegistryMediaCarousel
+        key={addon}
+        addon={addon}
+        accentColor={addonConfig.color}
+      />
     </div>
   );
 }
