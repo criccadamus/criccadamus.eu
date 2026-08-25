@@ -1,22 +1,16 @@
+/* eslint-disable react/set-state-in-effect */
 import { useEffect, useState } from "react";
 
 export function useParallaxScroll() {
-  const [scrollY, setScrollY] = useState(() => {
-    try {
-      return window.scrollY;
-    } catch {
-      return 0;
-    }
-  });
-  const [viewportHeight, setViewportHeight] = useState(() => {
-    try {
-      return window.innerHeight;
-    } catch {
-      return 0;
-    }
-  });
+  const [scrollY, setScrollY] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(0);
 
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => {
+    // Set initial values after mount to avoid hydration mismatch
+    setScrollY(window.scrollY);
+    setViewportHeight(window.innerHeight);
+
     let ticking = false;
 
     const updateScrollY = () => {

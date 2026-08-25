@@ -1,3 +1,4 @@
+/* eslint-disable react/set-state-in-effect */
 import { useEffect, useRef, useState } from "react";
 
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -9,17 +10,14 @@ export function ParallaxBackground() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerHeight, setContainerHeight] = useState(0);
 
-  // Check for reduced motion preference
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
-    try {
-      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    } catch {
-      return false;
-    }
-  });
+  // Check for reduced motion preference - init false to match SSR, update after mount
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // Set initial value after mount to avoid hydration mismatch
+    setPrefersReducedMotion(mediaQuery.matches);
 
     const handleChange = () => {
       setPrefersReducedMotion(mediaQuery.matches);

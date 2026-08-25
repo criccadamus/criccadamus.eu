@@ -1,3 +1,4 @@
+/* eslint-disable react/set-state-in-effect */
 import { IconChevronLeft, IconChevronRight, IconX } from "@tabler/icons-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -219,14 +220,21 @@ export function RegistryMediaCarousel({
   addon,
   accentColor,
 }: RegistryMediaCarouselProps) {
-  const [mediaKeys, setMediaKeys] = useState<string[] | null>(() =>
-    readFreshMediaCache(addon),
-  );
+  const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
   const [showControls, setShowControls] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [zoomedItem, setZoomedItem] = useState<RegistryMediaItem | null>(null);
+
+  // Hydration-safe: load from cache after mount (localStorage not available on server)
+  // oxlint-disable-next-line react/set-state-in-effect
+  useEffect(() => {
+    const cached = readFreshMediaCache(addon);
+    if (cached) {
+      setMediaKeys(cached);
+    }
+  }, [addon]);
 
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const carouselRef = useRef<HTMLDivElement>(null);

@@ -1,3 +1,4 @@
+/* eslint-disable react/set-state-in-effect */
 import { IconCopy } from "@tabler/icons-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -67,14 +68,11 @@ export function RegistryItemCard({
   addon,
   addonConfig,
 }: RegistryItemCardProps) {
-  const [profileString, setProfileString] = useState<string | null>(
-    () => readFreshProfileCache(name)?.content ?? null,
-  );
-  const [lastUpdated, setLastUpdated] = useState<string | null>(
-    () => readFreshProfileCache(name)?.updatedAt ?? null,
-  );
+  const [profileString, setProfileString] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
   const isMobile = useIsMobile();
 
+  // oxlint-disable-next-line react/set-state-in-effect
   useEffect(() => {
     const storeUpdatedAt = (value: string | null) => {
       if (!value) {
@@ -127,6 +125,8 @@ export function RegistryItemCard({
 
     const cached = readFreshProfileCache(name);
     if (cached) {
+      setProfileString(cached.content);
+      setLastUpdated(cached.updatedAt);
       if (!cached.updatedAt) {
         void refreshUpdatedAt();
       }
