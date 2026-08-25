@@ -7,6 +7,13 @@ import { defineConfig } from "vite-plus";
 
 const MOUNT_PATH = "/hyperscaler-services/";
 
+/**
+ * Vite configuration for the hyperscaler services application.
+ * Configures plugins for React, TypeScript paths, Tailwind CSS, TanStack Start, and Cloudflare.
+ *
+ * @returns Vite configuration object
+ */
+
 export default defineConfig({
   base: MOUNT_PATH,
   plugins: [tailwindcss(), tanstackStart(), viteReact({ compiler: true })],
@@ -54,6 +61,7 @@ export default defineConfig({
   },
   lint: {
     plugins: ["eslint", "react", "typescript", "jsx-a11y", "unicorn", "oxc", "import", "promise"],
+    jsPlugins: [{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" }],
     categories: {
       correctness: "error",
       suspicious: "warn",
@@ -148,6 +156,21 @@ export default defineConfig({
       "typescript/no-implied-eval": "error",
       "typescript/no-unsafe-type-assertion": "off",
       "typescript/no-unnecessary-type-assertion": "warn",
+      "anti-slop/no-chained-type-assertions": "error",
+      "anti-slop/no-conditional-empty-object-spread": "error",
+      "anti-slop/no-known-value-widening": "error",
+      "anti-slop/no-module-mocking": "error",
+      "anti-slop/no-object-parameters": "error",
+      "anti-slop/no-reflect-apply": "error",
+      "anti-slop/no-reflect-get": "error",
+      "anti-slop/no-runtime-typeof": "error",
+      "anti-slop/no-shape-in-symbol-names": "error",
+      "anti-slop/no-unknown-parameters": "error",
+      "anti-slop/no-unknown-returns": "error",
+      "anti-slop/no-unknown-type-aliases": "error",
+      "anti-slop/no-unsafe-dictionary-type": "error",
+      "anti-slop/no-widen-then-assert": "error",
+      "anti-slop/require-safety-comment-for-type-assertion": "error",
     },
     options: {
       typeAware: true,

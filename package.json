@@ -38,16 +38,18 @@
     "vite-tsconfig-paths": "6.1.1"
   },
   "devDependencies": {
+    "@oxlint/plugins": "1.80.0",
     "@types/node": "26.2.0",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.5",
     "@vitejs/plugin-react": "6.1.0",
+    "oxlint": "1.80.0",
     "typescript": "7.0.2",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0",
     "vite-plus": "0.3.0",
     "wrangler": "4.125.0"
   },
   "overrides": {
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9"
+    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.0"
   }
 }
