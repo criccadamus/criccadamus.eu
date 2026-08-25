@@ -5,17 +5,7 @@ import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite-plus";
 
-const MOUNT_PATH = "/hyperscaler-services/";
-
-/**
- * Vite configuration for the hyperscaler services application.
- * Configures plugins for React, TypeScript paths, Tailwind CSS, TanStack Start, and Cloudflare.
- *
- * @returns Vite configuration object
- */
-
 export default defineConfig({
-  base: MOUNT_PATH,
   plugins: [tailwindcss(), tanstackStart(), viteReact({ compiler: true })],
   resolve: {
     alias: {
@@ -60,8 +50,19 @@ export default defineConfig({
     ignorePatterns: ["src/routeTree.gen.ts", "node_modules/**", "bun.lock"],
   },
   lint: {
-    plugins: ["eslint", "react", "typescript", "jsx-a11y", "unicorn", "oxc", "import", "promise"],
-    jsPlugins: [{ name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" }],
+    plugins: [
+      "eslint",
+      "react",
+      "typescript",
+      "jsx-a11y",
+      "unicorn",
+      "oxc",
+      "import",
+      "promise",
+    ],
+    jsPlugins: [
+      { name: "anti-slop", specifier: "./tools/oxlint/anti-slop/index.ts" },
+    ],
     categories: {
       correctness: "error",
       suspicious: "warn",
@@ -70,7 +71,13 @@ export default defineConfig({
       browser: true,
       ESNext: true,
     },
-    ignorePatterns: ["*.d.ts", "**/*.d.ts", "public/**", "tools/**", "tools/**/*"],
+    ignorePatterns: [
+      "*.d.ts",
+      "**/*.d.ts",
+      "public/**",
+      "tools/**",
+      "tools/**/*",
+    ],
     rules: {
       "typescript/no-explicit-any": "error",
       "typescript/no-unsafe-assignment": "error",
