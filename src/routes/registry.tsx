@@ -8,9 +8,15 @@ import { RegistryList } from "@/components/registry/registry-list";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
+interface RegistrySearch {
+  profile?: string;
+  macro?: string;
+}
+
 export const Route = createFileRoute("/registry")({
-  validateSearch: (search: Record<string, string | undefined>) => {
+  validateSearch: (
+    search: Record<string, string | undefined>,
+  ): RegistrySearch => {
     const profile = search.profile;
     const macro = search.macro;
     return { profile, macro };
@@ -33,12 +39,7 @@ function RegistryPage() {
   const isMobile = useIsMobile();
   const mobileTextClass = isMobile ? "text-white" : "text-foreground";
   const mobileSubtextClass = isMobile ? "text-white/75" : "text-foreground/75";
-  // SAFETY: /registry search is validated to { profile?: string, macro?: string }
-  // oxlint-disable-next-line typescript/no-unsafe-assignment -- useSearch returns any for generated route, cast is safe with SAFETY
-  const { profile, macro } = useSearch({ from: "/registry" }) as {
-    profile?: string;
-    macro?: string;
-  };
+  const { profile, macro } = useSearch({ from: "/registry" });
   const profilesRef = useRef<HTMLElement>(null);
   const macrosRef = useRef<HTMLElement>(null);
 
@@ -47,7 +48,10 @@ function RegistryPage() {
     const hasMacro = Boolean(macro);
 
     if (hasProfile && !hasMacro) {
-      profilesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      profilesRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     } else if (hasMacro && !hasProfile) {
       macrosRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
@@ -63,15 +67,18 @@ function RegistryPage() {
             className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur"
           >
             <div>
-              <h2 className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}>
+              <h2
+                className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}
+              >
                 Addon Profiles
               </h2>
               <p className={`mt-2 ${mobileSubtextClass}`}>
                 My personal addon profiles for World of Warcraft.
               </p>
               <p className={`mt-2 ${mobileSubtextClass}`}>
-                Download them with the <code className="tracking-tight">shadcn</code> CLI or copy
-                the strings directly.
+                Download them with the{" "}
+                <code className="tracking-tight">shadcn</code> CLI or copy the
+                strings directly.
               </p>
             </div>
             <Alert className="border-border/60 bg-background/70 sm:bg-background/70">
@@ -79,11 +86,13 @@ function RegistryPage() {
               <AlertTitle>Fonts used in these profiles</AlertTitle>
               <AlertDescription>
                 <p>
-                  These profiles are tailored for <span className="font-bold">Pretendard</span> and{" "}
+                  These profiles are tailored for{" "}
+                  <span className="font-bold">Pretendard</span> and{" "}
                   <code className="tracking-tight">Google Sans Code</code>.
                 </p>
                 <p>
-                  You can download this addons that will add them to all <code>libSharedMedia</code>
+                  You can download this addons that will add them to all{" "}
+                  <code>libSharedMedia</code>
                   -compatible addons here:
                 </p>
                 <ul>
@@ -110,7 +119,10 @@ function RegistryPage() {
                     </a>
                   </li>
                 </ul>
-                <p>If the fonts are not found, each addon's fallback will be used instead.</p>
+                <p>
+                  If the fonts are not found, each addon's fallback will be used
+                  instead.
+                </p>
               </AlertDescription>
             </Alert>
             <RegistryList />
@@ -121,7 +133,11 @@ function RegistryPage() {
             className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur"
           >
             <div>
-              <h2 className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}>Macros</h2>
+              <h2
+                className={`text-2xl font-bold tracking-tight ${mobileTextClass}`}
+              >
+                Macros
+              </h2>
             </div>
             <MacrosList />
           </section>

@@ -47,7 +47,13 @@ export default defineConfig({
       preserveDuplicates: false,
       preserveWhitespace: false,
     },
-    ignorePatterns: ["src/routeTree.gen.ts", "node_modules/**", "bun.lock"],
+    ignorePatterns: [
+      "src/routeTree.gen.ts",
+      "node_modules/**",
+      "bun.lock",
+      "*.d.ts",
+      "**/*.d.ts",
+    ],
   },
   lint: {
     plugins: [

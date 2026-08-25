@@ -171,7 +171,12 @@ export function MacroCard({ name, spec, macro, classConfig }: MacroCardProps) {
           <h4 className="text-sm font-medium text-foreground">{name}</h4>
           {spec && <p className="text-xs text-muted-foreground">{spec}</p>}
         </div>
-        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0" onClick={copy}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 shrink-0"
+          onClick={copy}
+        >
           <IconCopy className="h-4 w-4" />
         </Button>
       </div>

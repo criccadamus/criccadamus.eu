@@ -3,6 +3,8 @@ type StartRequestContext = {
   ctx: ExecutionContext;
 };
 
+export {};
+
 declare module "@tanstack/react-start" {
   interface Register {
     server: {

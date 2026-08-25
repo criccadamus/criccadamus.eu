@@ -1,4 +1,9 @@
-import { IconAlertTriangle, IconArrowLeft, IconHome, IconRefresh } from "@tabler/icons-react";
+import {
+  IconAlertTriangle,
+  IconArrowLeft,
+  IconHome,
+  IconRefresh,
+} from "@tabler/icons-react";
 import { Link, useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
 
@@ -22,8 +27,6 @@ function ErrorMessage({ message }: { message: string | null }) {
 }
 
 export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment -- reset is typed as () => void | undefined via ErrorBoundaryProps
-  const safeReset = reset;
   const errorMessage = error instanceof Error ? error.message : null;
   useEffect(() => {
     // Log error to console for debugging
@@ -38,7 +41,9 @@ export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
             <IconAlertTriangle className="h-4 w-4 text-destructive" />
           </div>
           <div className="space-y-1">
-            <h1 className="text-sm font-medium text-foreground">Something went wrong</h1>
+            <h1 className="text-sm font-medium text-foreground">
+              Something went wrong
+            </h1>
             <p className="text-xs leading-relaxed text-muted-foreground">
               An unexpected error occurred while loading this page.
             </p>
@@ -48,8 +53,7 @@ export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
         <ErrorMessage message={errorMessage} />
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          {/* oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return -- safeReset is typed function */}
-          <Button size="sm" onClick={() => safeReset?.()}>
+          <Button size="sm" onClick={() => reset?.()}>
             <IconRefresh className="mr-2 h-4 w-4" />
             Try Again
           </Button>
@@ -66,13 +70,8 @@ export function ErrorBoundary({ error, reset }: ErrorBoundaryProps) {
 }
 
 export function RouteErrorBoundary({ error, reset }: ErrorBoundaryProps) {
-  // oxlint-disable-next-line typescript/no-unsafe-assignment -- reset is typed as () => void | undefined
-  const safeReset = reset;
-  // SAFETY: TanStack useRouter returns history with back() at runtime; shape validated via navigation
-  // oxlint-disable-next-line typescript/no-unsafe-assignment, typescript/no-unnecessary-type-assertion -- useRouter type is generic any, cast is safe with SAFETY
-  const router = useRouter() as { history: { back: () => void } };
+  const router = useRouter();
   const errorMessage = error instanceof Error ? error.message : null;
-
   useEffect(() => {
     // Log error to console for debugging
     console.error("Route Error:", error);
@@ -86,7 +85,9 @@ export function RouteErrorBoundary({ error, reset }: ErrorBoundaryProps) {
             <IconAlertTriangle className="h-4 w-4 text-destructive" />
           </div>
           <div className="space-y-1">
-            <h2 className="text-sm font-medium text-foreground">Something went wrong</h2>
+            <h2 className="text-sm font-medium text-foreground">
+              Something went wrong
+            </h2>
             <p className="text-xs leading-relaxed text-muted-foreground">
               We encountered an error while loading this content.
             </p>
@@ -96,13 +97,15 @@ export function RouteErrorBoundary({ error, reset }: ErrorBoundaryProps) {
         <ErrorMessage message={errorMessage} />
 
         <div className="flex flex-col gap-2 sm:flex-row">
-          {/* oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return -- safeReset typed */}
-          <Button onClick={() => safeReset?.()} size="sm">
+          <Button onClick={() => reset?.()} size="sm">
             <IconRefresh className="mr-1 h-4 w-4" />
             Try Again
           </Button>
-          {/* oxlint-disable-next-line typescript/no-unsafe-call, typescript/no-unsafe-return, typescript/no-unsafe-member-access -- router is typed via SAFETY cast */}
-          <Button onClick={() => router.history.back()} variant="ghost" size="sm">
+          <Button
+            onClick={() => router.history.back()}
+            variant="ghost"
+            size="sm"
+          >
             <IconArrowLeft className="mr-1 h-4 w-4" />
             Go Back
           </Button>

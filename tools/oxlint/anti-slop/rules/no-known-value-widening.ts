@@ -38,19 +38,27 @@ function resolveVariable(
   return null;
 }
 
-function variableDeclarator(variable: Variable): ESTree.VariableDeclarator | null {
+function variableDeclarator(
+  variable: Variable,
+): ESTree.VariableDeclarator | null {
   if (variable.defs.length !== 1) return null;
   const [definition] = variable.defs;
-  return definition?.type === "Variable" && definition.node.type === "VariableDeclarator"
+  return definition?.type === "Variable" &&
+    definition.node.type === "VariableDeclarator"
     ? definition.node
     : null;
 }
 
-function isStableConstVariable(variable: Variable, declarator: ESTree.VariableDeclarator): boolean {
+function isStableConstVariable(
+  variable: Variable,
+  declarator: ESTree.VariableDeclarator,
+): boolean {
   return (
     declarator.parent.type === "VariableDeclaration" &&
     declarator.parent.kind === "const" &&
-    variable.references.every((reference) => reference.init || !reference.isWrite())
+    variable.references.every(
+      (reference) => reference.init || !reference.isWrite(),
+    )
   );
 }
 
@@ -100,33 +108,49 @@ function enclosingFunction(node: ESTree.Node): FunctionExpression | null {
   return null;
 }
 
-function sourceKeyName(sourceCode: SourceCode, key: ESTree.PropertyKey): string {
-  if (key.type === "Identifier" || key.type === "PrivateIdentifier") return key.name;
+function sourceKeyName(
+  sourceCode: SourceCode,
+  key: ESTree.PropertyKey,
+): string {
+  if (key.type === "Identifier" || key.type === "PrivateIdentifier")
+    return key.name;
   if (key.type === "Literal") return String(key.value);
   return sourceCode.getText(key);
 }
 
-function functionName(sourceCode: SourceCode, owner: FunctionExpression | null): string {
+function functionName(
+  sourceCode: SourceCode,
+  owner: FunctionExpression | null,
+): string {
   if (owner === null) return "anonymous function";
   if (owner.id !== null) return owner.id.name;
   const parent = owner.parent;
   if (parent.type === "VariableDeclarator" && parent.id.type === "Identifier")
     return parent.id.name;
-  if (parent.type === "MethodDefinition") return sourceKeyName(sourceCode, parent.key);
+  if (parent.type === "MethodDefinition")
+    return sourceKeyName(sourceCode, parent.key);
   return "anonymous function";
 }
 
 function isEmptyObjectExpression(expression: ESTree.Expression): boolean {
   const unwrapped = unwrapExpression(expression);
-  return unwrapped.type === "ObjectExpression" && unwrapped.properties.length === 0;
+  return (
+    unwrapped.type === "ObjectExpression" && unwrapped.properties.length === 0
+  );
 }
 
 function isDictionaryAccumulatorTarget(destination: WideningTarget): boolean {
-  return destination.kind === "open dictionary" || destination.kind === "generic container";
+  return (
+    destination.kind === "open dictionary" ||
+    destination.kind === "generic container"
+  );
 }
 
 function hasParentAssertion(node: ESTree.Node): boolean {
-  return node.parent?.type === "TSAsExpression" || node.parent?.type === "TSTypeAssertion";
+  return (
+    node.parent?.type === "TSAsExpression" ||
+    node.parent?.type === "TSTypeAssertion"
+  );
 }
 
 /** Detect sound syntactic cases where a known value is explicitly widened and loses evidence. */
@@ -151,7 +175,10 @@ export const noKnownValueWideningRule = defineRule({
       subject: string,
     ) => {
       if (destination === null) return;
-      if (isDictionaryAccumulatorTarget(destination) && isEmptyObjectExpression(expression)) {
+      if (
+        isDictionaryAccumulatorTarget(destination) &&
+        isEmptyObjectExpression(expression)
+      ) {
         return;
       }
       if (!hasKnownEvidence(context.sourceCode, expression)) return;
@@ -162,7 +189,9 @@ export const noKnownValueWideningRule = defineRule({
       });
     };
 
-    const targetFromAnnotation = (annotation: ESTree.TSTypeAnnotation | null | undefined) =>
+    const targetFromAnnotation = (
+      annotation: ESTree.TSTypeAnnotation | null | undefined,
+    ) =>
       environment === null ? null : annotationTarget(annotation, environment);
 
     return {

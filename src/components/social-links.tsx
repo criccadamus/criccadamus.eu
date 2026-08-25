@@ -150,7 +150,9 @@ export function SocialLinks() {
             )}
           >
             <img
-              src={isDark ? "/icon/anilist-dark.svg" : "/icon/anilist-light.svg"}
+              src={
+                isDark ? "/icon/anilist-dark.svg" : "/icon/anilist-light.svg"
+              }
               alt="AniList"
               className="h-6 w-6 shrink-0"
             />
@@ -174,7 +176,9 @@ export function SocialLinks() {
               <IconExternalLink className="h-4 w-4 text-foreground group-hover:text-[#02A9FF] md:h-5 md:w-5" />
             </div>
             <img
-              src={isDark ? "/icon/anilist-dark.svg" : "/icon/anilist-light.svg"}
+              src={
+                isDark ? "/icon/anilist-dark.svg" : "/icon/anilist-light.svg"
+              }
               alt="AniList"
               className="h-full max-h-24 w-full max-w-24"
             />

@@ -24,15 +24,33 @@ function MacroCardSkeleton({ color }: { color: string }) {
     >
       <div className="flex items-center justify-between">
         <div className="w-full space-y-2">
-          <div className="h-3 rounded" style={{ backgroundColor: skeletonShade, width: "60%" }} />
-          <div className="h-2.5 rounded" style={{ backgroundColor: skeletonShade, width: "40%" }} />
+          <div
+            className="h-3 rounded"
+            style={{ backgroundColor: skeletonShade, width: "60%" }}
+          />
+          <div
+            className="h-2.5 rounded"
+            style={{ backgroundColor: skeletonShade, width: "40%" }}
+          />
         </div>
-        <div className="h-8 w-8 rounded" style={{ backgroundColor: skeletonShade }} />
+        <div
+          className="h-8 w-8 rounded"
+          style={{ backgroundColor: skeletonShade }}
+        />
       </div>
       <div className="space-y-2 rounded border border-transparent px-3 py-2">
-        <div className="h-2.5 rounded" style={{ backgroundColor: skeletonShade, width: "85%" }} />
-        <div className="h-2.5 rounded" style={{ backgroundColor: skeletonShade, width: "70%" }} />
-        <div className="h-2.5 rounded" style={{ backgroundColor: skeletonShade, width: "60%" }} />
+        <div
+          className="h-2.5 rounded"
+          style={{ backgroundColor: skeletonShade, width: "85%" }}
+        />
+        <div
+          className="h-2.5 rounded"
+          style={{ backgroundColor: skeletonShade, width: "70%" }}
+        />
+        <div
+          className="h-2.5 rounded"
+          style={{ backgroundColor: skeletonShade, width: "60%" }}
+        />
       </div>
     </div>
   );
@@ -47,11 +65,12 @@ export function MacrosList() {
   // SAFETY: wowClasses is defined with WowClass keys; Object.keys returns those exact keys at runtime
   const classOrder = Object.keys(wowClasses) as WowClass[];
   // SAFETY: /registry search is validated to { macro?: string, profile?: string }; shape trusted from validateSearch
-  const search = useSearch({ from: "/registry" }) as { macro?: string; profile?: string };
-  // oxlint-disable-next-line typescript/no-unsafe-assignment
+  const search = useSearch({ from: "/registry" });
   const navigate = useNavigate({ from: "/registry" });
   const initialClass =
-    search.macro !== undefined && isWowClass(search.macro) && wowClasses[search.macro]
+    search.macro !== undefined &&
+    isWowClass(search.macro) &&
+    wowClasses[search.macro]
       ? search.macro
       : classOrder[0];
   const [activeClass, setActiveClass] = useState<WowClass>(initialClass);
@@ -62,9 +81,8 @@ export function MacrosList() {
     }
     const classKey = value;
     setActiveClass(classKey);
-    // oxlint-disable-next-line typescript/no-unsafe-call
-    navigate({
-      search: (prev: { profile?: string; macro?: string }) => ({ ...prev, macro: classKey }),
+    void navigate({
+      search: (prev) => ({ ...prev, macro: classKey }),
       replace: true,
       resetScroll: false,
     });
@@ -75,7 +93,9 @@ export function MacrosList() {
     {} as Record<WowClass, Macro[]>,
   );
   // SAFETY: empty record is valid initial cache before any class loads
-  const [updatedAtByClass, setUpdatedAtByClass] = useState<Record<WowClass, string | null>>(
+  const [updatedAtByClass, setUpdatedAtByClass] = useState<
+    Record<WowClass, string | null>
+  >(
     // SAFETY: empty record is valid initial cache before any class loads; entries populated on demand
     {} as Record<WowClass, string | null>,
   );
@@ -83,14 +103,18 @@ export function MacrosList() {
   const tabsRootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
+      "[data-slot='tabs-list']",
+    );
     if (tabsList) {
       tabsList.scrollLeft = 0;
     }
   }, []);
 
   useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
+      "[data-slot='tabs-list']",
+    );
     if (!tabsList) {
       return;
     }
@@ -140,8 +164,7 @@ export function MacrosList() {
           return;
         }
         // SAFETY: GitHub gist API returns object with optional updated_at; shape validated via property check
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- response.json() returns unknown, cast to typed shape is required
-        const data = (await res.json()) as { updated_at?: string };
+        const data: { updated_at?: string } = await res.json();
         if (data.updated_at) {
           storeUpdatedAt(data.updated_at);
         }
@@ -152,8 +175,11 @@ export function MacrosList() {
 
     const refreshMetadata = async () => {
       try {
-        const res = await fetch(`/macros/${activeClass}/json`, { cache: "no-store" });
-        const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
+        const res = await fetch(`/macros/${activeClass}/json`, {
+          cache: "no-store",
+        });
+        const updatedAt =
+          res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         if (updatedAt) {
           storeUpdatedAt(updatedAt);
         } else {
@@ -175,7 +201,11 @@ export function MacrosList() {
       try {
         const cached = localStorage.getItem(cacheKey);
         const cachedAt = Number(localStorage.getItem(cacheTsKey));
-        if (!cached || !Number.isFinite(cachedAt) || Date.now() - cachedAt >= cacheTtlMs) {
+        if (
+          !cached ||
+          !Number.isFinite(cachedAt) ||
+          Date.now() - cachedAt >= cacheTtlMs
+        ) {
           return null;
         }
 
@@ -210,7 +240,8 @@ export function MacrosList() {
       try {
         const response = await fetch(`/macros/${activeClass}/json`);
         const updatedAt =
-          response.headers.get("x-last-updated") ?? response.headers.get("last-modified");
+          response.headers.get("x-last-updated") ??
+          response.headers.get("last-modified");
         const data: unknown = await response.json();
         // SAFETY: response JSON is expected to be Macro[]; Array.isArray confirms array, elements validated by MacroCard rendering
         const macros = Array.isArray(data) ? (data as Macro[]) : [];
@@ -282,7 +313,8 @@ export function MacrosList() {
         <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
           {classOrder.map((classKey) => {
             const classConfig = wowClasses[classKey];
-            const dotBorderColor = classKey === "priest" ? "rgba(15, 23, 42, 0.35)" : "transparent";
+            const dotBorderColor =
+              classKey === "priest" ? "rgba(15, 23, 42, 0.35)" : "transparent";
             return (
               <TabsTrigger
                 key={classKey}
@@ -341,7 +373,9 @@ export function MacrosList() {
                   </>
                 )}
                 {macros && macros.length === 0 && !isLoading && (
-                  <div className="text-xs text-muted-foreground">No macros found.</div>
+                  <div className="text-xs text-muted-foreground">
+                    No macros found.
+                  </div>
                 )}
               </div>
             </TabsContent>

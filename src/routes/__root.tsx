@@ -70,7 +70,9 @@ function RootDocument({ children }: { children: ReactNode }) {
           richColors
           position="bottom-center"
         />
-        <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-3 md:py-8">{children}</div>
+        <div className="mx-auto w-full max-w-4xl flex-1 px-4 py-3 md:py-8">
+          {children}
+        </div>
         <Footer />
         <Scripts />
         <a href="https://github.com/criccadamus" className="sr-only" rel="me">
@@ -79,7 +81,11 @@ function RootDocument({ children }: { children: ReactNode }) {
         <a href="https://twitter.com/criccadamus" className="sr-only" rel="me">
           Twitter
         </a>
-        <a href="https://bsky.app/profile/criccadamus.eu" className="sr-only" rel="me">
+        <a
+          href="https://bsky.app/profile/criccadamus.eu"
+          className="sr-only"
+          rel="me"
+        >
           Bluesky
         </a>
       </body>

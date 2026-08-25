@@ -1,4 +1,8 @@
-import { IconExternalLink, IconInfoCircle, IconDownload } from "@tabler/icons-react";
+import {
+  IconExternalLink,
+  IconInfoCircle,
+  IconDownload,
+} from "@tabler/icons-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { AddonAlert } from "@/data/addons";

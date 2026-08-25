@@ -120,7 +120,12 @@ async function fetchProfileContent(gistId: string, filename: string) {
   try {
     const response = await fetch(rawUrl);
     if (!response.ok) {
-      return { error: Response.json({ error: "Profile content not found." }, { status: 404 }) };
+      return {
+        error: Response.json(
+          { error: "Profile content not found." },
+          { status: 404 },
+        ),
+      };
     }
 
     const content = await response.text();
@@ -130,7 +135,12 @@ async function fetchProfileContent(gistId: string, filename: string) {
 
     return { content, updatedAt };
   } catch {
-    return { error: Response.json({ error: "Failed to load profile content." }, { status: 502 }) };
+    return {
+      error: Response.json(
+        { error: "Failed to load profile content." },
+        { status: 502 },
+      ),
+    };
   }
 }
 
@@ -152,7 +162,9 @@ interface GistMetadataResponse {
   updated_at?: string;
 }
 
-async function fetchGistMetadata(gistId: string): Promise<{ updatedAt: string | undefined }> {
+async function fetchGistMetadata(
+  gistId: string,
+): Promise<{ updatedAt: string | undefined }> {
   try {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
@@ -164,27 +176,31 @@ async function fetchGistMetadata(gistId: string): Promise<{ updatedAt: string | 
       return { updatedAt: undefined };
     }
     // SAFETY: GitHub gist API returns object with optional updated_at; validated via optional access
-    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- response.json() returns unknown, cast to typed response is required
-    const data = (await response.json()) as GistMetadataResponse;
+    const data: GistMetadataResponse = await response.json();
     return { updatedAt: data.updated_at };
   } catch {
     return { updatedAt: undefined };
   }
 }
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
 export const Route = createFileRoute("/r/$name/json")({
   server: {
     handlers: {
       GET: async (ctx: RouteCtx<{ name: string }>) => {
         const { params } = ctx;
         if (!GIST_OWNER) {
-          return Response.json({ error: "Registry gist is not configured." }, { status: 500 });
+          return Response.json(
+            { error: "Registry gist is not configured." },
+            { status: 500 },
+          );
         }
 
         const profile = findProfileByName(params.name);
         if (!profile) {
-          return Response.json({ error: "Profile not found." }, { status: 404 });
+          return Response.json(
+            { error: "Profile not found." },
+            { status: 404 },
+          );
         }
 
         const env = getEnvFromContext(ctx.context);
@@ -193,12 +209,20 @@ export const Route = createFileRoute("/r/$name/json")({
 
         const cached = await readCachedProfile(env, cacheKey);
         if (cached) {
-          return buildProfileResponse(profile, cached.content, filename, cached.updatedAt);
+          return buildProfileResponse(
+            profile,
+            cached.content,
+            filename,
+            cached.updatedAt,
+          );
         }
 
         const gistId = profileGists[profile.name];
         if (!gistId) {
-          return Response.json({ error: "Profile gist not found." }, { status: 404 });
+          return Response.json(
+            { error: "Profile gist not found." },
+            { status: 404 },
+          );
         }
 
         const profileResult = await fetchProfileContent(gistId, filename);
@@ -213,7 +237,9 @@ export const Route = createFileRoute("/r/$name/json")({
               content,
               updatedAt,
             } satisfies CachedProfile);
-            await env.REGISTRY_KV.put(cacheKey, cacheValue, { expirationTtl: kvTtlSeconds });
+            await env.REGISTRY_KV.put(cacheKey, cacheValue, {
+              expirationTtl: kvTtlSeconds,
+            });
           } catch {
             // Ignore cache write errors
           }

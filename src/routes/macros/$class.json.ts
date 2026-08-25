@@ -93,14 +93,21 @@ async function fetchMacrosFromGist(classKey: WowClass, gistId: string) {
       const fallbackUrl = buildRawGistUrl(gistId, `${classKey}.json`);
       response = await fetch(fallbackUrl);
       if (!response.ok) {
-        return { error: Response.json({ error: "Macros not found." }, { status: 404 }) };
+        return {
+          error: Response.json({ error: "Macros not found." }, { status: 404 }),
+        };
       }
     }
 
     const text = await response.text();
     const payload: unknown = JSON.parse(text);
     if (!Array.isArray(payload)) {
-      return { error: Response.json({ error: "Invalid macros format." }, { status: 502 }) };
+      return {
+        error: Response.json(
+          { error: "Invalid macros format." },
+          { status: 502 },
+        ),
+      };
     }
 
     const rawLastModified = response.headers.get("last-modified") ?? undefined;
@@ -110,7 +117,12 @@ async function fetchMacrosFromGist(classKey: WowClass, gistId: string) {
     // SAFETY: payload is array validated via Array.isArray; elements are unknown macro objects
     return { macros: payload as unknown[], updatedAt };
   } catch {
-    return { error: Response.json({ error: "Failed to load macros." }, { status: 502 }) };
+    return {
+      error: Response.json(
+        { error: "Failed to load macros." },
+        { status: 502 },
+      ),
+    };
   }
 }
 
@@ -122,7 +134,9 @@ interface GistMetadataResponse {
   updated_at?: string;
 }
 
-async function fetchGistMetadata(gistId: string): Promise<{ updatedAt: string | undefined }> {
+async function fetchGistMetadata(
+  gistId: string,
+): Promise<{ updatedAt: string | undefined }> {
   try {
     const response = await fetch(`${gistApiBase}/${gistId}`, {
       headers: {
@@ -134,7 +148,6 @@ async function fetchGistMetadata(gistId: string): Promise<{ updatedAt: string | 
       return { updatedAt: undefined };
     }
     // SAFETY: GitHub gist API returns object with optional updated_at; validated via optional access
-    // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- response.json() returns unknown, cast to typed response is required
     const data = (await response.json()) as GistMetadataResponse;
     return { updatedAt: data.updated_at };
   } catch {
@@ -142,7 +155,6 @@ async function fetchGistMetadata(gistId: string): Promise<{ updatedAt: string | 
   }
 }
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
 export const Route = createFileRoute("/macros/$class/json")({
   server: {
     handlers: {
@@ -162,7 +174,10 @@ export const Route = createFileRoute("/macros/$class/json")({
 
         const gistId = classGists[classKey];
         if (!gistId || gistId === "TODO") {
-          return Response.json({ error: "Class gist not configured." }, { status: 500 });
+          return Response.json(
+            { error: "Class gist not configured." },
+            { status: 500 },
+          );
         }
 
         const macrosResult = await fetchMacrosFromGist(classKey, gistId);
@@ -177,7 +192,9 @@ export const Route = createFileRoute("/macros/$class/json")({
               macros,
               updatedAt,
             } satisfies CachedMacros);
-            await env.REGISTRY_KV.put(cacheKey, cacheValue, { expirationTtl: kvTtlSeconds });
+            await env.REGISTRY_KV.put(cacheKey, cacheValue, {
+              expirationTtl: kvTtlSeconds,
+            });
           } catch {
             // Ignore cache write errors
           }

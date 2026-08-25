@@ -34,7 +34,8 @@ const antiSlopPlugin = definePlugin({
     "no-unknown-returns": noUnknownReturnsRule,
     "no-unknown-type-aliases": noUnknownTypeAliasesRule,
     "no-widen-then-assert": noWidenThenAssertRule,
-    "require-safety-comment-for-type-assertion": requireSafetyCommentForTypeAssertionRule,
+    "require-safety-comment-for-type-assertion":
+      requireSafetyCommentForTypeAssertionRule,
   },
 });
 

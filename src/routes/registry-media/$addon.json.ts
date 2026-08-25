@@ -29,7 +29,6 @@ function extractNumericIndex(key: string) {
   return Number.isFinite(index) ? index : null;
 }
 
-// oxlint-disable-next-line typescript/no-unsafe-assignment -- TanStack createFileRoute is typed as any for generated routes
 export const Route = createFileRoute("/registry-media/$addon/json")({
   server: {
     handlers: {
@@ -42,7 +41,10 @@ export const Route = createFileRoute("/registry-media/$addon/json")({
 
         const env = getEnvFromContext(ctx.context);
         if (!env?.REGISTRY_MEDIA_BUCKET) {
-          return Response.json({ error: "Media bucket not configured." }, { status: 500 });
+          return Response.json(
+            { error: "Media bucket not configured." },
+            { status: 500 },
+          );
         }
 
         const items: string[] = [];
@@ -74,7 +76,10 @@ export const Route = createFileRoute("/registry-media/$addon/json")({
             }
           } while (cursor);
         } catch {
-          return Response.json({ error: "Failed to list media." }, { status: 502 });
+          return Response.json(
+            { error: "Failed to list media." },
+            { status: 502 },
+          );
         }
 
         items.sort((a, b) => {

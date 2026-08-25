@@ -31,7 +31,8 @@ export const profilesByAddon: AddonProfiles[] = [
     alerts: [
       {
         title: "Extend the Cooldown Manager",
-        description: "ElvUI is not flexible enough, so we use this for better customization.",
+        description:
+          "ElvUI is not flexible enough, so we use this for better customization.",
         icon: "download",
         link: {
           text: "SenseiClassResourceBar on Wago",
@@ -40,7 +41,8 @@ export const profilesByAddon: AddonProfiles[] = [
       },
       {
         title: "More QoL for you",
-        description: "GOATed addon with so many knobs and options. You should try it!",
+        description:
+          "GOATed addon with so many knobs and options. You should try it!",
         icon: "download",
         link: {
           text: "Plumber on Wago",

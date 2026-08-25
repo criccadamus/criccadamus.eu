@@ -1,4 +1,7 @@
-import { createStartHandler, defaultStreamHandler } from "@tanstack/react-start/server";
+import {
+  createStartHandler,
+  defaultStreamHandler,
+} from "@tanstack/react-start/server";
 
 type RegistryEnv = {
   REGISTRY_KV?: KVNamespace;

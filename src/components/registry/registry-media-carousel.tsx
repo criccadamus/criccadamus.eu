@@ -45,7 +45,10 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
 }
 
 // oxlint-disable-next-line complexity -- carousel handles gallery, lightbox, cache, and scroll logic; splitting would hurt cohesion
-export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarouselProps) {
+export function RegistryMediaCarousel({
+  addon,
+  accentColor,
+}: RegistryMediaCarouselProps) {
   const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showControls, setShowControls] = useState(true);
@@ -81,7 +84,8 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     for (const item of parsedItems) {
       const insertAt = sortedItems.findIndex(
         (current) =>
-          current.index > item.index || (current.index === item.index && current.key > item.key),
+          current.index > item.index ||
+          (current.index === item.index && current.key > item.key),
       );
       if (insertAt === -1) {
         sortedItems.push(item);
@@ -104,12 +108,15 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
           return current;
         }
 
-        const currentZoomIndex = mediaItems.findIndex((item) => item.key === current.key);
+        const currentZoomIndex = mediaItems.findIndex(
+          (item) => item.key === current.key,
+        );
         if (currentZoomIndex === -1) {
           return current;
         }
 
-        const nextIndex = (currentZoomIndex + delta + mediaItems.length) % mediaItems.length;
+        const nextIndex =
+          (currentZoomIndex + delta + mediaItems.length) % mediaItems.length;
         return mediaItems[nextIndex] ?? current;
       });
     },
@@ -215,7 +222,11 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     try {
       const cached = localStorage.getItem(cacheKey);
       const cachedAt = Number(localStorage.getItem(cacheTsKey));
-      if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < MEDIA_CACHE_TTL_MS) {
+      if (
+        cached &&
+        Number.isFinite(cachedAt) &&
+        Date.now() - cachedAt < MEDIA_CACHE_TTL_MS
+      ) {
         // SAFETY: cached value was previously stringified string[]; validated via Array.isArray, unknown is safe intermediate
         const parsed = JSON.parse(cached) as unknown;
         if (Array.isArray(parsed)) {
@@ -236,13 +247,13 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     setHasError(false);
 
     fetch(`/registry-media/${addon}/json`, { signal: controller.signal })
-      .then((res) => {
+      .then(async (res) => {
         if (!res.ok) {
           throw new Error("Failed to load registry media.");
         }
         // SAFETY: registry-media endpoint returns { items: string[] }; validated via Array.isArray below
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- typed media response
-        return res.json() as Promise<RegistryMediaResponse>;
+        const data: RegistryMediaResponse = await res.json();
+        return data;
       })
       .then((data) => {
         if (!isActive) {
@@ -317,7 +328,11 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     if (!target) {
       return;
     }
-    target.scrollIntoView({ behavior: "smooth", inline: "start", block: "nearest" });
+    target.scrollIntoView({
+      behavior: "smooth",
+      inline: "start",
+      block: "nearest",
+    });
     setCurrentIndex(index);
   };
 
@@ -345,11 +360,15 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
     <div ref={carouselRef} className="space-y-2">
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium text-muted-foreground">Gallery</p>
-        {isLoading && <span className="text-[11px] text-muted-foreground">Loading...</span>}
+        {isLoading && (
+          <span className="text-[11px] text-muted-foreground">Loading...</span>
+        )}
       </div>
 
       {hasError && !isLoading && (
-        <div className="text-xs text-muted-foreground">Media not available.</div>
+        <div className="text-xs text-muted-foreground">
+          Media not available.
+        </div>
       )}
 
       {!hasError && hasItems && (
@@ -406,7 +425,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                 variant="ghost"
                 size="icon"
                 onClick={() =>
-                  scrollToIndex((currentIndex - 1 + mediaItems.length) % mediaItems.length)
+                  scrollToIndex(
+                    (currentIndex - 1 + mediaItems.length) % mediaItems.length,
+                  )
                 }
                 className={`absolute top-1/2 left-2 -translate-y-1/2 bg-black/50 text-white transition-all duration-300 hover:bg-black/70 ${
                   showControls ? "opacity-100" : "pointer-events-none opacity-0"
@@ -417,7 +438,9 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => scrollToIndex((currentIndex + 1) % mediaItems.length)}
+                onClick={() =>
+                  scrollToIndex((currentIndex + 1) % mediaItems.length)
+                }
                 className={`absolute top-1/2 right-2 -translate-y-1/2 bg-black/50 text-white transition-all duration-300 hover:bg-black/70 ${
                   showControls ? "opacity-100" : "pointer-events-none opacity-0"
                 }`}
@@ -463,11 +486,19 @@ export function RegistryMediaCarousel({ addon, accentColor }: RegistryMediaCarou
                     )}
                     <div
                       className={`relative h-full w-full rounded-full transition-all duration-300 ${
-                        currentIndex === index ? "scale-150" : "group-hover:scale-125"
+                        currentIndex === index
+                          ? "scale-150"
+                          : "group-hover:scale-125"
                       }`}
                       style={{
-                        backgroundColor: currentIndex === index ? accentColor : `${accentColor}66`,
-                        boxShadow: currentIndex === index ? `0 0 8px ${accentColor}80` : undefined,
+                        backgroundColor:
+                          currentIndex === index
+                            ? accentColor
+                            : `${accentColor}66`,
+                        boxShadow:
+                          currentIndex === index
+                            ? `0 0 8px ${accentColor}80`
+                            : undefined,
                       }}
                     />
                   </button>

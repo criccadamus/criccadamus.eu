@@ -12,7 +12,8 @@ export function useTheme() {
   useEffect(() => {
     // Listen for theme changes
     const observer = new MutationObserver(() => {
-      const nextIsDarkMode = document.documentElement.classList.contains("dark");
+      const nextIsDarkMode =
+        document.documentElement.classList.contains("dark");
       setIsDark(nextIsDarkMode);
     });
 

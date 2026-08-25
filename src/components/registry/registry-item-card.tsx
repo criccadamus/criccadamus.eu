@@ -1,5 +1,4 @@
 import { IconCopy } from "@tabler/icons-react";
-import { useSearch } from "@tanstack/react-router";
 import { useState, useEffect, useRef } from "react";
 import { toast } from "sonner";
 
@@ -44,30 +43,23 @@ export function RegistryItemCard({
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
   const [profileString, setProfileString] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
-  // SAFETY: tab is extracted from URL search; validateSearch returns string values, shape trusted from router
-  const search = useSearch({ from: "/registry" }) as { tab?: string };
-  const selectedTab =
-    search.tab !== undefined && ["string", "npm", "yarn", "pnpm", "bun"].includes(search.tab)
-      ? search.tab
-      : "string";
-  const [activeTab, setActiveTab] = useState(selectedTab);
+  const [activeTab, setActiveTab] = useState("string");
   const tabsRootRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- syncing URL param (external navigation state) to controlled tab
-    setActiveTab(selectedTab);
-  }, [selectedTab]);
-
-  useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
+      "[data-slot='tabs-list']",
+    );
     if (tabsList) {
       tabsList.scrollLeft = 0;
     }
   }, []);
 
   useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>("[data-slot='tabs-list']");
+    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
+      "[data-slot='tabs-list']",
+    );
     if (!tabsList) {
       return;
     }
@@ -118,8 +110,7 @@ export function RegistryItemCard({
           return;
         }
         // SAFETY: GitHub gist API returns object with optional updated_at; validated via property existence check
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- typed gist response
-        const data = (await res.json()) as { updated_at?: string };
+        const data: { updated_at?: string } = await res.json();
         if (data.updated_at) {
           storeUpdatedAt(data.updated_at);
         }
@@ -131,7 +122,8 @@ export function RegistryItemCard({
     const refreshMetadata = async () => {
       try {
         const res = await fetch(`/r/${name}.json`, { cache: "no-store" });
-        const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
+        const updatedAt =
+          res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         if (updatedAt) {
           storeUpdatedAt(updatedAt);
         } else {
@@ -145,7 +137,11 @@ export function RegistryItemCard({
     try {
       const cached = localStorage.getItem(cacheKey);
       const cachedAt = Number(localStorage.getItem(cacheTsKey));
-      if (cached && Number.isFinite(cachedAt) && Date.now() - cachedAt < cacheTtlMs) {
+      if (
+        cached &&
+        Number.isFinite(cachedAt) &&
+        Date.now() - cachedAt < cacheTtlMs
+      ) {
         // oxlint-disable-next-line react/set-state-in-effect -- syncing cached profile from localStorage (external) to state
         setProfileString(cached);
         const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
@@ -164,10 +160,10 @@ export function RegistryItemCard({
 
     fetch(`/r/${name}.json`)
       .then(async (res) => {
-        const updatedAt = res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
+        const updatedAt =
+          res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         // SAFETY: registry JSON shape is RegistryJson; validated via files array access, same app contract
-        // oxlint-disable-next-line typescript/no-unnecessary-type-assertion -- typed registry json
-        const data = (await res.json()) as RegistryJson;
+        const data: RegistryJson = await res.json();
         return { data, updatedAt };
       })
       .then(({ data, updatedAt }) => {
@@ -250,7 +246,9 @@ export function RegistryItemCard({
                       className="size-2 rounded-full border"
                       style={{
                         backgroundColor: command.color,
-                        borderColor: needsBorder ? "rgba(15, 23, 42, 0.35)" : "transparent",
+                        borderColor: needsBorder
+                          ? "rgba(15, 23, 42, 0.35)"
+                          : "transparent",
                       }}
                     />
                     {command.label}
@@ -286,7 +284,9 @@ export function RegistryItemCard({
                 size="icon"
                 className="h-8 w-8 shrink-0"
                 disabled={!profileString}
-                onClick={() => profileString && copy(profileString, "Profile string copied")}
+                onClick={() =>
+                  profileString && copy(profileString, "Profile string copied")
+                }
               >
                 <IconCopy className="h-4 w-4" />
               </Button>
