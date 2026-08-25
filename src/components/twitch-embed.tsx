@@ -9,11 +9,12 @@ export function TwitchEmbed() {
     <div className="relative aspect-video w-full overflow-hidden rounded-lg border border-border">
       <h2 className="sr-only">Twitch</h2>
       {isLoading && <Skeleton className="absolute inset-0" />}
+      {/* SAFETY: Twitch player requires cookie/storage access; origin pinned to player.twitch.tv */}
       <iframe
         src="https://player.twitch.tv/?channel=criccadamus&parent=criccadamus.eu&parent=localhost&autoplay=false&muted=true"
         height="100%"
         width="100%"
-        sandbox="allow-scripts allow-popups allow-presentation allow-popups-to-escape-sandbox"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-popups-to-escape-sandbox"
         allow="autoplay; fullscreen"
         allowFullScreen
         className="border-0"

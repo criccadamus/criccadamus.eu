@@ -81,16 +81,6 @@ export function MacrosList() {
     }
     const classKey = value;
     setActiveClass(classKey);
-    requestAnimationFrame(() => {
-      const activeTrigger = tabsRootRef.current?.querySelector<HTMLElement>(
-        "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
-      );
-      activeTrigger?.scrollIntoView({
-        block: "nearest",
-        inline: "nearest",
-        behavior: "smooth",
-      });
-    });
     void navigate({
       search: (prev) => ({ ...prev, macro: classKey }),
       replace: true,

@@ -1,6 +1,5 @@
 import { IconExternalLink, IconInfoCircle } from "@tabler/icons-react";
-import { createFileRoute, useSearch } from "@tanstack/react-router";
-import { useEffect, useRef } from "react";
+import { createFileRoute } from "@tanstack/react-router";
 
 import { Header } from "@/components/layout/header";
 import { MacrosList } from "@/components/registry/macros-list";
@@ -39,23 +38,6 @@ function RegistryPage() {
   const isMobile = useIsMobile();
   const mobileTextClass = isMobile ? "text-white" : "text-foreground";
   const mobileSubtextClass = isMobile ? "text-white/75" : "text-foreground/75";
-  const { profile, macro } = useSearch({ from: "/registry" });
-  const profilesRef = useRef<HTMLElement>(null);
-  const macrosRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const hasProfile = Boolean(profile);
-    const hasMacro = Boolean(macro);
-
-    if (hasProfile && !hasMacro) {
-      profilesRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    } else if (hasMacro && !hasProfile) {
-      macrosRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, [profile, macro]);
 
   return (
     <div className="relative z-10">
@@ -63,7 +45,6 @@ function RegistryPage() {
       <main className="container mx-auto px-4 py-8">
         <div className="space-y-10">
           <section
-            ref={profilesRef}
             className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur"
           >
             <div>
@@ -129,7 +110,6 @@ function RegistryPage() {
           </section>
 
           <section
-            ref={macrosRef}
             className="space-y-6 sm:rounded-lg sm:border sm:border-border/60 sm:bg-card/80 sm:p-6 sm:backdrop-blur"
           >
             <div>

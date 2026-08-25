@@ -207,6 +207,18 @@ export default defineConfig({
         },
       },
       {
+        // Trusted-provider embeds (player.twitch.tv, youtube.com): their players
+        // read cookies/storage at boot, so sandbox needs allow-scripts +
+        // allow-same-origin despite the rule's blanket warning.
+        files: [
+          "src/components/twitch-embed.tsx",
+          "src/components/youtube-carousel.tsx",
+        ],
+        rules: {
+          "react/iframe-missing-sandbox": "off",
+        },
+      },
+      {
         files: ["tools/**", "tools/**/*", "**/tools/**"],
         rules: {
           complexity: "off",

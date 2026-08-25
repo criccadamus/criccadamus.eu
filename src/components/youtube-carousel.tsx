@@ -51,11 +51,12 @@ export function YouTubeCarousel() {
       onMouseLeave={handleMouseLeave}
     >
       <h2 className="sr-only">Youtube</h2>
+      {/* SAFETY: YouTube player requires cookie/storage access; origin pinned to youtube.com embeds */}
       <iframe
         key={currentIndex}
         src={embedUrl}
         title={currentItem.title}
-        sandbox="allow-scripts allow-popups allow-presentation allow-popups-to-escape-sandbox"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-popups-to-escape-sandbox"
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
         className="h-full w-full border-0"
