@@ -20,10 +20,8 @@ export const noForbiddenTermInSymbolNamesRule = defineRule({
         'Rename symbol "{{name}}" for its domain role; "shape" describes structure rather than ownership.',
     },
   },
-  create(context) {
-    const reportForbiddenSymbolName = (
-      node: ESTree.Node & { name: string },
-    ) => {
+  createOnce(context) {
+    const reportForbiddenSymbolName = (node: ESTree.Node & { name: string }) => {
       if (!containsForbiddenSymbolName(node.name)) return;
       context.report({
         node,
