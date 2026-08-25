@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { profilesByAddon } from "@/data/addons";
-import { GIST_OWNER, profileGists } from "@/data/gists";
+import { GIST_OWNER, getProfileGist } from "@/data/gists";
 
 const registrySchemaUrl = "https://ui.shadcn.com/schema/registry-item.json";
 const fileType = "registry:file";
@@ -23,11 +23,6 @@ function getEnvFromContext(context: AppRequestContext | undefined) {
 }
 
 type CachedProfile = {
-  content: string;
-  updatedAt?: string;
-};
-
-type ProfileCacheEntry = {
   content: string;
   updatedAt?: string;
 };
@@ -74,26 +69,14 @@ function buildProfileResponse(
   });
 }
 
-// oxlint-disable-next-line anti-slop/no-unknown-parameters -- type guard requires unknown for parsing
-function isString(value: unknown): value is string {
-  return Object.prototype.toString.call(value) === "[object String]";
-}
-
-function parseCachedProfile(cached: string): ProfileCacheEntry | null {
+function parseCachedProfile(cached: string): CachedProfile | null {
   try {
-    // SAFETY: cached JSON was stringified CachedProfile; shape validated via isString check
+    // SAFETY: KV value is written by the handler below as CachedProfile JSON; catch handles foreign garbage
     const parsed = JSON.parse(cached) as CachedProfile;
-    if (isString(parsed?.content)) {
-      return {
-        content: parsed.content,
-        updatedAt: parsed.updatedAt,
-      };
-    }
+    return { content: parsed.content, updatedAt: parsed.updatedAt };
   } catch {
-    // ignore
+    return null;
   }
-
-  return { content: cached };
 }
 
 async function readCachedProfile(
@@ -217,7 +200,7 @@ export const Route = createFileRoute("/r/$name/json")({
           );
         }
 
-        const gistId = profileGists[profile.name];
+        const gistId = getProfileGist(profile.name);
         if (!gistId) {
           return Response.json(
             { error: "Profile gist not found." },

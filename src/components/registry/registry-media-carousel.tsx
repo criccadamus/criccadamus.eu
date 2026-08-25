@@ -44,13 +44,184 @@ function parseMediaItem(key: string): RegistryMediaItem | null {
   };
 }
 
-// oxlint-disable-next-line complexity -- carousel handles gallery, lightbox, cache, and scroll logic; splitting would hurt cohesion
+function mediaCacheKeys(addon: string) {
+  const base = `registry:media:${addon}`;
+  return { items: base, ts: `${base}:ts` };
+}
+
+function readFreshMediaCache(addon: string): string[] | null {
+  try {
+    const keys = mediaCacheKeys(addon);
+    const cached = localStorage.getItem(keys.items);
+    const cachedAt = Number(localStorage.getItem(keys.ts));
+    if (
+      !cached ||
+      !Number.isFinite(cachedAt) ||
+      Date.now() - cachedAt >= MEDIA_CACHE_TTL_MS
+    ) {
+      return null;
+    }
+    // SAFETY: localStorage content is untrusted text; parse to unknown before structural checks
+    const parsed = JSON.parse(cached) as unknown;
+    // SAFETY: cached value was previously stringified string[]; Array.isArray guards foreign garbage
+    return Array.isArray(parsed) ? (parsed as string[]) : null;
+  } catch {
+    // Ignore localStorage errors and fall back to network
+    return null;
+  }
+}
+
+function writeMediaCache(addon: string, items: string[]) {
+  try {
+    const keys = mediaCacheKeys(addon);
+    localStorage.setItem(keys.items, JSON.stringify(items));
+    localStorage.setItem(keys.ts, String(Date.now()));
+  } catch {
+    // Ignore localStorage write errors
+  }
+}
+
+interface MediaZoomModalProps {
+  item: RegistryMediaItem;
+  addon: string;
+  hasNavigation: boolean;
+  onClose: () => void;
+  onMove: (delta: number) => void;
+}
+
+function MediaZoomModal({
+  item,
+  addon,
+  hasNavigation,
+  onClose,
+  onMove,
+}: MediaZoomModalProps) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+
+  useEffect(() => {
+    // Lock body scroll while the zoom modal is open
+    const ownerDocument = dialogRef.current?.ownerDocument ?? document;
+    const originalOverflow = ownerDocument.body.style.overflow;
+    ownerDocument.body.style.overflow = "hidden";
+
+    return () => {
+      ownerDocument.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
+  useEffect(() => {
+    // Close or navigate the zoomed media with keyboard
+    const ownerDocument = dialogRef.current?.ownerDocument ?? document;
+    const ownerWindow = ownerDocument.defaultView ?? window;
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+        return;
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        onMove(1);
+        return;
+      }
+
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        onMove(-1);
+      }
+    };
+
+    ownerWindow.addEventListener("keydown", handleKeyDown);
+    return () => ownerWindow.removeEventListener("keydown", handleKeyDown);
+  }, [onClose, onMove]);
+
+  useEffect(() => {
+    dialogRef.current?.focus();
+
+    const dialog = dialogRef.current;
+    if (!dialog) {
+      return undefined;
+    }
+
+    const handleClick = (event: MouseEvent) => {
+      if (event.target === event.currentTarget) {
+        onClose();
+      }
+    };
+
+    dialog.addEventListener("click", handleClick);
+    return () => dialog.removeEventListener("click", handleClick);
+  }, [onClose]);
+
+  return createPortal(
+    <dialog
+      ref={dialogRef}
+      className="fixed inset-0 z-50 m-0 flex h-screen max-h-screen w-screen max-w-screen items-center justify-center border-0 bg-black/95 p-0"
+      aria-label={`${addon} gallery ${item.index}`}
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onClose}
+        className="absolute top-4 right-4 z-10 text-white/70 hover:bg-white/10 hover:text-white"
+        aria-label="Close"
+      >
+        <IconX className="h-6 w-6" />
+      </Button>
+      {hasNavigation && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onMove(-1)}
+            className="absolute top-1/2 left-4 z-10 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
+            aria-label="Previous media"
+          >
+            <IconChevronLeft className="h-6 w-6" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => onMove(1)}
+            className="absolute top-1/2 right-4 z-10 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
+            aria-label="Next media"
+          >
+            <IconChevronRight className="h-6 w-6" />
+          </Button>
+        </>
+      )}
+      {item.type === "video" ? (
+        <video
+          className="max-h-[90vh] max-w-[90vw]"
+          src={item.url}
+          muted
+          loop
+          autoPlay
+          playsInline
+          controls
+          aria-label={`${addon} gallery video ${item.index}`}
+        />
+      ) : (
+        <img
+          className="max-h-[90vh] max-w-[90vw] object-contain"
+          src={item.url}
+          alt={`${addon} gallery ${item.index}`}
+        />
+      )}
+    </dialog>,
+    document.body,
+  );
+}
+
 export function RegistryMediaCarousel({
   addon,
   accentColor,
 }: RegistryMediaCarouselProps) {
-  const [mediaKeys, setMediaKeys] = useState<string[] | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [mediaKeys, setMediaKeys] = useState<string[] | null>(() =>
+    readFreshMediaCache(addon),
+  );
   const [showControls, setShowControls] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [shouldLoad, setShouldLoad] = useState(false);
@@ -58,15 +229,44 @@ export function RegistryMediaCarousel({
   const [zoomedItem, setZoomedItem] = useState<RegistryMediaItem | null>(null);
 
   const hideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const carouselRef = useRef<HTMLDivElement | null>(null);
-  const trackRef = useRef<HTMLDivElement | null>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Array<HTMLDivElement | null>>([]);
   const scrollRafRef = useRef<number | null>(null);
-  const zoomModalRef = useRef<HTMLDialogElement | null>(null);
 
-  const handleMediaClick = (item: RegistryMediaItem) => {
-    setZoomedItem(item);
+  const scheduleHide = useCallback((delayMs = 2000) => {
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
+    hideTimeoutRef.current = setTimeout(() => {
+      setShowControls(false);
+    }, delayMs);
+  }, []);
+
+  const handleMouseEnter = () => {
+    setShowControls(true);
+    if (hideTimeoutRef.current) {
+      clearTimeout(hideTimeoutRef.current);
+    }
   };
+
+  const handleMouseLeave = () => {
+    scheduleHide();
+  };
+
+  // Hide controls after initial reveal once the user has not interacted
+  useEffect(() => {
+    const initialTimeout = setTimeout(() => {
+      setShowControls(false);
+    }, 3000);
+
+    return () => {
+      clearTimeout(initialTimeout);
+      if (hideTimeoutRef.current) {
+        clearTimeout(hideTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleZoomClose = useCallback(() => {
     setZoomedItem(null);
@@ -123,71 +323,6 @@ export function RegistryMediaCarousel({
     [mediaItems],
   );
 
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (!zoomedItem) {
-      return undefined;
-    }
-
-    const ownerDocument = zoomModalRef.current?.ownerDocument ?? document;
-    const originalOverflow = ownerDocument.body.style.overflow;
-    ownerDocument.body.style.overflow = "hidden";
-
-    return () => {
-      ownerDocument.body.style.overflow = originalOverflow;
-    };
-  }, [zoomedItem]);
-
-  // Close modal or navigate zoomed media with keyboard
-  useEffect(() => {
-    if (!zoomedItem) {
-      return undefined;
-    }
-
-    const ownerDocument = zoomModalRef.current?.ownerDocument ?? document;
-    const ownerWindow = ownerDocument.defaultView ?? window;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        event.preventDefault();
-        handleZoomClose();
-        return;
-      }
-
-      if (event.key === "ArrowRight") {
-        event.preventDefault();
-        moveZoom(1);
-        return;
-      }
-
-      if (event.key === "ArrowLeft") {
-        event.preventDefault();
-        moveZoom(-1);
-      }
-    };
-
-    ownerWindow.addEventListener("keydown", handleKeyDown);
-    return () => ownerWindow.removeEventListener("keydown", handleKeyDown);
-  }, [handleZoomClose, moveZoom, zoomedItem]);
-
-  useEffect(() => {
-    const dialog = zoomModalRef.current;
-    if (!dialog) {
-      return undefined;
-    }
-
-    dialog.focus();
-
-    const handleClick = (event: MouseEvent) => {
-      if (event.target === event.currentTarget) {
-        handleZoomClose();
-      }
-    };
-
-    dialog.addEventListener("click", handleClick);
-    return () => dialog.removeEventListener("click", handleClick);
-  }, [zoomedItem, handleZoomClose]); // oxlint-disable-line react/exhaustive-effect-dependencies
-
   useEffect(() => {
     if (shouldLoad) {
       return undefined;
@@ -210,41 +345,13 @@ export function RegistryMediaCarousel({
     return () => observer.disconnect();
   }, [shouldLoad]);
 
-  // oxlint-disable-next-line react/set-state-in-effect -- syncing external localStorage cache to state requires synchronous set
   useEffect(() => {
-    if (!shouldLoad) {
+    if (!shouldLoad || mediaKeys !== null) {
       return undefined;
-    }
-
-    const cacheKey = `registry:media:${addon}`;
-    const cacheTsKey = `${cacheKey}:ts`;
-
-    try {
-      const cached = localStorage.getItem(cacheKey);
-      const cachedAt = Number(localStorage.getItem(cacheTsKey));
-      if (
-        cached &&
-        Number.isFinite(cachedAt) &&
-        Date.now() - cachedAt < MEDIA_CACHE_TTL_MS
-      ) {
-        // SAFETY: cached value was previously stringified string[]; validated via Array.isArray, unknown is safe intermediate
-        const parsed = JSON.parse(cached) as unknown;
-        if (Array.isArray(parsed)) {
-          // SAFETY: parsed array contains string media keys; Array.isArray confirms array, strings validated by rendering
-          // oxlint-disable-next-line react/set-state-in-effect -- syncing cached media keys from localStorage
-          setMediaKeys(parsed as string[]);
-          return undefined;
-        }
-      }
-    } catch {
-      // Ignore localStorage errors and fall back to network
     }
 
     let isActive = true;
     const controller = new AbortController();
-
-    setIsLoading(true);
-    setHasError(false);
 
     fetch(`/registry-media/${addon}/json`, { signal: controller.signal })
       .then(async (res) => {
@@ -261,12 +368,7 @@ export function RegistryMediaCarousel({
         }
         const items = Array.isArray(data.items) ? data.items : [];
         setMediaKeys(items);
-        try {
-          localStorage.setItem(cacheKey, JSON.stringify(items));
-          localStorage.setItem(cacheTsKey, String(Date.now()));
-        } catch {
-          // Ignore localStorage errors
-        }
+        writeMediaCache(addon, items);
         return null;
       })
       .catch((error) => {
@@ -276,49 +378,13 @@ export function RegistryMediaCarousel({
         setHasError(true);
         setMediaKeys([]);
         console.error(error);
-      })
-      .finally(() => {
-        if (isActive) {
-          setIsLoading(false);
-        }
       });
 
     return () => {
       isActive = false;
       controller.abort();
     };
-  }, [addon, shouldLoad]);
-
-  useEffect(() => {
-    // oxlint-disable-next-line react/set-state-in-effect -- resetting carousel index when addon changes is required external state sync
-    setCurrentIndex(0);
-  }, [addon, mediaItems.length]); // oxlint-disable-line react/exhaustive-effect-dependencies
-
-  const handleMouseEnter = () => {
-    if (hideTimeoutRef.current) {
-      clearTimeout(hideTimeoutRef.current);
-    }
-    setShowControls(true);
-  };
-
-  const handleMouseLeave = () => {
-    hideTimeoutRef.current = setTimeout(() => {
-      setShowControls(false);
-    }, 2000);
-  };
-
-  useEffect(() => {
-    const initialTimeout = setTimeout(() => {
-      setShowControls(false);
-    }, 3000);
-
-    return () => {
-      clearTimeout(initialTimeout);
-      if (hideTimeoutRef.current) {
-        clearTimeout(hideTimeoutRef.current);
-      }
-    };
-  }, [currentIndex]); // oxlint-disable-line react/exhaustive-effect-dependencies
+  }, [addon, shouldLoad, mediaKeys]);
 
   const scrollToIndex = (index: number) => {
     if (!trackRef.current) {
@@ -334,6 +400,7 @@ export function RegistryMediaCarousel({
       block: "nearest",
     });
     setCurrentIndex(index);
+    scheduleHide(3000);
   };
 
   const handleScroll = () => {
@@ -350,11 +417,14 @@ export function RegistryMediaCarousel({
       const width = trackRef.current.clientWidth || 1;
       const nextIndex = Math.round(trackRef.current.scrollLeft / width);
       setCurrentIndex(nextIndex);
+      scheduleHide(3000);
     });
   };
 
   const hasItems = mediaItems.length > 0;
   const hasZoomNavigation = mediaItems.length > 1;
+  // Loading is exactly the phase between intersection triggering the fetch and media keys arriving
+  const isLoading = shouldLoad && mediaKeys === null;
 
   return (
     <div ref={carouselRef} className="space-y-2">
@@ -391,7 +461,7 @@ export function RegistryMediaCarousel({
                 className="relative h-full min-w-full snap-start bg-black"
               >
                 <button
-                  onClick={() => handleMediaClick(item)}
+                  onClick={() => setZoomedItem(item)}
                   className="h-full w-full cursor-zoom-in"
                   aria-label={`View ${item.type} ${item.index} in full size`}
                 >
@@ -514,65 +584,15 @@ export function RegistryMediaCarousel({
       )}
 
       {/* Zoom Modal - rendered via portal to escape parent stacking context */}
-      {zoomedItem &&
-        createPortal(
-          <dialog
-            ref={zoomModalRef}
-            className="fixed inset-0 z-50 m-0 flex h-screen max-h-screen w-screen max-w-screen items-center justify-center border-0 bg-black/95 p-0"
-            aria-label={`${addon} gallery ${zoomedItem.index}`}
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleZoomClose}
-              className="absolute top-4 right-4 z-10 text-white/70 hover:bg-white/10 hover:text-white"
-              aria-label="Close"
-            >
-              <IconX className="h-6 w-6" />
-            </Button>
-            {hasZoomNavigation && (
-              <>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => moveZoom(-1)}
-                  className="absolute top-1/2 left-4 z-10 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
-                  aria-label="Previous media"
-                >
-                  <IconChevronLeft className="h-6 w-6" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => moveZoom(1)}
-                  className="absolute top-1/2 right-4 z-10 -translate-y-1/2 bg-white/10 text-white hover:bg-white/20"
-                  aria-label="Next media"
-                >
-                  <IconChevronRight className="h-6 w-6" />
-                </Button>
-              </>
-            )}
-            {zoomedItem.type === "video" ? (
-              <video
-                className="max-h-[90vh] max-w-[90vw]"
-                src={zoomedItem.url}
-                muted
-                loop
-                autoPlay
-                playsInline
-                controls
-                aria-label={`${addon} gallery video ${zoomedItem.index}`}
-              />
-            ) : (
-              <img
-                className="max-h-[90vh] max-w-[90vw] object-contain"
-                src={zoomedItem.url}
-                alt={`${addon} gallery ${zoomedItem.index}`}
-              />
-            )}
-          </dialog>,
-          document.body,
-        )}
+      {zoomedItem && (
+        <MediaZoomModal
+          item={zoomedItem}
+          addon={addon}
+          hasNavigation={hasZoomNavigation}
+          onClose={handleZoomClose}
+          onMove={moveZoom}
+        />
+      )}
     </div>
   );
 }

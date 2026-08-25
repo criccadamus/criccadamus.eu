@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { RegistryMediaCarousel } from "@/components/registry/registry-media-carousel";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { profileGists } from "@/data/gists";
+import { getProfileGist } from "@/data/gists";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import type { WowAddonConfig } from "@/lib/wow-addons";
@@ -33,6 +33,34 @@ interface RegistryJson {
   files: RegistryJsonFile[];
 }
 
+const PROFILE_CACHE_TTL_MS = 5 * 60 * 1000;
+
+function profileCacheKeys(name: string) {
+  const base = `registry:profile:v3:${name}`;
+  return { content: base, ts: `${base}:ts`, updatedAt: `${base}:updatedAt` };
+}
+
+function readFreshProfileCache(
+  name: string,
+): { content: string; updatedAt: string | null } | null {
+  try {
+    const keys = profileCacheKeys(name);
+    const content = localStorage.getItem(keys.content);
+    const cachedAt = Number(localStorage.getItem(keys.ts));
+    if (
+      !content ||
+      !Number.isFinite(cachedAt) ||
+      Date.now() - cachedAt >= PROFILE_CACHE_TTL_MS
+    ) {
+      return null;
+    }
+    return { content, updatedAt: localStorage.getItem(keys.updatedAt) };
+  } catch {
+    // Ignore localStorage errors and fall back to network
+    return null;
+  }
+}
+
 export function RegistryItemCard({
   name,
   title,
@@ -41,8 +69,12 @@ export function RegistryItemCard({
   addonConfig,
 }: RegistryItemCardProps) {
   const registryUrl = `https://criccadamus.eu/r/${name}.json`;
-  const [profileString, setProfileString] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [profileString, setProfileString] = useState<string | null>(
+    () => readFreshProfileCache(name)?.content ?? null,
+  );
+  const [lastUpdated, setLastUpdated] = useState<string | null>(
+    () => readFreshProfileCache(name)?.updatedAt ?? null,
+  );
   const [activeTab, setActiveTab] = useState("string");
   const tabsRootRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
@@ -56,49 +88,35 @@ export function RegistryItemCard({
     }
   }, []);
 
-  useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
-      "[data-slot='tabs-list']",
-    );
-    if (!tabsList) {
-      return;
-    }
-
-    const scrollToActive = () => {
-      const activeTrigger = tabsList.querySelector<HTMLElement>(
+  const handleTabChange = (value: string) => {
+    setActiveTab(value);
+    requestAnimationFrame(() => {
+      const activeTrigger = tabsRootRef.current?.querySelector<HTMLElement>(
         "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
       );
-      if (!activeTrigger) {
-        return;
-      }
-
-      activeTrigger.scrollIntoView({
+      activeTrigger?.scrollIntoView({
         block: "nearest",
         inline: "nearest",
         behavior: "smooth",
       });
-    };
+    });
+  };
 
-    requestAnimationFrame(scrollToActive);
-  }, [activeTab]); // oxlint-disable-line react/exhaustive-effect-dependencies
-
-  // oxlint-disable-next-line react/set-state-in-effect -- syncing external systems (localStorage + network) to state; initial cache read requires synchronous set
   useEffect(() => {
-    const cacheVersion = "v3";
-    const cacheKey = `registry:profile:${cacheVersion}:${name}`;
-    const cacheTsKey = `${cacheKey}:ts`;
-    const cacheUpdatedAtKey = `${cacheKey}:updatedAt`;
-    const cacheTtlMs = 5 * 60 * 1000;
-
-    const storeUpdatedAt = (updatedAt: string | null) => {
-      if (updatedAt) {
-        setLastUpdated(updatedAt);
-        localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+    const storeUpdatedAt = (value: string | null) => {
+      if (!value) {
+        return;
+      }
+      setLastUpdated(value);
+      try {
+        localStorage.setItem(profileCacheKeys(name).updatedAt, value);
+      } catch {
+        // Ignore localStorage write errors
       }
     };
 
-    const fetchMetadataFromGist = async () => {
-      const gistId = profileGists[name];
+    const fetchGistUpdatedAt = async () => {
+      const gistId = getProfileGist(name);
       if (!gistId) {
         return;
       }
@@ -119,7 +137,7 @@ export function RegistryItemCard({
       }
     };
 
-    const refreshMetadata = async () => {
+    const refreshUpdatedAt = async () => {
       try {
         const res = await fetch(`/r/${name}.json`, { cache: "no-store" });
         const updatedAt =
@@ -127,35 +145,19 @@ export function RegistryItemCard({
         if (updatedAt) {
           storeUpdatedAt(updatedAt);
         } else {
-          await fetchMetadataFromGist();
+          await fetchGistUpdatedAt();
         }
       } catch {
         // Ignore background refresh errors
       }
     };
 
-    try {
-      const cached = localStorage.getItem(cacheKey);
-      const cachedAt = Number(localStorage.getItem(cacheTsKey));
-      if (
-        cached &&
-        Number.isFinite(cachedAt) &&
-        Date.now() - cachedAt < cacheTtlMs
-      ) {
-        // oxlint-disable-next-line react/set-state-in-effect -- syncing cached profile from localStorage (external) to state
-        setProfileString(cached);
-        const cachedUpdatedAt = localStorage.getItem(cacheUpdatedAtKey);
-        if (cachedUpdatedAt) {
-          // oxlint-disable-next-line react/set-state-in-effect -- syncing cached timestamp from localStorage
-          setLastUpdated(cachedUpdatedAt);
-        }
-        if (!cachedUpdatedAt) {
-          void refreshMetadata();
-        }
-        return;
+    const cached = readFreshProfileCache(name);
+    if (cached) {
+      if (!cached.updatedAt) {
+        void refreshUpdatedAt();
       }
-    } catch {
-      // Ignore localStorage errors and fall back to network
+      return;
     }
 
     fetch(`/r/${name}.json`)
@@ -164,23 +166,22 @@ export function RegistryItemCard({
           res.headers.get("x-last-updated") ?? res.headers.get("last-modified");
         // SAFETY: registry JSON shape is RegistryJson; validated via files array access, same app contract
         const data: RegistryJson = await res.json();
-        return { data, updatedAt };
+        return { content: data.files?.[0]?.content ?? null, updatedAt };
       })
-      .then(({ data, updatedAt }) => {
-        const content = data.files?.[0]?.content ?? null;
+      .then(({ content, updatedAt }) => {
         setProfileString(content);
         if (updatedAt) {
           storeUpdatedAt(updatedAt);
-        }
-        if (!updatedAt) {
-          void fetchMetadataFromGist();
+        } else {
+          void fetchGistUpdatedAt();
         }
         if (content) {
           try {
-            localStorage.setItem(cacheKey, content);
-            localStorage.setItem(cacheTsKey, String(Date.now()));
+            const keys = profileCacheKeys(name);
+            localStorage.setItem(keys.content, content);
+            localStorage.setItem(keys.ts, String(Date.now()));
             if (updatedAt) {
-              localStorage.setItem(cacheUpdatedAtKey, updatedAt);
+              localStorage.setItem(keys.updatedAt, updatedAt);
             }
           } catch {
             // Ignore localStorage write errors
@@ -231,7 +232,7 @@ export function RegistryItemCard({
       </div>
 
       <div ref={tabsRootRef}>
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="scrollbar-hidden w-full max-w-full justify-start gap-1 overflow-x-auto rounded-lg bg-muted/80 p-1">
             {commands.map((command) => {
               const needsBorder = command.id === "bun";
@@ -299,7 +300,8 @@ export function RegistryItemCard({
         <p>Last updated: {formattedUpdatedAt ?? "Unknown"}</p>
       </div>
 
-      <RegistryMediaCarousel addon={addon} accentColor={addonConfig.color} />
+      {/* key resets all carousel state (index, cache, errors) when the addon changes */}
+      <RegistryMediaCarousel key={addon} addon={addon} accentColor={addonConfig.color} />
     </div>
   );
 }

@@ -81,6 +81,16 @@ export function MacrosList() {
     }
     const classKey = value;
     setActiveClass(classKey);
+    requestAnimationFrame(() => {
+      const activeTrigger = tabsRootRef.current?.querySelector<HTMLElement>(
+        "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
+      );
+      activeTrigger?.scrollIntoView({
+        block: "nearest",
+        inline: "nearest",
+        behavior: "smooth",
+      });
+    });
     void navigate({
       search: (prev) => ({ ...prev, macro: classKey }),
       replace: true,
@@ -110,28 +120,6 @@ export function MacrosList() {
       tabsList.scrollLeft = 0;
     }
   }, []);
-
-  useEffect(() => {
-    const tabsList = tabsRootRef.current?.querySelector<HTMLElement>(
-      "[data-slot='tabs-list']",
-    );
-    if (!tabsList) {
-      return;
-    }
-
-    const activeTrigger = tabsList.querySelector<HTMLElement>(
-      "[data-slot='tabs-trigger'][data-active], [data-slot='tabs-trigger'][aria-selected='true']",
-    );
-    if (!activeTrigger) {
-      return;
-    }
-
-    activeTrigger.scrollIntoView({
-      block: "nearest",
-      inline: "nearest",
-      behavior: "smooth",
-    });
-  }, [activeClass]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
   useEffect(() => {
     let cancelled = false;

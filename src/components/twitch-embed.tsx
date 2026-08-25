@@ -13,8 +13,7 @@ export function TwitchEmbed() {
         src="https://player.twitch.tv/?channel=criccadamus&parent=criccadamus.eu&parent=localhost&autoplay=false&muted=true"
         height="100%"
         width="100%"
-        // oxlint-disable-next-line react/iframe-missing-sandbox
-        sandbox="allow-scripts allow-same-origin allow-popups allow-presentation allow-popups-to-escape-sandbox"
+        sandbox="allow-scripts allow-popups allow-presentation allow-popups-to-escape-sandbox"
         allow="autoplay; fullscreen"
         allowFullScreen
         className="border-0"
